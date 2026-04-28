@@ -21,97 +21,104 @@ const emptyStats: UserStats = {
 };
 
 export async function saveGameResult(result: GameResult): Promise<SaveGameResultResponse> {
-  const supabase = createClient();
+  try {
+    const supabase = createClient();
 
-  if (!supabase) {
-    return { ok: false, message: "Supabase is not configured yet." };
-  }
+    if (!supabase) {
+      return { ok: false, message: "Supabase is not configured yet." };
+    }
 
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+    const {
+      data: { user }
+    } = await supabase.auth.getUser();
 
-  if (!user) {
-    return { ok: false, message: "Log in to save your score." };
-  }
+    if (!user) {
+      return { ok: false, message: "Log in to save your score." };
+    }
 
-  const [profileBefore, allScoresBefore, gameScoresBefore, leaderboardBefore] = await Promise.all([
-    ensureProfile(),
-    getUserScoresForUser(user.id),
-    getUserScoresForUser(user.id, result.gameSlug),
-    getLeaderboard()
-  ]);
+    const [profileBefore, allScoresBefore, gameScoresBefore, leaderboardBefore] = await Promise.all([
+      ensureProfile(),
+      getUserScoresForUser(user.id),
+      getUserScoresForUser(user.id, result.gameSlug),
+      getLeaderboard()
+    ]);
 
-  const previousRunScore = gameScoresBefore[0]?.score ?? null;
-  const previousBestScore = gameScoresBefore.reduce((max, score) => Math.max(max, score.score), 0) || null;
-  const rankBefore = leaderboardBefore.find((entry) => entry.user_id === user.id)?.rank ?? null;
-  const previousProgression = getProgressionSnapshot(profileBefore?.total_xp ?? 0, allScoresBefore);
+    const previousRunScore = gameScoresBefore[0]?.score ?? null;
+    const previousBestScore = gameScoresBefore.reduce((max, score) => Math.max(max, score.score), 0) || null;
+    const rankBefore = leaderboardBefore.find((entry) => entry.user_id === user.id)?.rank ?? null;
+    const previousProgression = getProgressionSnapshot(profileBefore?.total_xp ?? 0, allScoresBefore);
 
-  const { data: session, error: sessionError } = await supabase
-    .from("game_sessions")
-    .insert({
-      correct_answers: result.correct,
-      duration_seconds: null,
+    const { data: session, error: sessionError } = await supabase
+      .from("game_sessions")
+      .insert({
+        correct_answers: result.correct,
+        duration_seconds: null,
+        game_slug: result.gameSlug,
+        score: result.score,
+        total_questions: result.total,
+        user_id: user.id
+      })
+      .select("id")
+      .single();
+
+    if (sessionError) {
+      return { ok: false, message: sessionError.message };
+    }
+
+    const { error } = await supabase.from("scores").insert({
+      accuracy: result.accuracy,
+      game_session_id: session.id,
       game_slug: result.gameSlug,
+      max_streak: result.maxStreak,
       score: result.score,
-      total_questions: result.total,
       user_id: user.id
-    })
-    .select("id")
-    .single();
+    });
 
-  if (sessionError) {
-    return { ok: false, message: sessionError.message };
+    if (error) {
+      return { ok: false, message: error.message };
+    }
+
+    const [profileAfter, scoresAfter, leaderboardAfter] = await Promise.all([getUserProfile(), getUserScoresForUser(user.id), getLeaderboard()]);
+    const totalXpAfter = profileAfter?.total_xp ?? profileBefore?.total_xp ?? 0;
+    const xpGained =
+      profileBefore && profileAfter ? Math.max(profileAfter.total_xp - profileBefore.total_xp, 0) : 0;
+    const nextProgression = getProgressionSnapshot(totalXpAfter, scoresAfter);
+    const rankAfter = leaderboardAfter.find((entry) => entry.user_id === user.id)?.rank ?? null;
+    const rankMessage =
+      rankBefore !== null && rankAfter !== null
+        ? rankAfter < rankBefore
+          ? ` Rank up: #${rankBefore} to #${rankAfter}.`
+          : rankAfter > rankBefore
+            ? ` Rank shift: #${rankBefore} to #${rankAfter}.`
+            : ` Holding at rank #${rankAfter}.`
+        : rankAfter !== null
+          ? ` You entered the board at #${rankAfter}.`
+          : "";
+
+    return {
+      insights: {
+        currentStreak: nextProgression.currentStreak,
+        improvement: previousRunScore !== null ? result.score - previousRunScore : null,
+        levelAfter: nextProgression.level,
+        levelBefore: getLevelFromXp(profileBefore?.total_xp ?? 0),
+        newlyEarnedBadges: getNewlyEarnedBadges(previousProgression.badges, nextProgression.badges),
+        personalBest: previousBestScore === null || result.score > previousBestScore,
+        previousBestScore,
+        previousRunScore,
+        rankAfter,
+        rankBefore,
+        recommendedNextChallenge: getRecommendedNextChallenge(result, scoresAfter),
+        xpGained
+      },
+      message: `Score saved.${rankMessage}`,
+      ok: true
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Unable to save score right now."
+    };
   }
-
-  const { error } = await supabase.from("scores").insert({
-    accuracy: result.accuracy,
-    game_session_id: session.id,
-    game_slug: result.gameSlug,
-    max_streak: result.maxStreak,
-    score: result.score,
-    user_id: user.id
-  });
-
-  if (error) {
-    return { ok: false, message: error.message };
-  }
-
-  const [profileAfter, scoresAfter, leaderboardAfter] = await Promise.all([getUserProfile(), getUserScoresForUser(user.id), getLeaderboard()]);
-  const totalXpAfter = profileAfter?.total_xp ?? profileBefore?.total_xp ?? 0;
-  const xpGained =
-    profileBefore && profileAfter ? Math.max(profileAfter.total_xp - profileBefore.total_xp, 0) : 0;
-  const nextProgression = getProgressionSnapshot(totalXpAfter, scoresAfter);
-  const rankAfter = leaderboardAfter.find((entry) => entry.user_id === user.id)?.rank ?? null;
-  const rankMessage =
-    rankBefore !== null && rankAfter !== null
-      ? rankAfter < rankBefore
-        ? ` Rank up: #${rankBefore} to #${rankAfter}.`
-        : rankAfter > rankBefore
-          ? ` Rank shift: #${rankBefore} to #${rankAfter}.`
-          : ` Holding at rank #${rankAfter}.`
-      : rankAfter !== null
-        ? ` You entered the board at #${rankAfter}.`
-        : "";
-
-  return {
-    insights: {
-      currentStreak: nextProgression.currentStreak,
-      improvement: previousRunScore !== null ? result.score - previousRunScore : null,
-      levelAfter: nextProgression.level,
-      levelBefore: getLevelFromXp(profileBefore?.total_xp ?? 0),
-      newlyEarnedBadges: getNewlyEarnedBadges(previousProgression.badges, nextProgression.badges),
-      personalBest: previousBestScore === null || result.score > previousBestScore,
-      previousBestScore,
-      previousRunScore,
-      rankAfter,
-      rankBefore,
-      recommendedNextChallenge: getRecommendedNextChallenge(result, scoresAfter),
-      xpGained
-    },
-    message: `Score saved.${rankMessage}`,
-    ok: true
-  };
 }
 
 export async function ensureProfile() {

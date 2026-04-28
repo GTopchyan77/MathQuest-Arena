@@ -5,15 +5,14 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { StatCard } from "@/shared/components/ui/StatCard";
 import { games } from "@/lib/games/catalog";
-import { mockScores } from "@/lib/mockData";
+import { getProgressionSnapshot } from "@/lib/progression";
 import { getCurrentProfile } from "@/lib/supabase/profileRepository";
 import { getUserScores } from "@/lib/supabase/scores";
 import type { ScoreRow } from "@/lib/types";
 
 export function ProfileClient() {
   const { user } = useAuth();
-  const [scores, setScores] = useState<ScoreRow[]>(mockScores);
-  const [usingMock, setUsingMock] = useState(true);
+  const [scores, setScores] = useState<ScoreRow[]>([]);
   const [profileName, setProfileName] = useState("");
 
   useEffect(() => {
@@ -24,10 +23,7 @@ export function ProfileClient() {
     }
 
     getUserScores().then((data) => {
-      if (data.length) {
-        setScores(data);
-        setUsingMock(false);
-      }
+      setScores(data);
     });
   }, []);
 
@@ -38,6 +34,26 @@ export function ProfileClient() {
     const accuracy = scores.length ? Math.round(scores.reduce((sum, score) => sum + score.accuracy, 0) / scores.length) : 0;
     return { accuracy, bestScore, bestStreak, totalXp };
   }, [scores]);
+  const progression = useMemo(() => getProgressionSnapshot(stats.totalXp, scores), [scores, stats.totalXp]);
+  const skillMap = useMemo(
+    () =>
+      games.map((game) => {
+        const gameScores = scores.filter((score) => score.game_slug === game.slug);
+        const averageAccuracy = gameScores.length
+          ? Math.round(gameScores.reduce((sum, score) => sum + score.accuracy, 0) / gameScores.length)
+          : 0;
+        const bestScore = gameScores.reduce((max, score) => Math.max(max, score.score), 0);
+
+        return {
+          averageAccuracy,
+          bestScore,
+          runs: gameScores.length,
+          title: game.title
+        };
+      }),
+    [scores]
+  );
+  const earnedBadges = progression.badges.filter((badge) => badge.earned);
 
   const displayName = profileName || user?.user_metadata?.display_name || user?.email?.split("@")[0] || "MathQuest Player";
   const joined = user?.created_at ? new Date(user.created_at).toLocaleDateString() : "Preview account";
@@ -59,7 +75,7 @@ export function ProfileClient() {
           </div>
           <div className="mt-6 grid gap-3">
             <ProfileLine icon={CalendarDays} label="Joined" value={joined} />
-            <ProfileLine icon={Trophy} label="Progress source" value={usingMock ? "Mock preview" : "Saved scores"} />
+            <ProfileLine icon={Trophy} label="Progress source" value={scores.length ? "Saved scores" : "No saved scores yet"} />
           </div>
         </aside>
 
@@ -76,38 +92,58 @@ export function ProfileClient() {
           <p className="surface-label">Activity</p>
           <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Recent sessions</h2>
           <div className="mt-5 grid gap-3">
-            {scores.map((score) => (
-              <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/6 p-4 sm:grid-cols-[1fr_auto] sm:items-center" key={score.id}>
-                <div>
-                  <p className="font-black text-white">{formatGame(score.game_slug)}</p>
-                  <p className="text-sm font-semibold text-slate-400">{new Date(score.created_at).toLocaleDateString()}</p>
+            {scores.length ? (
+              scores.map((score) => (
+                <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/6 p-4 sm:grid-cols-[1fr_auto] sm:items-center" key={score.id}>
+                  <div>
+                    <p className="font-black text-white">{formatGame(score.game_slug)}</p>
+                    <p className="text-sm font-semibold text-slate-400">{new Date(score.created_at).toLocaleDateString()}</p>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <MiniMetric label="Score" value={score.score} />
+                    <MiniMetric label="Accuracy" value={`${score.accuracy}%`} />
+                    <MiniMetric label="Streak" value={score.max_streak} />
+                  </div>
                 </div>
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  <MiniMetric label="Score" value={score.score} />
-                  <MiniMetric label="Accuracy" value={`${score.accuracy}%`} />
-                  <MiniMetric label="Streak" value={score.max_streak} />
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="rounded-2xl border border-white/10 bg-white/6 p-4 font-semibold text-slate-300">
+                No saved sessions yet. Play and save your first game.
+              </p>
+            )}
           </div>
         </div>
 
         <div className="panel rounded-[30px] p-6">
           <p className="surface-label text-cyan-200/80">Mastery</p>
           <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Skill map</h2>
-          <div className="mt-5 grid gap-4">
-            {games.map((game, index) => (
-              <div key={game.slug}>
-                <div className="mb-2 flex items-center justify-between text-sm font-black text-white">
-                  <span>{game.title}</span>
-                  <span className="text-cyan-200">{82 + index * 5}%</span>
+          {scores.length ? (
+            <div className="mt-5 grid gap-4">
+              {skillMap.map((game) => (
+                <div key={game.title}>
+                  <div className="mb-2 flex items-center justify-between gap-4 text-sm font-black text-white">
+                    <span>{game.title}</span>
+                    <span className="text-cyan-200">
+                      {game.runs ? `${game.averageAccuracy}% accuracy` : "No saved runs"}
+                    </span>
+                  </div>
+                  <div className="h-3 rounded-full bg-white/8">
+                    <div
+                      className="h-full rounded-full bg-[linear-gradient(90deg,#22d3ee_0%,#0ea5e9_52%,#8b5cf6_100%)] shadow-[0_0_18px_rgba(34,211,238,0.24)]"
+                      style={{ width: `${Math.max(game.averageAccuracy, game.runs ? 12 : 0)}%` }}
+                    />
+                  </div>
+                  <p className="mt-2 text-xs font-semibold text-slate-400">
+                    {game.runs ? `Best score ${game.bestScore.toLocaleString()} across ${game.runs} saved run${game.runs === 1 ? "" : "s"}` : "Play and save a run to see game-specific progress."}
+                  </p>
                 </div>
-                <div className="h-3 rounded-full bg-white/8">
-                  <div className="h-full rounded-full bg-[linear-gradient(90deg,#22d3ee_0%,#0ea5e9_52%,#8b5cf6_100%)] shadow-[0_0_18px_rgba(34,211,238,0.24)]" style={{ width: `${82 + index * 5}%` }} />
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-5 rounded-2xl border border-white/10 bg-white/6 p-4 font-semibold text-slate-300">
+              No saved sessions yet. Play and save your first game.
+            </p>
+          )}
         </div>
       </section>
 
@@ -124,18 +160,20 @@ export function ProfileClient() {
         <div className="panel rounded-[30px] p-6">
           <p className="surface-label">Achievements</p>
           <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Unlocked highlights</h2>
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
-            {[
-              { label: "Sharp Starter", value: "5 wins" },
-              { label: "Pattern Pilot", value: "82% logic" },
-              { label: "Arena Climber", value: `${stats.totalXp} XP` }
-            ].map((item) => (
-              <div className="rounded-[24px] border border-white/10 bg-white/6 p-4" key={item.label}>
-                <p className="text-sm font-black text-white">{item.label}</p>
-                <p className="mt-2 text-xs font-black uppercase tracking-[0.14em] text-cyan-200">{item.value}</p>
-              </div>
-            ))}
-          </div>
+          {earnedBadges.length ? (
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              {earnedBadges.map((badge) => (
+                <div className="rounded-[24px] border border-white/10 bg-white/6 p-4" key={badge.id}>
+                  <p className="text-sm font-black text-white">{badge.label}</p>
+                  <p className="mt-2 text-xs font-black uppercase tracking-[0.14em] text-cyan-200">{badge.description}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-5 rounded-2xl border border-white/10 bg-white/6 p-4 font-semibold text-slate-300">
+              No saved sessions yet. Play and save your first game.
+            </p>
+          )}
         </div>
       </section>
     </main>

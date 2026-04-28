@@ -1,7 +1,8 @@
 "use client";
 
+import type { Route } from "next";
 import Link from "next/link";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Crown, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/shared/components/ui/Button";
 import type { GameResult, PostGameInsights } from "@/lib/types";
@@ -27,15 +28,25 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
     setSaved(response.ok);
   }
 
+  const isFirstSave = insights?.newlyEarnedBadges.some((badge) => badge.id === "first-run") ?? false;
+
   return (
     <section className="panel-strong rounded-[30px] p-6">
-      <div className="flex items-center gap-3">
-        <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-400/25 bg-emerald-400/12 text-emerald-200">
+      <div className="relative overflow-hidden rounded-[26px] border border-white/10 bg-white/[0.04] p-5">
+        <div className="absolute right-0 top-0 h-28 w-28 rounded-full bg-cyan-400/10 blur-3xl" />
+        <div className="absolute left-0 top-0 h-20 w-20 rounded-full bg-violet/10 blur-3xl" />
+        <div className="relative flex items-center gap-3">
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-400/25 bg-emerald-400/12 text-emerald-200">
           <CheckCircle2 className="h-7 w-7" />
-        </span>
-        <div>
-          <h2 className="font-[var(--font-sora)] text-2xl font-extrabold text-white">Round complete</h2>
-          <p className="text-sm font-bold text-slate-400">Save your score to climb the leaderboard.</p>
+          </span>
+          <div>
+            <h2 className="font-[var(--font-sora)] text-2xl font-extrabold text-white">Round complete</h2>
+            <p className="text-sm font-bold text-slate-400">You can play now and decide later whether to save this run to your profile.</p>
+          </div>
+          <div className="ml-auto hidden items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-amber-100 sm:inline-flex">
+            <Sparkles className="h-3.5 w-3.5" />
+            Reward ready
+          </div>
         </div>
       </div>
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -45,6 +56,26 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
         <Metric label="Best streak" value={result.maxStreak} />
       </div>
       {status ? <p className="mt-4 rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-sm font-bold text-slate-200">{status}</p> : null}
+      {isFirstSave ? (
+        <div className="mt-4 relative overflow-hidden rounded-[24px] border border-emerald-400/20 bg-[linear-gradient(135deg,rgba(16,185,129,0.14),rgba(34,211,238,0.08))] p-5">
+          <div className="absolute right-0 top-0 h-24 w-24 rounded-full bg-emerald-400/10 blur-3xl" />
+          <p className="relative text-xs font-black uppercase tracking-[0.14em] text-emerald-100">First win unlocked</p>
+          <h3 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Nice. Your first score is saved.</h3>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-200">
+            Your dashboard, streak, XP, and badges will update from here on out. Take a quick look, then keep the momentum going with the next recommended challenge.
+          </p>
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+            <Button asChild>
+              <Link href="/dashboard">See your progress</Link>
+            </Button>
+            {insights ? (
+              <Button asChild variant="secondary">
+                <Link href={insights.recommendedNextChallenge.href as Route<string>}>Play the next challenge</Link>
+              </Button>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
       {insights ? (
         <div className="mt-4 grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="grid gap-3 sm:grid-cols-2">
@@ -67,9 +98,18 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
               }
             />
           </div>
-          <div className="rounded-2xl border border-white/10 bg-white/6 p-4">
-            <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">Next challenge</p>
-            <p className="mt-2 font-[var(--font-sora)] text-xl font-extrabold text-white">{insights.recommendedNextChallenge.title}</p>
+          <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/6 p-4">
+            <div className="absolute right-0 top-0 h-20 w-20 rounded-full bg-cyan-400/10 blur-3xl" />
+            <div className="relative">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">Next challenge</p>
+                <p className="mt-2 font-[var(--font-sora)] text-xl font-extrabold text-white">{insights.recommendedNextChallenge.title}</p>
+              </div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-400/10 text-cyan-100">
+                <Crown className="h-4 w-4" />
+              </div>
+            </div>
             <p className="mt-2 text-sm leading-6 text-slate-300">{insights.recommendedNextChallenge.reason}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {insights.personalBest ? <Tag>New personal best</Tag> : null}
@@ -79,8 +119,9 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
               ))}
             </div>
             <Button asChild className="mt-4" variant="secondary">
-              <Link href={insights.recommendedNextChallenge.href}>Play recommended challenge</Link>
+              <Link href={insights.recommendedNextChallenge.href as Route<string>}>Play recommended challenge</Link>
             </Button>
+            </div>
           </div>
         </div>
       ) : null}
@@ -91,6 +132,9 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
         <Button onClick={onRestart} variant="secondary">
           Play again
         </Button>
+        {!saved ? (
+          <p className="self-center text-sm font-semibold text-slate-400">Saving unlocks dashboard progress and leaderboard placement.</p>
+        ) : null}
       </div>
     </section>
   );

@@ -29,10 +29,10 @@ export function AuthForm({ mode }: AuthFormProps) {
   const isConfirmedRedirect = searchParams.get("confirmed") === "1";
 
   useEffect(() => {
-    if (!isRegister && !authLoading && user) {
+    if (!authLoading && user) {
       router.replace("/dashboard");
     }
-  }, [authLoading, isRegister, router, user]);
+  }, [authLoading, router, user]);
 
   useEffect(() => {
     if (isRegister || !isConfirmedRedirect) {

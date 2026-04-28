@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { Button } from "@/shared/components/ui/Button";
 import { StatCard } from "@/shared/components/ui/StatCard";
 import { games } from "@/lib/games/catalog";
-import { mockLeaderboard } from "@/lib/mockData";
 import { getLeaderboard } from "@/lib/supabase/scores";
 import type { GameSlug, LeaderboardEntry } from "@/lib/types";
 
@@ -13,18 +12,11 @@ type Filter = "all" | GameSlug;
 
 export function LeaderboardClient() {
   const [filter, setFilter] = useState<Filter>("all");
-  const [entries, setEntries] = useState<LeaderboardEntry[]>(mockLeaderboard);
-  const [usingMock, setUsingMock] = useState(true);
+  const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
 
   useEffect(() => {
     getLeaderboard(filter === "all" ? undefined : filter).then((data) => {
-      if (data.length) {
-        setEntries(data);
-        setUsingMock(false);
-      } else {
-        setEntries(mockLeaderboard);
-        setUsingMock(true);
-      }
+      setEntries(data);
     });
   }, [filter]);
 
@@ -35,12 +27,12 @@ export function LeaderboardClient() {
           <p className="surface-label">Leaderboard</p>
           <h1 className="mt-3 font-[var(--font-sora)] text-3xl font-extrabold text-white sm:text-4xl">Top players in the arena</h1>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-            Scores update from Supabase when connected, with a polished mock board available for local preview.
+            Scores update from Supabase when connected. Save a run to start climbing the rankings.
           </p>
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
             <StatCard icon={Crown} label="Leader score" tone="lemon" value={entries[0]?.best_score ?? 0} />
             <StatCard icon={Trophy} label="Total runs" tone="coral" value={entries.reduce((sum, entry) => sum + entry.games_played, 0)} />
-            <StatCard icon={Target} label={usingMock ? "Preview mode" : "Live board"} tone="mint" value={usingMock ? "Mock" : "Live"} />
+            <StatCard icon={Target} label="Board status" tone="mint" value={entries.length ? "Live" : "Empty"} />
           </div>
         </div>
 
@@ -69,31 +61,37 @@ export function LeaderboardClient() {
           <span>Games</span>
         </div>
         <div className="divide-y divide-white/10">
-          {entries.map((entry) => (
-            <div className="grid gap-4 px-5 py-4 transition hover:bg-white/6 md:grid-cols-[0.4fr_1.4fr_0.7fr_0.7fr_0.7fr] md:items-center" key={entry.user_id}>
-              <div className="flex items-center gap-3">
-                <span className={`flex h-10 w-10 items-center justify-center rounded-2xl border text-sm font-black ${
-                  entry.rank === 1
-                    ? "border-amber-300/30 bg-amber-300/14 text-amber-100 shadow-[0_0_24px_rgba(252,211,77,0.15)]"
-                    : entry.rank === 2
-                      ? "border-slate-300/20 bg-slate-200/12 text-slate-100"
-                      : entry.rank === 3
-                        ? "border-orange-300/24 bg-orange-300/12 text-orange-100"
-                        : "border-white/10 bg-white/6 text-white"
-                }`}>
-                  #{entry.rank}
-                </span>
-                {entry.rank <= 3 ? <Medal className="h-5 w-5 text-amber-200 md:hidden" /> : null}
+          {entries.length ? (
+            entries.map((entry) => (
+              <div className="grid gap-4 px-5 py-4 transition hover:bg-white/6 md:grid-cols-[0.4fr_1.4fr_0.7fr_0.7fr_0.7fr] md:items-center" key={entry.user_id}>
+                <div className="flex items-center gap-3">
+                  <span className={`flex h-10 w-10 items-center justify-center rounded-2xl border text-sm font-black ${
+                    entry.rank === 1
+                      ? "border-amber-300/30 bg-amber-300/14 text-amber-100 shadow-[0_0_24px_rgba(252,211,77,0.15)]"
+                      : entry.rank === 2
+                        ? "border-slate-300/20 bg-slate-200/12 text-slate-100"
+                        : entry.rank === 3
+                          ? "border-orange-300/24 bg-orange-300/12 text-orange-100"
+                          : "border-white/10 bg-white/6 text-white"
+                  }`}>
+                    #{entry.rank}
+                  </span>
+                  {entry.rank <= 3 ? <Medal className="h-5 w-5 text-amber-200 md:hidden" /> : null}
+                </div>
+                <div>
+                  <p className="font-black text-white">{entry.display_name || "Anonymous player"}</p>
+                  <p className="text-sm font-semibold text-slate-400">MathQuest competitor</p>
+                </div>
+                <Score label="Best" value={entry.best_score} />
+                <Score label="Total" value={entry.total_score} />
+                <Score label="Games" value={entry.games_played} />
               </div>
-              <div>
-                <p className="font-black text-white">{entry.display_name || "Anonymous player"}</p>
-                <p className="text-sm font-semibold text-slate-400">MathQuest competitor</p>
-              </div>
-              <Score label="Best" value={entry.best_score} />
-              <Score label="Total" value={entry.total_score} />
-              <Score label="Games" value={entry.games_played} />
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="px-5 py-6 text-sm font-semibold text-slate-300">
+              No rankings yet. Save a score to claim the first spot.
+            </p>
+          )}
         </div>
       </section>
     </main>

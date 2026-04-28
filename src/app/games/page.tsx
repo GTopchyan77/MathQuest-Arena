@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { Compass, Sparkles, Swords, TimerReset } from "lucide-react";
 import { DailyChallengeCard } from "@/features/games/components/DailyChallengeCard";
 import { GameCard } from "@/features/games/components/GameCard";
+import { Button } from "@/shared/components/ui/Button";
 import { games } from "@/lib/games/catalog";
 
 export default function GamesPage() {
@@ -11,6 +13,15 @@ export default function GamesPage() {
           <p className="surface-label">Game selection</p>
           <h1 className="mt-3 font-[var(--font-sora)] text-3xl font-extrabold text-white sm:text-4xl">Pick a math challenge</h1>
           <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">Each game targets a different kind of math confidence, from quick recall to slower pattern reasoning.</p>
+          <div className="mt-5 rounded-[24px] border border-cyan-300/16 bg-cyan-400/8 p-4">
+            <p className="text-sm font-black text-white">New here? Start with Quick Math Duel.</p>
+            <p className="mt-2 text-sm leading-6 text-slate-300">
+              You can play any challenge right away. Log in when you want to save progress, update your dashboard, and join the leaderboard.
+            </p>
+            <Button asChild className="mt-4">
+              <Link href="/games/quick-math-duel">Start your first challenge</Link>
+            </Button>
+          </div>
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
             <SurfaceStat icon={Compass} label="Challenge modes" value={games.length} />
             <SurfaceStat icon={TimerReset} label="Fastest loop" value="60 sec" />
@@ -34,7 +45,7 @@ export default function GamesPage() {
           </div>
           <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/6 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-slate-400">
             <Sparkles className="h-4 w-4 text-cyan-200" />
-            Recommended for daily practice
+            Play first, save later
           </div>
         </div>
         <div className="mt-5 grid gap-5 md:grid-cols-2 2xl:grid-cols-3">

@@ -2,11 +2,11 @@
 
 import type { Route } from "next";
 import Link from "next/link";
-import { Activity, Brain, Flame, Medal, Play, Rocket, Sparkles, Target, Trophy } from "lucide-react";
+import { Activity, Award, Brain, Flame, Medal, Play, Rocket, Sparkles, Star, Target, Trophy } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { DailyChallengeCard } from "@/features/games/components/DailyChallengeCard";
 import { Button } from "@/shared/components/ui/Button";
-import { getProgressionSnapshot, getRecommendedNextChallenge } from "@/lib/progression";
+import { getLevelCeiling, getLevelFloor, getProgressionSnapshot, getRecommendedNextChallenge } from "@/lib/progression";
 import { getUserProfile, getUserScores } from "@/lib/supabase/scores";
 import type { Profile, ScoreRow } from "@/lib/types";
 import { useAuth } from "@/features/auth/hooks/useAuth";
@@ -65,6 +65,9 @@ export function DashboardClient() {
     };
   }, [profile, scores]);
 
+  const isFirstSession = scores.length === 0;
+  const xpRange = Math.max(getLevelCeiling(stats.progression.level) - getLevelFloor(stats.progression.level), 1);
+
   return (
     <main className="mx-auto max-w-[1440px] p-4 sm:p-6">
       <section className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
@@ -74,33 +77,76 @@ export function DashboardClient() {
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p className="surface-label">Overview</p>
-                <h1 className="mt-3 font-[var(--font-sora)] text-3xl font-extrabold sm:text-4xl">Ready for your next run?</h1>
+                <h1 className="mt-3 font-[var(--font-sora)] text-3xl font-extrabold sm:text-4xl">
+                  {isFirstSession ? "Start with one quick win" : "Ready for your next run?"}
+                </h1>
                 <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-                  Welcome back, {user?.user_metadata?.display_name ?? user?.email?.split("@")[0] ?? "math explorer"}. Sharpen speed, patterns, and logic in one focused arena.
+                  {isFirstSession
+                    ? `Welcome, ${user?.user_metadata?.display_name ?? user?.email?.split("@")[0] ?? "math explorer"}. Begin with Quick Math Duel, save your first score, then come back here to watch your progress light up.`
+                    : `Welcome back, ${user?.user_metadata?.display_name ?? user?.email?.split("@")[0] ?? "math explorer"}. Sharpen speed, patterns, and logic in one focused arena.`}
                 </p>
               </div>
               <div className="rounded-2xl border border-emerald-400/16 bg-emerald-400/10 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-emerald-100">
-                Daily challenge ready
+                {isFirstSession ? "First session" : "Daily challenge ready"}
               </div>
             </div>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Button asChild>
-                <Link href="/games">
-                  <Play className="h-5 w-5" /> Launch games
+                <Link href={isFirstSession ? "/games/quick-math-duel" : "/games"}>
+                  <Play className="h-5 w-5" /> {isFirstSession ? "Start your first challenge" : "Launch games"}
                 </Link>
               </Button>
-              <Button asChild variant="secondary">
-                <Link href="/leaderboard">
-                  <Trophy className="h-5 w-5" /> View rankings
-                </Link>
-              </Button>
+              {!isFirstSession ? (
+                <Button asChild variant="secondary">
+                  <Link href="/leaderboard">
+                    <Trophy className="h-5 w-5" /> View rankings
+                  </Link>
+                </Button>
+              ) : null}
             </div>
+            {isFirstSession ? (
+              <div className="mt-6 grid gap-3 lg:grid-cols-3">
+                <OnboardingStep
+                  step="1"
+                  title="Play Quick Math Duel"
+                  body="It is the fastest way to get your first win on the board."
+                />
+                <OnboardingStep
+                  step="2"
+                  title="Save your first score"
+                  body="When the round ends, save it to unlock stats, streaks, and badges."
+                />
+                <OnboardingStep
+                  step="3"
+                  title="Come back here"
+                  body="Your dashboard will update with XP, activity, and a recommended next challenge."
+                />
+              </div>
+            ) : null}
             <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               <MetricCard icon={Flame} label="Total XP" tone="cyan" value={stats.totalXp.toLocaleString()} />
               <MetricCard icon={Rocket} label="Daily streak" tone="violet" value={stats.progression.currentStreak} />
               <MetricCard icon={Medal} label="Games completed" tone="green" value={stats.completed} />
               <MetricCard icon={Target} label={`Level ${stats.progression.level}`} tone="amber" value={`${stats.progression.xpToNextLevel} XP left`} />
             </div>
+            {!isFirstSession ? (
+              <div className="mt-6 grid gap-3 lg:grid-cols-[1.05fr_0.95fr]">
+                <ProgressPanel
+                  accent="cyan"
+                  helper={`${stats.totalXp.toLocaleString()} XP banked`}
+                  label="XP progress"
+                  progress={Math.round((stats.progression.xpIntoLevel / xpRange) * 100)}
+                  value={`Level ${stats.progression.level}`}
+                />
+                <ProgressPanel
+                  accent="violet"
+                  helper="Keep your streak alive with one saved run"
+                  label="Streak momentum"
+                  progress={Math.min(100, stats.progression.currentStreak * 14)}
+                  value={`${stats.progression.currentStreak} day streak`}
+                />
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -125,7 +171,7 @@ export function DashboardClient() {
           </div>
           <div className="mt-6 grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
             <div className="rounded-[24px] border border-white/10 bg-slate-950/45 p-4">
-              <p className="text-sm font-black text-white">What did I do?</p>
+              <p className="text-sm font-black text-white">{isFirstSession ? "What happens after the first run?" : "What did I do?"}</p>
               <div className="mt-4 space-y-4">
                 <MetricLine label="Runs saved" value={`${stats.completed}`} width={`${Math.min(24 + stats.completed * 8, 92)}%`} />
                 <MetricLine label="Total XP earned" value={stats.totalXp.toLocaleString()} width={`${Math.min(18 + stats.progression.level * 12, 96)}%`} />
@@ -133,7 +179,7 @@ export function DashboardClient() {
               </div>
             </div>
             <div className="rounded-[24px] border border-white/10 bg-slate-950/45 p-4">
-              <p className="text-sm font-black text-white">What improved?</p>
+              <p className="text-sm font-black text-white">{isFirstSession ? "What will unlock?" : "What improved?"}</p>
               <div className="mt-4 space-y-4">
                 <MetricLine label="Best score" value={stats.best.toLocaleString()} width="74%" />
                 <MetricLine label="Average accuracy" value={`${stats.avgAccuracy}%`} width={`${Math.max(stats.avgAccuracy, 18)}%`} />
@@ -151,12 +197,7 @@ export function DashboardClient() {
           <p className="surface-label">Next Up</p>
           <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">What should I do next?</h2>
           <div className="mt-5 grid gap-3">
-            <QuickAction
-              href={stats.recommendedNext.href as Route<string>}
-              icon={Play}
-              subtitle={stats.recommendedNext.reason}
-              title={stats.recommendedNext.title}
-            />
+            <RecommendedChallengeCard href={stats.recommendedNext.href as Route<string>} reason={stats.recommendedNext.reason} title={stats.recommendedNext.title} />
             <QuickAction href="/leaderboard" icon={Trophy} subtitle="See where you stand this week" title="Check the leaderboard" />
             <QuickAction href="/profile" icon={Brain} subtitle="Review your level, streak, and badge progress" title="Open your profile" />
           </div>
@@ -187,7 +228,21 @@ export function DashboardClient() {
                 </div>
               ))
             ) : (
-              <p className="rounded-2xl border border-white/10 bg-white/6 p-4 font-semibold text-slate-300">Play and save a score to fill this space with progress.</p>
+              <div className="relative overflow-hidden rounded-[26px] border border-cyan-300/16 bg-[linear-gradient(135deg,rgba(34,211,238,0.12),rgba(139,92,246,0.08))] p-5">
+                <div className="absolute right-0 top-0 h-28 w-28 rounded-full bg-cyan-400/10 blur-3xl" />
+                <div className="relative">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-400/10 text-cyan-100">
+                    <Star className="h-5 w-5" />
+                  </div>
+                  <p className="mt-4 font-[var(--font-sora)] text-xl font-extrabold text-white">Your first win will light this up.</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-300">
+                  Start with Quick Math Duel, save your first score, and this feed will update right away with your latest result.
+                  </p>
+                  <Button asChild className="mt-4" variant="secondary">
+                    <Link href="/games/quick-math-duel">Start first run</Link>
+                  </Button>
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -200,23 +255,27 @@ export function DashboardClient() {
             </div>
             <Sparkles className="h-5 w-5 text-violet" />
           </div>
-          <div className="mt-5 grid gap-3">
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {stats.progression.badges.map((badge) => (
-              <div className="rounded-2xl border border-white/10 bg-white/6 p-4" key={badge.id}>
-                <div>
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="font-black text-white">{badge.label}</p>
+              <div className={`relative overflow-hidden rounded-[24px] border p-4 ${badge.earned ? "border-emerald-300/18 bg-[linear-gradient(135deg,rgba(16,185,129,0.12),rgba(34,211,238,0.08))]" : "border-white/10 bg-white/6"}`} key={badge.id}>
+                <div className="absolute right-0 top-0 h-20 w-20 rounded-full bg-white/6 blur-2xl" />
+                <div className="relative">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${badge.earned ? "border-emerald-300/20 bg-emerald-400/12 text-emerald-100" : "border-cyan-300/18 bg-cyan-400/10 text-cyan-100"}`}>
+                      <Award className="h-5 w-5" />
+                    </div>
                     <span className={`text-xs font-black uppercase tracking-[0.14em] ${badge.earned ? "text-emerald-200" : "text-slate-500"}`}>
                       {badge.earned ? "Earned" : `${badge.progress}/${badge.target}`}
                     </span>
                   </div>
+                  <p className="mt-4 font-black text-white">{badge.label}</p>
                   <p className="mt-1 text-sm font-semibold text-slate-400">{badge.description}</p>
-                </div>
-                <div className="mt-3 h-2.5 rounded-full bg-white/8">
-                  <div
-                    className="h-full rounded-full bg-[linear-gradient(90deg,#22d3ee_0%,#8b5cf6_100%)]"
-                    style={{ width: `${Math.max((badge.progress / badge.target) * 100, badge.earned ? 100 : 8)}%` }}
-                  />
+                  <div className="mt-3 h-2.5 rounded-full bg-white/8">
+                    <div
+                      className={`h-full rounded-full ${badge.earned ? "bg-[linear-gradient(90deg,#34d399_0%,#22d3ee_100%)]" : "bg-[linear-gradient(90deg,#22d3ee_0%,#8b5cf6_100%)]"}`}
+                      style={{ width: `${Math.max((badge.progress / badge.target) * 100, badge.earned ? 100 : 8)}%` }}
+                    />
+                  </div>
                 </div>
               </div>
             ))}
@@ -224,6 +283,18 @@ export function DashboardClient() {
         </div>
       </section>
     </main>
+  );
+}
+
+function OnboardingStep({ body, step, title }: { body: string; step: string; title: string }) {
+  return (
+    <div className="rounded-[24px] border border-white/10 bg-slate-950/42 p-4 backdrop-blur-xl">
+      <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-400/10 text-sm font-black text-cyan-100">
+        {step}
+      </div>
+      <p className="mt-4 font-black text-white">{title}</p>
+      <p className="mt-2 text-sm leading-6 text-slate-300">{body}</p>
+    </div>
   );
 }
 
@@ -267,6 +338,61 @@ function MetricLine({ label, value, width }: { label: string; value: string; wid
         <div className="h-full rounded-full bg-[linear-gradient(90deg,#22d3ee_0%,#8b5cf6_100%)]" style={{ width }} />
       </div>
     </div>
+  );
+}
+
+function ProgressPanel({
+  accent,
+  helper,
+  label,
+  progress,
+  value
+}: {
+  accent: "cyan" | "violet";
+  helper: string;
+  label: string;
+  progress: number;
+  value: string;
+}) {
+  const barClass =
+    accent === "cyan"
+      ? "bg-[linear-gradient(90deg,#22d3ee_0%,#0ea5e9_100%)]"
+      : "bg-[linear-gradient(90deg,#8b5cf6_0%,#22d3ee_100%)]";
+
+  return (
+    <div className="rounded-[24px] border border-white/10 bg-slate-950/42 p-4">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">{label}</p>
+          <p className="mt-1 font-black text-white">{value}</p>
+        </div>
+        <span className="text-sm font-black text-cyan-100">{progress}%</span>
+      </div>
+      <div className="mt-4 h-2.5 rounded-full bg-white/8">
+        <div className={`h-full rounded-full ${barClass}`} style={{ width: `${Math.max(progress, 6)}%` }} />
+      </div>
+      <p className="mt-3 text-sm font-semibold text-slate-400">{helper}</p>
+    </div>
+  );
+}
+
+function RecommendedChallengeCard({ href, reason, title }: { href: Route<string>; reason: string; title: string }) {
+  return (
+    <Link className="relative overflow-hidden rounded-[26px] border border-cyan-300/16 bg-[linear-gradient(135deg,rgba(34,211,238,0.12),rgba(139,92,246,0.08))] p-5 transition hover:-translate-y-0.5 hover:border-cyan-300/24" href={href}>
+      <div className="absolute right-0 top-0 h-24 w-24 rounded-full bg-cyan-400/10 blur-3xl" />
+      <div className="relative">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-400/10 text-cyan-100">
+            <Play className="h-5 w-5" />
+          </div>
+          <span className="rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-emerald-100">
+            Recommended
+          </span>
+        </div>
+        <p className="mt-4 font-[var(--font-sora)] text-xl font-extrabold text-white">{title}</p>
+        <p className="mt-2 text-sm leading-6 text-slate-300">{reason}</p>
+      </div>
+    </Link>
   );
 }
 

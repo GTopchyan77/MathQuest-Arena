@@ -39,9 +39,9 @@ export default function HomePage() {
             </div>
             <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3">
               {[
-                { label: "Weekly quests", value: "120+" },
-                { label: "Average streak", value: "14 days" },
-                { label: "Top rank climb", value: "92%" }
+                { label: "Mini-games", value: "3" },
+                { label: "Round style", value: "Fast" },
+                { label: "Progress", value: "Saved" }
               ].map((item) => (
                 <div className="panel rounded-[22px] px-4 py-4" key={item.label}>
                   <p className="text-xl font-black text-white sm:text-2xl">{item.value}</p>
@@ -70,7 +70,7 @@ export default function HomePage() {
               <div className="rounded-[28px] border border-white/12 bg-slate-950/55 p-5 shadow-[0_28px_80px_rgba(2,8,23,0.45)] backdrop-blur-xl">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-bold uppercase tracking-[0.18em] text-cyan-200">Live Arena</p>
+                    <p className="text-sm font-bold uppercase tracking-[0.18em] text-cyan-200">Example Round</p>
                     <p className="mt-2 font-[var(--font-sora)] text-3xl font-extrabold text-white">42 + 19 = ?</p>
                   </div>
                   <div className="rounded-2xl border border-cyan-300/20 bg-cyan-400/10 p-4">
@@ -93,46 +93,42 @@ export default function HomePage() {
               <div className="grid grid-cols-3 gap-4">
                 <div className="rounded-[26px] border border-white/10 bg-white/8 p-4 backdrop-blur-xl transition hover:-translate-y-1 hover:bg-white/10">
                   <Trophy className="h-6 w-6 text-cyan-200" />
-                  <p className="mt-4 text-2xl font-black text-white">8,420</p>
-                  <p className="text-sm font-semibold text-slate-400">XP earned</p>
+                  <p className="mt-4 text-2xl font-black text-white">Fast</p>
+                  <p className="text-sm font-semibold text-slate-400">Short rounds</p>
                 </div>
                 <div className="rounded-[26px] border border-white/10 bg-white/8 p-4 backdrop-blur-xl transition hover:-translate-y-1 hover:bg-white/10">
                   <Crown className="h-6 w-6 text-amber-200" />
-                  <p className="mt-4 text-2xl font-black text-white">#12</p>
-                  <p className="text-sm font-semibold text-slate-400">Rank</p>
+                  <p className="mt-4 text-2xl font-black text-white">Track</p>
+                  <p className="text-sm font-semibold text-slate-400">Saved progress</p>
                 </div>
                 <div className="rounded-[26px] border border-white/10 bg-white/8 p-4 backdrop-blur-xl transition hover:-translate-y-1 hover:bg-white/10">
                   <Sparkles className="h-6 w-6 text-[rgb(221,214,254)]" />
-                  <p className="mt-4 text-2xl font-black text-white">14</p>
-                  <p className="text-sm font-semibold text-slate-400">Streak</p>
+                  <p className="mt-4 text-2xl font-black text-white">Return</p>
+                  <p className="text-sm font-semibold text-slate-400">Daily challenge</p>
                 </div>
               </div>
               <div className="grid gap-3 md:grid-cols-[1.1fr_0.9fr]">
                 <div className="rounded-[26px] border border-cyan-300/14 bg-white/[0.06] p-4 backdrop-blur-xl">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200/80">Next Quest</p>
-                      <p className="mt-2 font-[var(--font-sora)] text-xl font-extrabold text-white">Missing Number Sprint</p>
+                      <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200/80">Why it works</p>
+                      <p className="mt-2 font-[var(--font-sora)] text-xl font-extrabold text-white">Clear loops, real saves, fast feedback</p>
                     </div>
                     <span className="rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-emerald-100">
-                      Ready
+                      MVP
                     </span>
                   </div>
-                  <div className="mt-4 h-2 rounded-full bg-white/8">
-                    <div className="h-full w-[68%] rounded-full bg-[linear-gradient(90deg,#22d3ee_0%,#8b5cf6_100%)] shadow-[0_0_16px_rgba(34,211,238,0.2)]" />
-                  </div>
-                  <div className="mt-3 flex items-center justify-between text-sm font-semibold text-slate-400">
-                    <span>Progress to next badge</span>
-                    <span className="text-white">68%</span>
-                  </div>
+                  <p className="mt-4 text-sm leading-6 text-slate-300">
+                    Play a quick round, save the result, and watch your dashboard, profile, and leaderboard reflect what you actually earned.
+                  </p>
                 </div>
                 <div className="rounded-[26px] border border-white/10 bg-white/[0.06] p-4 backdrop-blur-xl">
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">Tonight's Arena</p>
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">What you can do</p>
                   <div className="mt-4 space-y-3">
                     {[
-                      { label: "Speed duel", tone: "text-cyan-200" },
-                      { label: "Pattern ladder", tone: "text-violet" },
-                      { label: "Boss round", tone: "text-amber-200" }
+                      { label: "Build fluency with fast duels", tone: "text-cyan-200" },
+                      { label: "Spot patterns in number puzzles", tone: "text-violet" },
+                      { label: "Practice logic in a math grid", tone: "text-amber-200" }
                     ].map((item) => (
                       <div className="flex items-center justify-between rounded-2xl border border-white/8 bg-slate-950/35 px-3 py-2" key={item.label}>
                         <span className="text-sm font-bold text-white">{item.label}</span>
@@ -153,9 +149,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="px-4 py-2 sm:px-6 lg:px-8">
+      <section className="px-4 py-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <DailyChallengeCard />
+          <div>
+            <p className="surface-label text-emerald-200/80">Daily Challenge</p>
+            <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white sm:text-3xl">One focused win for today</h2>
+            <div className="mt-4">
+              <DailyChallengeCard compact />
+            </div>
+          </div>
         </div>
       </section>
 
@@ -203,19 +205,19 @@ export default function HomePage() {
             <div className="rounded-[24px] border border-white/10 bg-slate-950/50 p-4 backdrop-blur-xl">
               <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">Weekly Standings</p>
-                  <p className="mt-1 font-[var(--font-sora)] text-2xl font-extrabold text-white">Top Arena Players</p>
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">Leaderboard Experience</p>
+                  <p className="mt-1 font-[var(--font-sora)] text-2xl font-extrabold text-white">Your scores turn into visible progress</p>
                 </div>
                 <div className="rounded-2xl border border-cyan-300/16 bg-cyan-400/10 px-3 py-2 text-sm font-black text-cyan-100">
-                  Live Preview
+                  Product Preview
                 </div>
               </div>
               <div className="space-y-3">
                 {[
-                  { rank: "#1", name: "NovaCipher", score: "12,480", badge: "24 streak", tone: "from-amber-300/20 to-amber-100/5" },
-                  { rank: "#2", name: "AdaVector", score: "11,920", badge: "19 streak", tone: "from-cyan-400/16 to-sky-500/5" },
-                  { rank: "#3", name: "LogicBloom", score: "10,870", badge: "17 streak", tone: "from-[rgba(139,92,246,0.18)] to-transparent" },
-                  { rank: "#12", name: "You", score: "8,420", badge: "Climbing", tone: "from-white/8 to-transparent" }
+                  { rank: "1", name: "Best score saved", score: "Tracked", badge: "Updates after each run", tone: "from-amber-300/20 to-amber-100/5" },
+                  { rank: "2", name: "Total XP earned", score: "Tracked", badge: "Builds over time", tone: "from-cyan-400/16 to-sky-500/5" },
+                  { rank: "3", name: "Games completed", score: "Tracked", badge: "Counts saved sessions", tone: "from-[rgba(139,92,246,0.18)] to-transparent" },
+                  { rank: "4", name: "Your position", score: "Live", badge: "Appears after save", tone: "from-white/8 to-transparent" }
                 ].map((entry, index) => (
                   <div
                     className={`group grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-[22px] border border-white/10 bg-[linear-gradient(135deg,var(--tw-gradient-from),var(--tw-gradient-to))] px-4 py-4 transition duration-300 hover:-translate-y-0.5 hover:border-cyan-300/20 hover:bg-white/8 ${
@@ -232,7 +234,7 @@ export default function HomePage() {
                             ? "border-violet/30 bg-violet/12 text-[rgb(237,233,254)]"
                             : "border-white/10 bg-white/8 text-white"
                     }`}>
-                      {index < 3 ? <Medal className="h-5 w-5" /> : entry.rank}
+                      {index < 3 ? <Medal className="h-5 w-5" /> : `#${entry.rank}`}
                     </div>
                     <div>
                       <p className="font-black text-white">{entry.name}</p>
@@ -240,7 +242,7 @@ export default function HomePage() {
                     </div>
                     <div className="text-right">
                       <p className="text-lg font-black text-white">{entry.score}</p>
-                      <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">XP</p>
+                      <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Status</p>
                     </div>
                   </div>
                 ))}

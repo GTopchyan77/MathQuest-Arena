@@ -72,10 +72,16 @@ export function SiteHeader() {
               </Button>
             ) : (
               <div className="grid grid-cols-2 gap-2">
-                <Button href="/login" variant="secondary">
-                  Login
+                <Button asChild variant="secondary">
+                  <Link href="/login" onClick={() => setOpen(false)}>
+                    Login
+                  </Link>
                 </Button>
-                <Button href="/register">Register</Button>
+                <Button asChild>
+                  <Link href="/register" onClick={() => setOpen(false)}>
+                    Register
+                  </Link>
+                </Button>
               </div>
             )}
           </nav>
