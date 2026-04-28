@@ -38,7 +38,7 @@ export function MissingNumberPuzzle() {
         {game.question.sequence.map((value, index) => (
           <div
             className={`flex aspect-square items-center justify-center rounded-3xl text-2xl font-black sm:text-4xl ${
-              value === null ? "border-2 border-dashed border-violet-300/45 bg-violet-400/14 text-violet-100" : "border border-white/10 bg-white/6 text-white"
+              value === null ? "border-2 border-dashed border-[rgba(196,181,253,0.45)] bg-[rgba(167,139,250,0.14)] text-[rgb(237,233,254)]" : "border border-white/10 bg-white/6 text-white"
             }`}
             key={`${value}-${index}`}
           >
@@ -49,7 +49,7 @@ export function MissingNumberPuzzle() {
       <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {game.question.options.map((option) => (
           <button
-            className="focus-ring min-h-20 rounded-3xl border border-white/10 bg-white/6 text-2xl font-black text-white shadow-[0_16px_35px_rgba(2,8,23,0.25)] transition hover:-translate-y-1 hover:border-violet-300/28 hover:bg-violet-400/12"
+            className="focus-ring min-h-20 rounded-3xl border border-white/10 bg-white/6 text-2xl font-black text-white shadow-[0_16px_35px_rgba(2,8,23,0.25)] transition hover:-translate-y-1 hover:border-[rgba(196,181,253,0.28)] hover:bg-[rgba(167,139,250,0.12)]"
             key={option}
             onClick={() => answer(option)}
             type="button"

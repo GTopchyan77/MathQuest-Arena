@@ -12,7 +12,7 @@ const tones = {
   coral: "border border-rose-400/20 bg-rose-400/12 text-rose-200",
   lemon: "border border-amber-300/24 bg-amber-300/14 text-amber-100",
   mint: "border border-emerald-400/24 bg-emerald-400/12 text-emerald-200",
-  violet: "border border-violet-400/24 bg-violet-400/12 text-violet-200"
+  violet: "border border-[rgba(167,139,250,0.24)] bg-[rgba(167,139,250,0.12)] text-[rgb(221,214,254)]"
 };
 
 export function StatCard({ icon: Icon, label, tone = "violet", value }: StatCardProps) {

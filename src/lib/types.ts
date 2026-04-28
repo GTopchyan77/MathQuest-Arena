@@ -45,6 +45,15 @@ export type LeaderboardEntry = {
   user_id: string;
 };
 
+export type Badge = {
+  description: string;
+  earned: boolean;
+  id: string;
+  label: string;
+  progress: number;
+  target: number;
+};
+
 export type GameResult = {
   accuracy: number;
   correct: number;
@@ -52,6 +61,45 @@ export type GameResult = {
   maxStreak: number;
   score: number;
   total: number;
+};
+
+export type RecommendedChallenge = {
+  href: string;
+  reason: string;
+  slug: GameSlug;
+  title: string;
+};
+
+export type ProgressionSnapshot = {
+  badges: Badge[];
+  currentStreak: number;
+  level: number;
+  longestStreak: number;
+  nextLevelXp: number;
+  totalXp: number;
+  xpIntoLevel: number;
+  xpToNextLevel: number;
+};
+
+export type PostGameInsights = {
+  currentStreak: number;
+  improvement: number | null;
+  levelAfter: number;
+  levelBefore: number;
+  newlyEarnedBadges: Badge[];
+  personalBest: boolean;
+  previousBestScore: number | null;
+  previousRunScore: number | null;
+  rankAfter: number | null;
+  rankBefore: number | null;
+  recommendedNextChallenge: RecommendedChallenge;
+  xpGained: number;
+};
+
+export type SaveGameResultResponse = {
+  insights?: PostGameInsights;
+  message: string;
+  ok: boolean;
 };
 
 export type UserStats = {

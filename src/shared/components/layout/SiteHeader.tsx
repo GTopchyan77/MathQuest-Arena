@@ -28,7 +28,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/55 backdrop-blur-2xl">
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link className="flex items-center gap-3 font-black text-white" href="/">
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-cyan-300/20 bg-gradient-to-br from-cyan-400/25 to-violet-500/30 text-cyan-100 shadow-[0_12px_40px_rgba(34,211,238,0.18)]">
+          <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-cyan-300/20 bg-[linear-gradient(135deg,rgba(34,211,238,0.25),rgba(139,92,246,0.3))] text-cyan-100 shadow-[0_12px_40px_rgba(34,211,238,0.18)]">
             <Calculator className="h-6 w-6" />
           </span>
           <span className="font-[var(--font-sora)] text-base tracking-wide">MathQuest Arena</span>

@@ -43,11 +43,11 @@ export function ProfileClient() {
   const joined = user?.created_at ? new Date(user.created_at).toLocaleDateString() : "Preview account";
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <section className="grid gap-6 lg:grid-cols-[0.78fr_1.22fr]">
+    <main className="mx-auto max-w-[1440px] p-4 sm:p-6">
+      <section className="grid gap-4 xl:grid-cols-[0.8fr_1.2fr]">
         <aside className="panel-strong rounded-[30px] p-6">
           <div className="flex items-center gap-4">
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl border border-cyan-300/20 bg-gradient-to-br from-cyan-400/16 to-violet-500/20 text-cyan-100">
+            <div className="flex h-20 w-20 items-center justify-center rounded-3xl border border-cyan-300/20 bg-[linear-gradient(135deg,rgba(34,211,238,0.16),rgba(139,92,246,0.2))] text-cyan-100">
               <UserRound className="h-10 w-10" />
             </div>
             <div className="min-w-0">
@@ -71,9 +71,10 @@ export function ProfileClient() {
         </div>
       </section>
 
-      <section className="mt-8 grid gap-6 lg:grid-cols-[1fr_0.82fr]">
+      <section className="mt-4 grid gap-4 xl:grid-cols-[1fr_0.82fr]">
         <div className="panel rounded-[30px] p-6">
-          <h2 className="font-[var(--font-sora)] text-2xl font-extrabold text-white">Recent sessions</h2>
+          <p className="surface-label">Activity</p>
+          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Recent sessions</h2>
           <div className="mt-5 grid gap-3">
             {scores.map((score) => (
               <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/6 p-4 sm:grid-cols-[1fr_auto] sm:items-center" key={score.id}>
@@ -92,7 +93,8 @@ export function ProfileClient() {
         </div>
 
         <div className="panel rounded-[30px] p-6">
-          <h2 className="font-[var(--font-sora)] text-2xl font-extrabold text-white">Skill map</h2>
+          <p className="surface-label text-cyan-200/80">Mastery</p>
+          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Skill map</h2>
           <div className="mt-5 grid gap-4">
             {games.map((game, index) => (
               <div key={game.slug}>
@@ -101,8 +103,36 @@ export function ProfileClient() {
                   <span className="text-cyan-200">{82 + index * 5}%</span>
                 </div>
                 <div className="h-3 rounded-full bg-white/8">
-                  <div className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-sky-500 to-violet-500 shadow-[0_0_18px_rgba(34,211,238,0.24)]" style={{ width: `${82 + index * 5}%` }} />
+                  <div className="h-full rounded-full bg-[linear-gradient(90deg,#22d3ee_0%,#0ea5e9_52%,#8b5cf6_100%)] shadow-[0_0_18px_rgba(34,211,238,0.24)]" style={{ width: `${82 + index * 5}%` }} />
                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-4 grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
+        <div className="panel rounded-[30px] p-6">
+          <p className="surface-label text-emerald-200/80">Summary</p>
+          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Performance snapshot</h2>
+          <div className="mt-5 space-y-4">
+            <MiniBar label="Accuracy trend" value={`${stats.accuracy}%`} width={`${Math.max(stats.accuracy, 14)}%`} />
+            <MiniBar label="XP growth" value={stats.totalXp.toLocaleString()} width={`${Math.min(24 + scores.length * 8, 92)}%`} />
+            <MiniBar label="Consistency" value={`${stats.bestStreak} streak`} width={`${Math.min(22 + stats.bestStreak * 6, 94)}%`} />
+          </div>
+        </div>
+        <div className="panel rounded-[30px] p-6">
+          <p className="surface-label">Achievements</p>
+          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Unlocked highlights</h2>
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            {[
+              { label: "Sharp Starter", value: "5 wins" },
+              { label: "Pattern Pilot", value: "82% logic" },
+              { label: "Arena Climber", value: `${stats.totalXp} XP` }
+            ].map((item) => (
+              <div className="rounded-[24px] border border-white/10 bg-white/6 p-4" key={item.label}>
+                <p className="text-sm font-black text-white">{item.label}</p>
+                <p className="mt-2 text-xs font-black uppercase tracking-[0.14em] text-cyan-200">{item.value}</p>
               </div>
             ))}
           </div>
@@ -128,6 +158,20 @@ function MiniMetric({ label, value }: { label: string; value: number | string })
     <div className="rounded-2xl border border-white/10 bg-slate-950/45 px-3 py-2">
       <p className="font-black text-white">{value}</p>
       <p className="text-[0.65rem] font-black uppercase tracking-[0.12em] text-slate-400">{label}</p>
+    </div>
+  );
+}
+
+function MiniBar({ label, value, width }: { label: string; value: string; width: string }) {
+  return (
+    <div>
+      <div className="mb-2 flex items-center justify-between gap-4 text-sm font-semibold text-slate-300">
+        <span>{label}</span>
+        <span className="text-white">{value}</span>
+      </div>
+      <div className="h-2.5 rounded-full bg-white/8">
+        <div className="h-full rounded-full bg-[linear-gradient(90deg,#22d3ee_0%,#0ea5e9_52%,#8b5cf6_100%)]" style={{ width }} />
+      </div>
     </div>
   );
 }

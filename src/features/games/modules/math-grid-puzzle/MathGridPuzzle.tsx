@@ -26,19 +26,19 @@ export function MathGridPuzzle() {
 
   return (
     <section className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-      <div className="rounded-3xl border border-ink/8 bg-white p-6 shadow-soft">
+      <div className="panel-strong rounded-[30px] p-6">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-mint">Grid {game.round} of {game.totalRounds}</p>
-            <h1 className="mt-2 text-3xl font-black text-ink">Complete the row rule</h1>
+            <p className="surface-label text-emerald-200/80">Grid {game.round} of {game.totalRounds}</p>
+            <h1 className="mt-2 font-[var(--font-sora)] text-3xl font-extrabold text-white">Complete the row rule</h1>
           </div>
-          <p className="rounded-2xl bg-mist px-4 py-3 text-sm font-black text-ink/62">Score {game.score}</p>
+          <p className="rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-sm font-black text-slate-200">Score {game.score}</p>
         </div>
         <div className="mt-8 grid max-w-xl grid-cols-3 gap-3">
           {game.question.grid.map((value, index) => (
             <div
               className={`flex aspect-square items-center justify-center rounded-3xl text-3xl font-black sm:text-5xl ${
-                value === null ? "border-2 border-dashed border-mint bg-mint/10 text-mint" : "bg-mist text-ink"
+                value === null ? "border-2 border-dashed border-emerald-300/45 bg-emerald-400/12 text-emerald-100" : "border border-white/10 bg-white/6 text-white"
               }`}
               key={`${value}-${index}`}
             >
@@ -47,24 +47,24 @@ export function MathGridPuzzle() {
           ))}
         </div>
       </div>
-      <aside className="rounded-3xl border border-ink/8 bg-white p-6 shadow-sm">
+      <aside className="panel rounded-[30px] p-6">
         <div className="grid grid-cols-3 gap-2">
           <Metric label="Streak" value={game.streak} />
           <Metric label="Correct" value={game.correct} />
           <Metric label="Left" value={(game.totalRounds ?? 0) - game.round + 1} />
         </div>
         <button
-          className="focus-ring mt-5 w-full rounded-2xl border border-ink/10 bg-mist px-4 py-3 text-sm font-black text-ink transition hover:bg-lemon/24"
+          className="focus-ring mt-5 w-full rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-sm font-black text-white transition hover:border-cyan-300/24 hover:bg-white/10"
           onClick={() => setHintVisible(true)}
           type="button"
         >
           Reveal hint
         </button>
-        {hintVisible ? <p className="mt-4 rounded-2xl bg-mint/10 p-4 text-sm font-bold leading-6 text-ink/70">{game.question.rule}</p> : null}
+        {hintVisible ? <p className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm font-bold leading-6 text-emerald-100">{game.question.rule}</p> : null}
         <div className="mt-6 grid grid-cols-2 gap-3">
           {game.question.options.map((option) => (
             <button
-              className="focus-ring min-h-20 rounded-3xl border border-ink/8 bg-white text-2xl font-black shadow-sm transition hover:-translate-y-1 hover:bg-mint/12"
+              className="focus-ring min-h-20 rounded-3xl border border-white/10 bg-white/6 text-2xl font-black text-white shadow-[0_16px_35px_rgba(2,8,23,0.25)] transition hover:-translate-y-1 hover:border-emerald-300/28 hover:bg-emerald-400/12"
               key={option}
               onClick={() => answer(option)}
               type="button"
@@ -80,9 +80,9 @@ export function MathGridPuzzle() {
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-2xl bg-mist px-3 py-3 text-center">
-      <p className="text-xl font-black">{value}</p>
-      <p className="text-[0.66rem] font-black uppercase tracking-[0.12em] text-ink/45">{label}</p>
+    <div className="rounded-2xl border border-white/10 bg-white/6 px-3 py-3 text-center">
+      <p className="text-xl font-black text-white">{value}</p>
+      <p className="text-[0.66rem] font-black uppercase tracking-[0.12em] text-slate-400">{label}</p>
     </div>
   );
 }

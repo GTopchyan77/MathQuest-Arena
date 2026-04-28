@@ -13,9 +13,9 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variants = {
   primary:
-    "border border-cyan-300/30 bg-gradient-to-r from-cyan-400 via-sky-500 to-violet-500 text-slate-950 shadow-[0_18px_45px_rgba(34,211,238,0.26)] hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(139,92,246,0.3)]",
+    "border border-cyan-300/30 bg-[linear-gradient(90deg,#67e8f9_0%,#22d3ee_18%,#0ea5e9_52%,#8b5cf6_100%)] text-slate-950 shadow-[0_18px_45px_rgba(34,211,238,0.26)] hover:-translate-y-1 hover:scale-[1.01] hover:brightness-105 hover:shadow-[0_26px_70px_rgba(139,92,246,0.34)]",
   secondary:
-    "border border-white/12 bg-white/6 text-white shadow-[0_14px_34px_rgba(2,8,23,0.25)] backdrop-blur-xl hover:-translate-y-0.5 hover:border-cyan-300/30 hover:bg-white/10",
+    "border border-white/12 bg-white/6 text-white shadow-[0_14px_34px_rgba(2,8,23,0.25)] backdrop-blur-xl hover:-translate-y-0.5 hover:border-cyan-300/30 hover:bg-white/10 hover:shadow-[0_20px_50px_rgba(8,15,38,0.35)]",
   ghost: "text-slate-200 hover:bg-white/8 hover:text-white",
   danger: "border border-rose-400/30 bg-rose-500/85 text-white hover:bg-rose-500"
 };

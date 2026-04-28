@@ -57,7 +57,7 @@ export function QuickMathDuel() {
         <div className="mt-8 grid grid-cols-2 gap-3">
           {game.question.options.map((option) => (
             <button
-              className="focus-ring min-h-24 rounded-3xl border border-white/10 bg-white/6 text-3xl font-black text-white transition duration-200 hover:-translate-y-1 hover:border-cyan-300/25 hover:bg-gradient-to-br hover:from-cyan-400/16 hover:to-violet-500/12 hover:shadow-[0_20px_50px_rgba(8,15,38,0.45)]"
+              className="focus-ring min-h-24 rounded-3xl border border-white/10 bg-white/6 text-3xl font-black text-white transition duration-200 hover:-translate-y-1 hover:border-cyan-300/25 hover:bg-[linear-gradient(135deg,rgba(34,211,238,0.16),rgba(139,92,246,0.12))] hover:shadow-[0_20px_50px_rgba(8,15,38,0.45)]"
               key={option}
               onClick={() => answer(option)}
               type="button"

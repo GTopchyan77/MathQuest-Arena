@@ -29,34 +29,38 @@ export function LeaderboardClient() {
   }, [filter]);
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <section className="grid gap-6 lg:grid-cols-[1fr_0.9fr] lg:items-end">
-        <div>
+    <main className="mx-auto max-w-[1440px] p-4 sm:p-6">
+      <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+        <div className="panel-strong rounded-[30px] p-6">
           <p className="surface-label">Leaderboard</p>
-          <h1 className="mt-3 font-[var(--font-sora)] text-4xl font-extrabold text-white sm:text-5xl">Top players in the arena</h1>
-          <p className="mt-4 max-w-2xl text-lg leading-8 text-slate-300">
+          <h1 className="mt-3 font-[var(--font-sora)] text-3xl font-extrabold text-white sm:text-4xl">Top players in the arena</h1>
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
             Scores update from Supabase when connected, with a polished mock board available for local preview.
           </p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            <StatCard icon={Crown} label="Leader score" tone="lemon" value={entries[0]?.best_score ?? 0} />
+            <StatCard icon={Trophy} label="Total runs" tone="coral" value={entries.reduce((sum, entry) => sum + entry.games_played, 0)} />
+            <StatCard icon={Target} label={usingMock ? "Preview mode" : "Live board"} tone="mint" value={usingMock ? "Mock" : "Live"} />
+          </div>
         </div>
-        <div className="flex flex-wrap gap-2 lg:justify-end">
-          <Button onClick={() => setFilter("all")} variant={filter === "all" ? "primary" : "secondary"}>
-            All
-          </Button>
-          {games.map((game) => (
-            <Button key={game.slug} onClick={() => setFilter(game.slug)} variant={filter === game.slug ? "primary" : "secondary"}>
-              {game.title}
+
+        <div className="panel rounded-[30px] p-5">
+          <p className="surface-label text-cyan-200/80">Filters</p>
+          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Switch ranking scope</h2>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <Button onClick={() => setFilter("all")} variant={filter === "all" ? "primary" : "secondary"}>
+              All
             </Button>
-          ))}
+            {games.map((game) => (
+              <Button key={game.slug} onClick={() => setFilter(game.slug)} variant={filter === game.slug ? "primary" : "secondary"}>
+                {game.title}
+              </Button>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="mt-8 grid gap-4 md:grid-cols-3">
-        <StatCard icon={Crown} label="Leader score" tone="lemon" value={entries[0]?.best_score ?? 0} />
-        <StatCard icon={Trophy} label="Total runs" tone="coral" value={entries.reduce((sum, entry) => sum + entry.games_played, 0)} />
-        <StatCard icon={Target} label={usingMock ? "Preview mode" : "Live board"} tone="mint" value={usingMock ? "Mock" : "Live"} />
-      </section>
-
-      <section className="panel overflow-hidden rounded-[30px]">
+      <section className="mt-4 panel overflow-hidden rounded-[30px]">
         <div className="hidden grid-cols-[0.4fr_1.4fr_0.7fr_0.7fr_0.7fr] border-b border-white/10 bg-white/6 px-5 py-4 text-xs font-black uppercase tracking-[0.14em] text-slate-400 md:grid">
           <span>Rank</span>
           <span>Player</span>

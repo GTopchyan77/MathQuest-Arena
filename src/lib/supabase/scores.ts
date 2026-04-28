@@ -1,7 +1,16 @@
 "use client";
 
-import type { GameResult, GameSlug, LeaderboardEntry, Profile, ScoreRow, UserStats } from "@/lib/types";
+import { getLevelFromXp, getNewlyEarnedBadges, getProgressionSnapshot, getRecommendedNextChallenge } from "@/lib/progression";
 import { createClient } from "@/lib/supabase/client";
+import type {
+  GameResult,
+  GameSlug,
+  LeaderboardEntry,
+  Profile,
+  SaveGameResultResponse,
+  ScoreRow,
+  UserStats
+} from "@/lib/types";
 
 const emptyStats: UserStats = {
   averageAccuracy: 0,
@@ -11,7 +20,7 @@ const emptyStats: UserStats = {
   totalScore: 0
 };
 
-export async function saveGameResult(result: GameResult) {
+export async function saveGameResult(result: GameResult): Promise<SaveGameResultResponse> {
   const supabase = createClient();
 
   if (!supabase) {
@@ -26,7 +35,17 @@ export async function saveGameResult(result: GameResult) {
     return { ok: false, message: "Log in to save your score." };
   }
 
-  await ensureProfile();
+  const [profileBefore, allScoresBefore, gameScoresBefore, leaderboardBefore] = await Promise.all([
+    ensureProfile(),
+    getUserScoresForUser(user.id),
+    getUserScoresForUser(user.id, result.gameSlug),
+    getLeaderboard()
+  ]);
+
+  const previousRunScore = gameScoresBefore[0]?.score ?? null;
+  const previousBestScore = gameScoresBefore.reduce((max, score) => Math.max(max, score.score), 0) || null;
+  const rankBefore = leaderboardBefore.find((entry) => entry.user_id === user.id)?.rank ?? null;
+  const previousProgression = getProgressionSnapshot(profileBefore?.total_xp ?? 0, allScoresBefore);
 
   const { data: session, error: sessionError } = await supabase
     .from("game_sessions")
@@ -58,7 +77,41 @@ export async function saveGameResult(result: GameResult) {
     return { ok: false, message: error.message };
   }
 
-  return { ok: true, message: "Score saved." };
+  const [profileAfter, scoresAfter, leaderboardAfter] = await Promise.all([getUserProfile(), getUserScoresForUser(user.id), getLeaderboard()]);
+  const totalXpAfter = profileAfter?.total_xp ?? profileBefore?.total_xp ?? 0;
+  const xpGained =
+    profileBefore && profileAfter ? Math.max(profileAfter.total_xp - profileBefore.total_xp, 0) : 0;
+  const nextProgression = getProgressionSnapshot(totalXpAfter, scoresAfter);
+  const rankAfter = leaderboardAfter.find((entry) => entry.user_id === user.id)?.rank ?? null;
+  const rankMessage =
+    rankBefore !== null && rankAfter !== null
+      ? rankAfter < rankBefore
+        ? ` Rank up: #${rankBefore} to #${rankAfter}.`
+        : rankAfter > rankBefore
+          ? ` Rank shift: #${rankBefore} to #${rankAfter}.`
+          : ` Holding at rank #${rankAfter}.`
+      : rankAfter !== null
+        ? ` You entered the board at #${rankAfter}.`
+        : "";
+
+  return {
+    insights: {
+      currentStreak: nextProgression.currentStreak,
+      improvement: previousRunScore !== null ? result.score - previousRunScore : null,
+      levelAfter: nextProgression.level,
+      levelBefore: getLevelFromXp(profileBefore?.total_xp ?? 0),
+      newlyEarnedBadges: getNewlyEarnedBadges(previousProgression.badges, nextProgression.badges),
+      personalBest: previousBestScore === null || result.score > previousBestScore,
+      previousBestScore,
+      previousRunScore,
+      rankAfter,
+      rankBefore,
+      recommendedNextChallenge: getRecommendedNextChallenge(result, scoresAfter),
+      xpGained
+    },
+    message: `Score saved.${rankMessage}`,
+    ok: true
+  };
 }
 
 export async function ensureProfile() {
@@ -113,14 +166,7 @@ export async function getUserScores() {
 
   if (!user) return [] as ScoreRow[];
 
-  const { data } = await supabase
-    .from("scores")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(12);
-
-  return (data ?? []) as ScoreRow[];
+  return getUserScoresForUser(user.id);
 }
 
 export async function getUserStats() {
@@ -161,4 +207,19 @@ export async function getLeaderboard(gameSlug?: GameSlug) {
   if (error) return [] as LeaderboardEntry[];
 
   return (data ?? []) as LeaderboardEntry[];
+}
+
+async function getUserScoresForUser(userId: string, gameSlug?: GameSlug) {
+  const supabase = createClient();
+  if (!supabase) return [] as ScoreRow[];
+
+  let query = supabase.from("scores").select("*").eq("user_id", userId);
+
+  if (gameSlug) {
+    query = query.eq("game_slug", gameSlug);
+  }
+
+  const { data } = await query.order("created_at", { ascending: false }).limit(50);
+
+  return (data ?? []) as ScoreRow[];
 }

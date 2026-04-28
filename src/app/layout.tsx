@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Sora } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/features/auth/context/AuthProvider";
-import { SiteHeader } from "@/shared/components/layout/SiteHeader";
+import { AppShell } from "@/shared/components/layout/AppShell";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 const sora = Sora({ subsets: ["latin"], display: "swap", variable: "--font-sora" });
@@ -21,8 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} ${sora.variable} min-h-screen antialiased`}>
         <AuthProvider>
-          <SiteHeader />
-          {children}
+          <AppShell>{children}</AppShell>
         </AuthProvider>
       </body>
     </html>
