@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --background: #050816;
+  --foreground: #f8fbff;
+  --surface: rgba(13, 18, 38, 0.72);
+  --surface-strong: rgba(18, 26, 49, 0.9);
+  --border: rgba(148, 163, 184, 0.18);
+  --text-muted: rgba(226, 232, 240, 0.7);
+  --hero-glow: rgba(34, 211, 238, 0.18);
+  --violet-glow: rgba(139, 92, 246, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: #050816;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.18), transparent 32%),
+    radial-gradient(circle at 82% 14%, rgba(139, 92, 246, 0.2), transparent 26%),
+    radial-gradient(circle at 50% 120%, rgba(59, 130, 246, 0.16), transparent 34%),
+    linear-gradient(180deg, #091123 0%, #060b18 34%, var(--background) 72%, #040612 100%);
+  color: var(--foreground);
+  min-height: 100vh;
+}
+
+a {
+  text-decoration: none;
+}
+
+::selection {
+  background: rgba(139, 92, 246, 0.26);
+  color: white;
+}
+
+.focus-ring {
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950;
+}
+
+.panel {
+  @apply border border-white/10 bg-white/5 backdrop-blur-xl;
+  box-shadow:
+    0 24px 80px rgba(2, 8, 23, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.panel-strong {
+  @apply border border-cyan-400/20 bg-slate-950/80 backdrop-blur-2xl;
+  box-shadow:
+    0 30px 90px rgba(2, 8, 23, 0.56),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(34, 211, 238, 0.05);
+}
+
+.premium-grid {
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 44px 44px;
+  background-position: center;
+}
+
+.text-gradient {
+  @apply bg-gradient-to-r from-white via-cyan-100 to-violet-200 bg-clip-text text-transparent;
+}
+
+.surface-label {
+  @apply text-xs font-extrabold uppercase tracking-[0.18em] text-cyan-200/80;
+}
+
+.surface-copy {
+  color: var(--text-muted);
+}
