@@ -109,3 +109,20 @@ export type UserStats = {
   maxStreak: number;
   totalScore: number;
 };
+
+export type TeacherInterventionCategory = "inactive" | "attention" | "advance";
+
+export type TeacherInterventionEvidence = {
+  label: string;
+  value: string;
+};
+
+export type TeacherInterventionStudent = {
+  actionLabel: string;
+  category: TeacherInterventionCategory;
+  displayName: string;
+  evidence: TeacherInterventionEvidence[];
+  id: string;
+  priority: "high" | "medium" | "low";
+  reason: string;
+};

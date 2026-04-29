@@ -2,8 +2,9 @@
 
 import type { Route } from "next";
 import Link from "next/link";
-import { AlertTriangle, BarChart3, Clock3, Target, Trophy, Users } from "lucide-react";
+import { AlertTriangle, ArrowRight, BarChart3, CheckCircle2, Clock3, Target, Trophy, Users } from "lucide-react";
 import { getTeacherClasses } from "@/lib/teacherData";
+import type { TeacherInterventionStudent } from "@/lib/types";
 
 export function TeacherDashboardClient() {
   const teacherClass = getTeacherClasses()[0];
@@ -28,67 +29,41 @@ export function TeacherDashboardClient() {
 
         <div className="panel rounded-[30px] p-5">
           <p className="surface-label text-cyan-200/80">Class Actions</p>
-          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Pilot snapshot</h2>
+          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Intervention queue</h2>
           <div className="mt-5 grid gap-3">
             <TeacherLink href={classDetailHref} subtitle="Open roster, mastery, and leaderboard views" title="View class detail" />
-            <TeacherInfo title="Most urgent follow-up" value={teacherClass.strugglingStudents[0]?.displayName ?? "No current flags"} />
-            <TeacherInfo title="Highest momentum" value={teacherClass.leaderboard[0]?.displayName ?? "No activity yet"} />
+            <TeacherInfo title="Inactive students" value={`${teacherClass.studentsInactive.length}`} />
+            <TeacherInfo title="Need attention" value={`${teacherClass.studentsNeedingAttention.length}`} />
+            <TeacherInfo title="Ready to advance" value={`${teacherClass.studentsReadyToAdvance.length}`} />
           </div>
         </div>
       </section>
 
-      <section className="mt-4 grid gap-4 xl:grid-cols-[1fr_1fr]">
-        <div className="panel rounded-[30px] p-5">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="surface-label">Who Played Today</p>
-              <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Today&apos;s activity</h2>
-            </div>
-            <Clock3 className="h-5 w-5 text-cyan-200" />
-          </div>
-          <div className="mt-5 grid gap-3">
-            {teacherClass.whoPlayedToday.map((student) => (
-              <div className="rounded-[24px] border border-white/10 bg-white/6 p-4" key={student.id}>
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="font-black text-white">{student.displayName}</p>
-                    <p className="text-sm font-semibold text-slate-400">{student.gamesPlayed} runs today-ready</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-black text-white">{student.totalXp.toLocaleString()} XP</p>
-                    <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">{student.averageAccuracy}% accuracy</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="panel rounded-[30px] p-5">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="surface-label text-amber-200/80">Struggling Students</p>
-              <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Needs support</h2>
-            </div>
-            <AlertTriangle className="h-5 w-5 text-amber-200" />
-          </div>
-          <div className="mt-5 grid gap-3">
-            {teacherClass.strugglingStudents.map((student) => (
-              <div className="rounded-[24px] border border-amber-300/14 bg-[linear-gradient(135deg,rgba(245,158,11,0.08),rgba(239,68,68,0.06))] p-4" key={student.id}>
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="font-black text-white">{student.displayName}</p>
-                    <p className="text-sm font-semibold text-slate-300">Recent class average below target</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-black text-white">{student.averageAccuracy}%</p>
-                    <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">{student.timePlayedMinutes} mins played</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      <section className="mt-4 grid gap-4 xl:grid-cols-3">
+        <InterventionPanel
+          emptyState="No students need a re-engagement nudge right now."
+          helper="Students who are not participating enough to generate useful instructional evidence."
+          icon={Clock3}
+          students={teacherClass.studentsInactive}
+          title="Students Inactive"
+          tone="cyan"
+        />
+        <InterventionPanel
+          emptyState="No students are signaling immediate practice support needs."
+          helper="Students who are playing, but whose recent evidence suggests the teacher should step in."
+          icon={AlertTriangle}
+          students={teacherClass.studentsNeedingAttention}
+          title="Students Needing Attention"
+          tone="amber"
+        />
+        <InterventionPanel
+          emptyState="No students have a strong enough signal for stretch work yet."
+          helper="Students whose recent results suggest they should move to more demanding work instead of repetition."
+          icon={CheckCircle2}
+          students={teacherClass.studentsReadyToAdvance}
+          title="Students Ready To Advance"
+          tone="emerald"
+        />
       </section>
 
       <section className="mt-4 panel rounded-[30px] p-5">
@@ -114,6 +89,92 @@ export function TeacherDashboardClient() {
         </div>
       </section>
     </main>
+  );
+}
+
+function InterventionPanel({
+  emptyState,
+  helper,
+  icon: Icon,
+  students,
+  title,
+  tone
+}: {
+  emptyState: string;
+  helper: string;
+  icon: typeof Users;
+  students: TeacherInterventionStudent[];
+  title: string;
+  tone: "amber" | "cyan" | "emerald";
+}) {
+  const panelTone = {
+    amber: {
+      card: "border-amber-300/14 bg-[linear-gradient(135deg,rgba(245,158,11,0.08),rgba(239,68,68,0.06))]",
+      icon: "text-amber-200",
+      label: "text-amber-200/80"
+    },
+    cyan: {
+      card: "border-cyan-300/14 bg-[linear-gradient(135deg,rgba(34,211,238,0.08),rgba(14,165,233,0.05))]",
+      icon: "text-cyan-200",
+      label: "text-cyan-200/80"
+    },
+    emerald: {
+      card: "border-emerald-300/14 bg-[linear-gradient(135deg,rgba(16,185,129,0.08),rgba(34,197,94,0.05))]",
+      icon: "text-emerald-200",
+      label: "text-emerald-200/80"
+    }
+  };
+
+  return (
+    <div className="panel rounded-[30px] p-5">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className={`surface-label ${panelTone[tone].label}`}>Teacher Action Panel</p>
+          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">{title}</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-400">{helper}</p>
+        </div>
+        <Icon className={`h-5 w-5 ${panelTone[tone].icon}`} />
+      </div>
+      <div className="mt-5 grid gap-3">
+        {students.length ? (
+          students.map((student) => (
+            <div className={`rounded-[24px] border p-4 ${panelTone[tone].card}`} key={student.id}>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-3">
+                    <p className="font-black text-white">{student.displayName}</p>
+                    <span className="rounded-full border border-white/10 bg-slate-950/45 px-2.5 py-1 text-[0.65rem] font-black uppercase tracking-[0.14em] text-slate-300">
+                      {student.priority} priority
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-slate-300">{student.reason}</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-slate-950/45 px-3 py-2 text-right">
+                  <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-slate-500">Teacher move</p>
+                  <p className="mt-1 font-black text-white">{student.actionLabel}</p>
+                </div>
+              </div>
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                {student.evidence.map((item) => (
+                  <div className="rounded-2xl border border-white/10 bg-slate-950/45 px-3 py-3" key={item.label}>
+                    <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-slate-500">{item.label}</p>
+                    <p className="mt-1 font-black text-white">{item.value}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 flex items-center justify-between gap-3 text-sm font-semibold text-slate-300">
+                <span>Use this evidence before assigning the next step.</span>
+                <Link className="inline-flex items-center gap-2 text-cyan-200 transition hover:text-cyan-100" href="/teacher/class/1">
+                  Open class detail <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="rounded-[24px] border border-white/10 bg-white/6 p-4 text-sm font-semibold text-slate-300">{emptyState}</div>
+        )}
+      </div>
+    </div>
   );
 }
 
