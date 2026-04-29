@@ -12,6 +12,13 @@ export function TeacherDashboardClient() {
 
   return (
     <main className="mx-auto max-w-[1440px] p-4 sm:p-6">
+      <div className="mb-4 rounded-[24px] border border-amber-300/20 bg-[linear-gradient(135deg,rgba(245,158,11,0.12),rgba(239,68,68,0.08))] px-5 py-4">
+        <p className="text-sm font-black uppercase tracking-[0.14em] text-amber-100">Internal Preview</p>
+        <p className="mt-2 text-sm font-semibold leading-6 text-slate-200">
+          Internal Preview — using demo classroom data. Not for live pilot decisions yet.
+        </p>
+      </div>
+
       <section className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
         <div className="panel-strong rounded-[30px] p-6">
           <p className="surface-label">Teacher Overview</p>
@@ -177,6 +184,7 @@ function InterventionPanel({
           <div className="rounded-[24px] border border-white/10 bg-white/6 p-4 text-sm font-semibold text-slate-300">{emptyState}</div>
         )}
       </div>
+      <p className="mt-4 text-xs font-black uppercase tracking-[0.14em] text-slate-500">Derived from demo play evidence</p>
     </div>
   );
 }
