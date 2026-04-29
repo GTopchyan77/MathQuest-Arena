@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { BarChart3, Clock3, Medal, Target, Trophy, Users } from "lucide-react";
 import { getTeacherClassById } from "@/lib/teacherData";
 
@@ -12,6 +13,12 @@ export function TeacherClassClient({ classId }: { classId: string }) {
 
   return (
     <main className="mx-auto max-w-[1440px] p-4 sm:p-6">
+      <div className="mb-4">
+        <Link className="text-sm font-semibold text-cyan-200 transition hover:text-cyan-100" href="/teacher">
+          Back to teacher dashboard
+        </Link>
+      </div>
+
       <section className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
         <div className="panel-strong rounded-[30px] p-6">
           <p className="surface-label">Class Detail</p>

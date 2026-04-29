@@ -7,6 +7,7 @@ import { getTeacherClasses } from "@/lib/teacherData";
 
 export function TeacherDashboardClient() {
   const teacherClass = getTeacherClasses()[0];
+  const classDetailHref = "/teacher/class/1" as Route<string>;
 
   return (
     <main className="mx-auto max-w-[1440px] p-4 sm:p-6">
@@ -29,7 +30,7 @@ export function TeacherDashboardClient() {
           <p className="surface-label text-cyan-200/80">Class Actions</p>
           <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Pilot snapshot</h2>
           <div className="mt-5 grid gap-3">
-            <TeacherLink href={`/teacher/class/${teacherClass.id}` as Route<string>} subtitle="Open roster, mastery, and leaderboard views" title="View class detail" />
+            <TeacherLink href={classDetailHref} subtitle="Open roster, mastery, and leaderboard views" title="View class detail" />
             <TeacherInfo title="Most urgent follow-up" value={teacherClass.strugglingStudents[0]?.displayName ?? "No current flags"} />
             <TeacherInfo title="Highest momentum" value={teacherClass.leaderboard[0]?.displayName ?? "No activity yet"} />
           </div>
