@@ -131,7 +131,7 @@ export function AuthForm({ mode }: AuthFormProps) {
     }
 
     if (isRegister && !response.data.session) {
-      setMessage("Check your email to confirm your account, then log in.");
+      setMessage("Account created. Check your email to confirm it, then log in to start playing.");
       return;
     }
 
@@ -178,6 +178,11 @@ export function AuthForm({ mode }: AuthFormProps) {
       </label>
       {error ? <p className="rounded-2xl border border-rose-400/20 bg-rose-400/12 px-4 py-3 text-sm font-bold text-rose-200">{error}</p> : null}
       {message ? <p className="rounded-2xl border border-emerald-400/20 bg-emerald-400/12 px-4 py-3 text-sm font-bold text-emerald-100">{message}</p> : null}
+      {isRegister && message && !error ? (
+        <Button asChild size="lg" variant="secondary">
+          <Link href="/login">Go to login</Link>
+        </Button>
+      ) : null}
       <Button disabled={loading || handlingConfirmation || authLoading} size="lg" type="submit">
         {loading ? "Working..." : isRegister ? "Create account" : "Log in"}
       </Button>

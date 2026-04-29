@@ -185,7 +185,7 @@ export default function HomePage() {
           <div className="panel-strong relative overflow-hidden rounded-[30px] p-6">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(250,204,21,.08),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,.12),transparent_34%)]" />
             <div className="relative">
-              <p className="surface-label text-amber-200/80">Leaderboard Preview</p>
+              <p className="surface-label text-amber-200/80">Illustrative Leaderboard Preview</p>
               <h2 className="mt-2 font-[var(--font-sora)] text-3xl font-extrabold text-white sm:text-4xl">Competition that feels worth returning to</h2>
               <p className="mt-4 max-w-xl text-lg leading-8 text-slate-300">
                 Track your climb, compare streaks, and turn practice into momentum with a leaderboard that feels like part of the game.
@@ -217,7 +217,7 @@ export default function HomePage() {
                   { rank: "1", name: "Best score saved", score: "Tracked", badge: "Updates after each run", tone: "from-amber-300/20 to-amber-100/5" },
                   { rank: "2", name: "Total XP earned", score: "Tracked", badge: "Builds over time", tone: "from-cyan-400/16 to-sky-500/5" },
                   { rank: "3", name: "Games completed", score: "Tracked", badge: "Counts saved sessions", tone: "from-[rgba(139,92,246,0.18)] to-transparent" },
-                  { rank: "4", name: "Your position", score: "Live", badge: "Appears after save", tone: "from-white/8 to-transparent" }
+                  { rank: "4", name: "Your position", score: "Visible", badge: "Appears after save", tone: "from-white/8 to-transparent" }
                 ].map((entry, index) => (
                   <div
                     className={`group grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-[22px] border border-white/10 bg-[linear-gradient(135deg,var(--tw-gradient-from),var(--tw-gradient-to))] px-4 py-4 transition duration-300 hover:-translate-y-0.5 hover:border-cyan-300/20 hover:bg-white/8 ${

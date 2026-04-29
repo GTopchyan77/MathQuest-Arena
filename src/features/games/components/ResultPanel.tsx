@@ -30,6 +30,7 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
 
   const isFirstSave = insights?.newlyEarnedBadges.some((badge) => badge.id === "first-run") ?? false;
   const firstBadge = insights?.newlyEarnedBadges[0] ?? null;
+  const hasRealXpGain = (insights?.xpGained ?? 0) > 0;
   const leaderboardUnlockMessage =
     insights?.rankAfter !== null && insights?.rankAfter !== undefined
       ? insights.rankBefore === null
@@ -74,7 +75,7 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
             Your first saved run just unlocked real progress. Check what changed, then take the next recommended challenge while the momentum is fresh.
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <Metric label="XP gained" value={`+${insights?.xpGained ?? 0}`} />
+            <Metric label={hasRealXpGain ? "XP gained" : "Save status"} value={hasRealXpGain ? `+${insights?.xpGained ?? 0}` : "Score saved"} />
             <Metric label="First badge" value={firstBadge?.label ?? "Unlocked"} />
             <Metric label="Leaderboard" value={insights?.rankAfter ? `#${insights.rankAfter}` : "Next up"} />
             <Metric label="Next unlock" value={insights?.recommendedNextChallenge.title ?? "Ready"} />
@@ -102,7 +103,7 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
       {insights ? (
         <div className="mt-4 grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="grid gap-3 sm:grid-cols-2">
-            <Metric label="XP gained" value={`+${insights.xpGained}`} />
+            {hasRealXpGain ? <Metric label="XP gained" value={`+${insights.xpGained}`} /> : <Metric label="Save status" value="Score saved" />}
             <Metric label="Level" value={`${insights.levelBefore} -> ${insights.levelAfter}`} />
             <Metric
               label="Vs last run"
