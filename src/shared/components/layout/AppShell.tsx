@@ -8,6 +8,7 @@ import {
   Bell,
   Calculator,
   ChevronRight,
+  GraduationCap,
   Gamepad2,
   LayoutGrid,
   LogOut,
@@ -16,6 +17,7 @@ import {
   Sparkles,
   Trophy,
   UserRound,
+  Users,
   X
 } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
@@ -35,7 +37,7 @@ type NavItem = {
   label: string;
 };
 
-const shellPrefixes = ["/dashboard", "/games", "/leaderboard", "/profile"];
+const shellPrefixes = ["/dashboard", "/games", "/leaderboard", "/profile", "/teacher"];
 
 const navItems: NavItem[] = [
   { href: "/dashboard", icon: LayoutGrid, label: "Overview" },
@@ -44,6 +46,11 @@ const navItems: NavItem[] = [
   { href: "/leaderboard", icon: Trophy, label: "Leaderboard" },
   { href: "/profile", icon: UserRound, label: "Profile" },
   { icon: Award, label: "Achievements" }
+];
+
+const teacherNavItems: NavItem[] = [
+  { href: "/teacher", icon: GraduationCap, label: "Class Overview" },
+  { href: "/teacher/class/class-alpha" as Route<string>, icon: Users, label: "Pilot Class" }
 ];
 
 export function AppShell({ children }: AppShellProps) {
@@ -72,12 +79,13 @@ export function AppShell({ children }: AppShellProps) {
 
   const displayName = user?.user_metadata?.display_name ?? user?.email?.split("@")[0] ?? "Explorer";
   const initial = displayName.charAt(0).toUpperCase();
+  const isTeacherRoute = pathname === "/teacher" || pathname.startsWith("/teacher/");
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.08),transparent_24%),radial-gradient(circle_at_top_right,rgba(139,92,246,0.08),transparent_26%),linear-gradient(180deg,rgba(8,12,24,0.96),rgba(5,8,22,1))]">
       <div className="flex min-h-screen">
         <aside className="hidden w-[280px] shrink-0 border-r border-white/8 bg-slate-950/70 px-5 py-5 backdrop-blur-2xl lg:flex lg:flex-col">
-          <SidebarContent currentPath={pathname} displayName={displayName} initial={initial} onLogout={logout} />
+          <SidebarContent currentPath={pathname} displayName={displayName} initial={initial} isTeacherRoute={isTeacherRoute} onLogout={logout} />
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
@@ -92,14 +100,16 @@ export function AppShell({ children }: AppShellProps) {
               </button>
               <div className="flex min-w-0 flex-1 items-center gap-3 rounded-[22px] border border-white/10 bg-white/6 px-4 py-3 shadow-[0_18px_45px_rgba(2,8,23,0.28)]">
                 <Search className="h-4 w-4 shrink-0 text-slate-400" />
-                <span className="truncate text-sm font-medium text-slate-400">Search games, skills, streaks</span>
+                <span className="truncate text-sm font-medium text-slate-400">
+                  {isTeacherRoute ? "Search classes, students, mastery" : "Search games, skills, streaks"}
+                </span>
                 <span className="ml-auto hidden rounded-lg border border-white/10 bg-slate-950/65 px-2 py-1 text-[11px] font-black uppercase tracking-[0.12em] text-slate-500 sm:inline-flex">
                   Cmd K
                 </span>
               </div>
               <div className="hidden items-center gap-3 sm:flex">
                 <div className="rounded-2xl border border-emerald-400/16 bg-emerald-400/10 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-emerald-100">
-                  Daily ready
+                  {isTeacherRoute ? "Pilot demo" : "Daily ready"}
                 </div>
                 <button className="focus-ring rounded-2xl border border-white/10 bg-white/6 p-3 text-slate-200 transition hover:bg-white/10" type="button">
                   <Bell className="h-4 w-4" />
@@ -137,6 +147,7 @@ export function AppShell({ children }: AppShellProps) {
               currentPath={pathname}
               displayName={displayName}
               initial={initial}
+              isTeacherRoute={isTeacherRoute}
               onItemClick={() => setSidebarOpen(false)}
               onLogout={logout}
             />
@@ -151,15 +162,19 @@ function SidebarContent({
   currentPath,
   displayName,
   initial,
+  isTeacherRoute,
   onItemClick,
   onLogout
 }: {
   currentPath: string;
   displayName: string;
   initial: string;
+  isTeacherRoute: boolean;
   onItemClick?: () => void;
   onLogout: () => void;
 }) {
+  const items = isTeacherRoute ? teacherNavItems : navItems;
+
   return (
     <>
       <Link className="flex items-center gap-3" href="/">
@@ -175,7 +190,7 @@ function SidebarContent({
       <div className="mt-8">
         <p className="mb-3 px-3 text-[11px] font-black uppercase tracking-[0.16em] text-slate-500">Workspace</p>
         <nav className="grid gap-1.5">
-          {navItems.map((item) => {
+          {items.map((item) => {
             const Icon = item.icon;
             const active = item.href ? currentPath === item.href || currentPath.startsWith(`${item.href}/`) : false;
             const content = (
@@ -224,11 +239,17 @@ function SidebarContent({
       </div>
 
       <div className="mt-8 rounded-[26px] border border-white/10 bg-white/6 p-4">
-        <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200/80">Daily Focus</p>
-        <p className="mt-2 font-[var(--font-sora)] text-lg font-extrabold text-white">Pattern ladder sprint</p>
-        <p className="mt-2 text-sm leading-6 text-slate-400">One quick challenge to keep your streak active and your XP moving.</p>
-        <Button className="mt-4 w-full" href="/dashboard">
-          Open challenge
+        <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200/80">{isTeacherRoute ? "Pilot Mode" : "Daily Focus"}</p>
+        <p className="mt-2 font-[var(--font-sora)] text-lg font-extrabold text-white">
+          {isTeacherRoute ? "Read-only class insight demo" : "Pattern ladder sprint"}
+        </p>
+        <p className="mt-2 text-sm leading-6 text-slate-400">
+          {isTeacherRoute
+            ? "Show class engagement, mastery, and student risk signals without write actions."
+            : "One quick challenge to keep your streak active and your XP moving."}
+        </p>
+        <Button className="mt-4 w-full" href={isTeacherRoute ? "/teacher" : "/dashboard"}>
+          {isTeacherRoute ? "Open teacher dashboard" : "Open challenge"}
         </Button>
       </div>
 

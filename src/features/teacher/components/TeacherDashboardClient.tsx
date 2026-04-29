@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import Link from "next/link";
 import { AlertTriangle, BarChart3, Clock3, Target, Trophy, Users } from "lucide-react";
 import { getTeacherClasses } from "@/lib/teacherData";
@@ -28,7 +29,7 @@ export function TeacherDashboardClient() {
           <p className="surface-label text-cyan-200/80">Class Actions</p>
           <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Pilot snapshot</h2>
           <div className="mt-5 grid gap-3">
-            <TeacherLink href={`/teacher/class/${teacherClass.id}`} subtitle="Open roster, mastery, and leaderboard views" title="View class detail" />
+            <TeacherLink href={`/teacher/class/${teacherClass.id}` as Route<string>} subtitle="Open roster, mastery, and leaderboard views" title="View class detail" />
             <TeacherInfo title="Most urgent follow-up" value={teacherClass.strugglingStudents[0]?.displayName ?? "No current flags"} />
             <TeacherInfo title="Highest momentum" value={teacherClass.leaderboard[0]?.displayName ?? "No activity yet"} />
           </div>
@@ -127,7 +128,7 @@ function SummaryCard({ icon: Icon, label, value }: { icon: typeof Users; label: 
   );
 }
 
-function TeacherLink({ href, subtitle, title }: { href: string; subtitle: string; title: string }) {
+function TeacherLink({ href, subtitle, title }: { href: Route<string>; subtitle: string; title: string }) {
   return (
     <Link className="rounded-[24px] border border-white/10 bg-white/6 p-4 transition hover:border-cyan-300/20 hover:bg-white/10" href={href}>
       <div className="flex items-center justify-between gap-4">
