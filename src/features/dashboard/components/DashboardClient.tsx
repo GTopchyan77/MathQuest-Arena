@@ -67,6 +67,7 @@ export function DashboardClient() {
 
   const isFirstSession = scores.length === 0;
   const xpRange = Math.max(getLevelCeiling(stats.progression.level) - getLevelFloor(stats.progression.level), 1);
+  const latestBadge = stats.progression.badges.find((badge) => badge.earned) ?? null;
 
   return (
     <main className="mx-auto max-w-[1440px] p-4 sm:p-6">
@@ -150,14 +151,46 @@ export function DashboardClient() {
           </div>
         </div>
 
-        <div className="panel rounded-[30px] p-5">
-          <p className="surface-label text-emerald-200/80">Daily Challenge</p>
-          <div className="mt-4">
-            <DailyChallengeCard compact />
+        {!isFirstSession ? (
+          <div className="panel rounded-[30px] p-5">
+            <p className="surface-label text-emerald-200/80">Daily Challenge</p>
+            <div className="mt-4">
+              <DailyChallengeCard compact />
+            </div>
           </div>
-        </div>
+        ) : null}
       </section>
 
+      {isFirstSession ? null : (
+        <section className="mt-4 panel-strong rounded-[30px] p-5">
+          <p className="surface-label text-cyan-200/80">Progress Chain</p>
+          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Saved run to next challenge, in one glance</h2>
+          <div className="mt-5 grid gap-3 lg:grid-cols-4">
+            <ChainStep
+              body={stats.completed === 1 ? "Your first saved run is now on your record." : `${stats.completed} saved runs are feeding your progression.`}
+              eyebrow="1. Saved run"
+              title={`${stats.completed} run${stats.completed === 1 ? "" : "s"} saved`}
+            />
+            <ChainStep
+              body={`${stats.totalXp.toLocaleString()} XP earned. Level ${stats.progression.level} is now live.`}
+              eyebrow="2. XP and level"
+              title={`${stats.progression.xpToNextLevel} XP to next level`}
+            />
+            <ChainStep
+              body={latestBadge ? `${latestBadge.label} is unlocked and your streak is ${stats.progression.currentStreak} day${stats.progression.currentStreak === 1 ? "" : "s"}.` : `Current streak: ${stats.progression.currentStreak} day${stats.progression.currentStreak === 1 ? "" : "s"}.`}
+              eyebrow="3. Badge and streak"
+              title={latestBadge ? latestBadge.label : "Progress unlocked"}
+            />
+            <ChainStep
+              body={stats.recommendedNext.reason}
+              eyebrow="4. Recommended next"
+              title={stats.recommendedNext.title}
+            />
+          </div>
+        </section>
+      )}
+
+      {isFirstSession ? null : (
       <section className="mt-4 grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
         <div className="panel rounded-[30px] p-5">
           <div className="flex items-center justify-between gap-3">
@@ -203,7 +236,9 @@ export function DashboardClient() {
           </div>
         </div>
       </section>
+      )}
 
+      {isFirstSession ? null : (
       <section className="mt-4 grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
         <div className="panel rounded-[30px] p-5">
           <div className="flex items-center justify-between gap-3">
@@ -282,6 +317,7 @@ export function DashboardClient() {
           </div>
         </div>
       </section>
+      )}
     </main>
   );
 }
@@ -393,6 +429,16 @@ function RecommendedChallengeCard({ href, reason, title }: { href: Route<string>
         <p className="mt-2 text-sm leading-6 text-slate-300">{reason}</p>
       </div>
     </Link>
+  );
+}
+
+function ChainStep({ body, eyebrow, title }: { body: string; eyebrow: string; title: string }) {
+  return (
+    <div className="rounded-[24px] border border-white/10 bg-slate-950/42 p-4">
+      <p className="text-xs font-black uppercase tracking-[0.14em] text-cyan-200">{eyebrow}</p>
+      <p className="mt-3 font-black text-white">{title}</p>
+      <p className="mt-2 text-sm leading-6 text-slate-300">{body}</p>
+    </div>
   );
 }
 

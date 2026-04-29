@@ -135,7 +135,7 @@ export function AuthForm({ mode }: AuthFormProps) {
       return;
     }
 
-    router.push("/dashboard");
+    router.push(isRegister ? "/games/quick-math-duel" : "/dashboard");
     router.refresh();
   }
 

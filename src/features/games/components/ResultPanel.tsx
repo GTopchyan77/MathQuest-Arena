@@ -29,6 +29,15 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
   }
 
   const isFirstSave = insights?.newlyEarnedBadges.some((badge) => badge.id === "first-run") ?? false;
+  const firstBadge = insights?.newlyEarnedBadges[0] ?? null;
+  const leaderboardUnlockMessage =
+    insights?.rankAfter !== null && insights?.rankAfter !== undefined
+      ? insights.rankBefore === null
+        ? `You entered the leaderboard at #${insights.rankAfter}.`
+        : insights.rankAfter < insights.rankBefore
+          ? `You moved up to #${insights.rankAfter}.`
+          : `You are holding at #${insights.rankAfter}.`
+      : "One more saved run could move you onto the board.";
 
   return (
     <section className="panel-strong rounded-[30px] p-6">
@@ -62,7 +71,16 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
           <p className="relative text-xs font-black uppercase tracking-[0.14em] text-emerald-100">First win unlocked</p>
           <h3 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Nice. Your first score is saved.</h3>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-200">
-            Your dashboard, streak, XP, and badges will update from here on out. Take a quick look, then keep the momentum going with the next recommended challenge.
+            Your first saved run just unlocked real progress. Check what changed, then take the next recommended challenge while the momentum is fresh.
+          </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <Metric label="XP gained" value={`+${insights?.xpGained ?? 0}`} />
+            <Metric label="First badge" value={firstBadge?.label ?? "Unlocked"} />
+            <Metric label="Leaderboard" value={insights?.rankAfter ? `#${insights.rankAfter}` : "Next up"} />
+            <Metric label="Next unlock" value={insights?.recommendedNextChallenge.title ?? "Ready"} />
+          </div>
+          <p className="mt-4 rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-semibold text-slate-100">
+            {leaderboardUnlockMessage}
           </p>
           <div className="mt-4 flex flex-col gap-3 sm:flex-row">
             <Button asChild>
@@ -133,7 +151,7 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
           Play again
         </Button>
         {!saved ? (
-          <p className="self-center text-sm font-semibold text-slate-400">Saving unlocks dashboard progress and leaderboard placement.</p>
+          <p className="self-center text-sm font-semibold text-slate-400">Save this first run to unlock XP, your first badge, leaderboard placement, and the next challenge path.</p>
         ) : null}
       </div>
     </section>
