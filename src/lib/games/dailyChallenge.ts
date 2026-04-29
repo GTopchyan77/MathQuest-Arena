@@ -12,6 +12,7 @@ export type DailyChallenge = {
 };
 
 const prompts: Record<GameMeta["slug"], string> = {
+  "boss-round-battle": "Take down today's boss with clean hits and keep enough hearts to finish the fight.",
   "math-grid-puzzle": "Complete today's logic grid and keep your hint use low for the cleanest finish.",
   "missing-number-puzzle": "Spot the pattern quickly and clear the sequence ladder before your streak drops.",
   "quick-math-duel": "Push your speed and accuracy in today's featured duel before the timer runs out."

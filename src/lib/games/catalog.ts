@@ -11,6 +11,14 @@ export type GameMeta = {
 
 export const games: GameMeta[] = [
   {
+    accent: "violet",
+    description: "Battle a math monster across five attack turns and protect your hearts.",
+    duration: "5 rounds",
+    skills: ["battle math", "focus", "addition"],
+    slug: "boss-round-battle",
+    title: "Boss Round Battle"
+  },
+  {
     accent: "coral",
     description: "Race the clock through fast arithmetic rounds and build a streak.",
     duration: "60 sec",

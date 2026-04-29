@@ -51,7 +51,7 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
           </span>
           <div>
             <h2 className="font-[var(--font-sora)] text-2xl font-extrabold text-white">Round complete</h2>
-            <p className="text-sm font-bold text-slate-400">You can play now and decide later whether to save this run to your profile.</p>
+            <p className="text-sm font-bold text-slate-400">Save this run to unlock real progress, leaderboard entry, and your next recommended challenge.</p>
           </div>
           <div className="ml-auto hidden items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-amber-100 sm:inline-flex">
             <Sparkles className="h-3.5 w-3.5" />
@@ -150,14 +150,14 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
         </div>
       ) : null}
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-        <Button disabled={saving || saved} onClick={save}>
-          {saving ? "Saving..." : saved ? "Score saved" : "Save score"}
+        <Button className={!saved ? "shadow-[0_24px_80px_rgba(34,211,238,0.34)]" : undefined} disabled={saving || saved} onClick={save} size="lg">
+          {saving ? "Saving..." : saved ? "Score saved" : "Unlock progress with first save"}
         </Button>
         <Button onClick={onRestart} variant="secondary">
           Play again
         </Button>
         {!saved ? (
-          <p className="self-center text-sm font-semibold text-slate-400">Save this first run to unlock XP, your first badge, leaderboard placement, and the next challenge path.</p>
+          <p className="self-center text-sm font-semibold text-slate-400">First save unlocks XP, your first badge, leaderboard placement, and a strong reason to do one more run.</p>
         ) : null}
       </div>
     </section>

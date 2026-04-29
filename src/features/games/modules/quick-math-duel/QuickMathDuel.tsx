@@ -1,16 +1,20 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { CharacterFeedback } from "@/features/games/components/CharacterFeedback";
 import { ResultPanel } from "@/features/games/components/ResultPanel";
 import { createGameState, finishGame, getGameResult, submitGameAnswer } from "@/lib/games/engine";
 import { quickMathDuel } from "@/lib/games/quickMath";
 import type { GameResult } from "@/lib/types";
 
 const duration = 60;
+type FeedbackTone = "complete" | "correct" | "idle" | "wrong";
 
 export function QuickMathDuel() {
   const [game, setGame] = useState(() => createGameState(quickMathDuel));
   const [timeLeft, setTimeLeft] = useState(duration);
+  const [feedbackTone, setFeedbackTone] = useState<FeedbackTone>("idle");
+  const feedbackTimer = useRef<number | null>(null);
 
   useEffect(() => {
     if (game.completed) return;
@@ -27,15 +31,38 @@ export function QuickMathDuel() {
     return () => window.clearInterval(timer);
   }, [game.completed]);
 
+  useEffect(() => {
+    return () => {
+      if (feedbackTimer.current) {
+        window.clearTimeout(feedbackTimer.current);
+      }
+    };
+  }, []);
+
   const result = useMemo<GameResult>(() => getGameResult(quickMathDuel, game), [game]);
 
   function answer(value: number) {
-    setGame((current) => submitGameAnswer(quickMathDuel, current, value, undefined).state);
+    setGame((current) => {
+      const feedback = submitGameAnswer(quickMathDuel, current, value, undefined);
+
+      if (feedbackTimer.current) {
+        window.clearTimeout(feedbackTimer.current);
+      }
+
+      const nextTone: FeedbackTone = feedback.completed ? "complete" : feedback.isCorrect ? "correct" : "wrong";
+      setFeedbackTone(nextTone);
+      feedbackTimer.current = window.setTimeout(() => {
+        setFeedbackTone("idle");
+      }, feedback.completed ? 2200 : 1200);
+
+      return feedback.state;
+    });
   }
 
   function restart() {
     setGame(createGameState(quickMathDuel));
     setTimeLeft(duration);
+    setFeedbackTone("idle");
   }
 
   if (game.completed) return <ResultPanel onRestart={restart} result={result} />;
@@ -44,6 +71,9 @@ export function QuickMathDuel() {
     <section className="grid gap-5 lg:grid-cols-[0.75fr_1.25fr]">
       <aside className="panel rounded-[28px] p-6">
         <p className="surface-label text-rose-200/80">Quick Math Duel</p>
+        <div className="mt-5">
+          <CharacterFeedback streak={game.streak} tone={feedbackTone} />
+        </div>
         <div className="mt-6 grid grid-cols-2 gap-3">
           <Metric label="Time" value={`${timeLeft}s`} />
           <Metric label="Score" value={game.score} />

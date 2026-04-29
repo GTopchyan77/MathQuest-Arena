@@ -66,6 +66,7 @@ export function DashboardClient() {
   }, [profile, scores]);
 
   const isFirstSession = scores.length === 0;
+  const isFirstReturn = scores.length === 1;
   const xpRange = Math.max(getLevelCeiling(stats.progression.level) - getLevelFloor(stats.progression.level), 1);
   const latestBadge = stats.progression.badges.find((badge) => badge.earned) ?? null;
 
@@ -91,13 +92,13 @@ export function DashboardClient() {
                 {isFirstSession ? "First session" : "Daily challenge ready"}
               </div>
             </div>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button asChild className={isFirstSession ? "shadow-[0_22px_70px_rgba(34,211,238,0.32)]" : undefined}>
-                <Link href={isFirstSession ? "/games/quick-math-duel" : "/games"}>
-                  <Play className="h-5 w-5" /> {isFirstSession ? "Play Quick Math Duel" : "Launch games"}
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                <Button asChild className={isFirstSession ? "shadow-[0_22px_70px_rgba(34,211,238,0.32)]" : undefined}>
+                <Link href={isFirstSession || isFirstReturn ? "/games/quick-math-duel" : "/games"}>
+                  <Play className="h-5 w-5" /> {isFirstSession ? "Play Quick Math Duel" : isFirstReturn ? "Do one more Quick Math Duel run" : "Launch games"}
                 </Link>
               </Button>
-              {!isFirstSession ? (
+              {!isFirstSession && !isFirstReturn ? (
                 <Button asChild variant="secondary">
                   <Link href="/leaderboard">
                     <Trophy className="h-5 w-5" /> View rankings
@@ -129,13 +130,15 @@ export function DashboardClient() {
                 />
               </div>
             ) : null}
+            {!isFirstReturn ? (
             <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               <MetricCard icon={Flame} label="Total XP" tone="cyan" value={stats.totalXp.toLocaleString()} />
               <MetricCard icon={Rocket} label="Daily streak" tone="violet" value={stats.progression.currentStreak} />
               <MetricCard icon={Medal} label="Games completed" tone="green" value={stats.completed} />
               <MetricCard icon={Target} label={`Level ${stats.progression.level}`} tone="amber" value={`${stats.progression.xpToNextLevel} XP left`} />
             </div>
-            {!isFirstSession ? (
+            ) : null}
+            {!isFirstSession && !isFirstReturn ? (
               <div className="mt-6 grid gap-3 lg:grid-cols-[1.05fr_0.95fr]">
                 <ProgressPanel
                   accent="cyan"
@@ -182,6 +185,33 @@ export function DashboardClient() {
               </div>
             </div>
           </div>
+        ) : isFirstReturn ? (
+          <div className="panel rounded-[30px] p-5">
+            <p className="surface-label text-emerald-200/80">What unlocked</p>
+            <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Your first save is live</h2>
+            <div className="mt-5 grid gap-3">
+              <ChainStep
+                body={`${stats.totalXp.toLocaleString()} XP is now on your profile, and Level ${stats.progression.level} has started.`}
+                eyebrow="Unlocked"
+                title="XP and level are now tracking"
+              />
+              <ChainStep
+                body={latestBadge ? `${latestBadge.label} is earned, and your current streak is ${stats.progression.currentStreak} day${stats.progression.currentStreak === 1 ? "" : "s"}.` : `Your streak is now ${stats.progression.currentStreak} day${stats.progression.currentStreak === 1 ? "" : "s"}.`}
+                eyebrow="Unlocked"
+                title={latestBadge ? latestBadge.label : "Your first progress markers are active"}
+              />
+              <ChainStep
+                body={stats.recommendedNext.reason}
+                eyebrow="Next challenge"
+                title={stats.recommendedNext.title}
+              />
+            </div>
+            <Button asChild className="mt-5 w-full" size="lg">
+              <Link href={stats.recommendedNext.href as Route<string>}>
+                <ArrowRight className="h-5 w-5" /> Do one more run now
+              </Link>
+            </Button>
+          </div>
         ) : (
           <div className="panel rounded-[30px] p-5">
             <p className="surface-label text-emerald-200/80">Daily Challenge</p>
@@ -192,7 +222,7 @@ export function DashboardClient() {
         )}
       </section>
 
-      {isFirstSession ? null : (
+      {isFirstSession || isFirstReturn ? null : (
         <section className="mt-4 panel-strong rounded-[30px] p-5">
           <p className="surface-label text-cyan-200/80">Progress Chain</p>
           <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Saved run to next challenge, in one glance</h2>
@@ -221,7 +251,7 @@ export function DashboardClient() {
         </section>
       )}
 
-      {isFirstSession ? null : (
+      {isFirstSession || isFirstReturn ? null : (
       <section className="mt-4 grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
         <div className="panel rounded-[30px] p-5">
           <div className="flex items-center justify-between gap-3">
@@ -269,7 +299,7 @@ export function DashboardClient() {
       </section>
       )}
 
-      {isFirstSession ? null : (
+      {isFirstSession || isFirstReturn ? null : (
       <section className="mt-4 grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
         <div className="panel rounded-[30px] p-5">
           <div className="flex items-center justify-between gap-3">

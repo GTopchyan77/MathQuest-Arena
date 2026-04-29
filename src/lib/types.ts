@@ -1,4 +1,4 @@
-export type GameSlug = "quick-math-duel" | "missing-number-puzzle" | "math-grid-puzzle";
+export type GameSlug = "quick-math-duel" | "missing-number-puzzle" | "math-grid-puzzle" | "boss-round-battle";
 
 export type Profile = {
   avatar_url: string | null;

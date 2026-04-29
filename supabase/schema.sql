@@ -15,7 +15,7 @@ create table if not exists public.profiles (
 create table if not exists public.game_sessions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
-  game_slug text not null check (game_slug in ('quick-math-duel', 'missing-number-puzzle', 'math-grid-puzzle')),
+  game_slug text not null check (game_slug in ('quick-math-duel', 'missing-number-puzzle', 'math-grid-puzzle', 'boss-round-battle')),
   score integer not null default 0 check (score >= 0),
   correct_answers integer not null default 0 check (correct_answers >= 0),
   total_questions integer not null default 0 check (total_questions >= 0),
@@ -29,7 +29,7 @@ create table if not exists public.scores (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   game_session_id uuid references public.game_sessions(id) on delete set null,
-  game_slug text not null check (game_slug in ('quick-math-duel', 'missing-number-puzzle', 'math-grid-puzzle')),
+  game_slug text not null check (game_slug in ('quick-math-duel', 'missing-number-puzzle', 'math-grid-puzzle', 'boss-round-battle')),
   score integer not null check (score >= 0),
   accuracy integer not null default 0 check (accuracy between 0 and 100),
   max_streak integer not null default 0 check (max_streak >= 0),
