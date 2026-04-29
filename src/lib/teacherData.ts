@@ -6,36 +6,38 @@ export type TeacherStudent = {
   bestScore: number;
   displayName: string;
   gamesPlayed: number;
+  hasHistoricalStruggle: boolean;
   id: string;
   last3Accuracy: number | null;
+  last5Accuracy: number | null;
   lastPlayedAt: string;
   latestGameTitle: string | null;
-  lowAccuracyCountLast7Days: number;
-  masteryBand: "developing" | "emerging" | "proficient" | "unknown";
+  lowAccuracyCountRecent: number;
+  recentActiveDays: number;
+  recentSessionCount: number;
   recentTrend: number | null;
   struggling: boolean;
-  timePlayedMinutes: number;
   totalXp: number;
 };
 
 export type TeacherClassSummary = {
   activeToday: number;
   averageAccuracy: number;
-  averageMastery: number;
+  averagePracticePerformance: number;
   id: string;
   leaderboard: Array<{
     displayName: string;
     rank: number;
     totalXp: number;
   }>;
-  masteryOverview: Array<{
+  participatingStudents: number;
+  practicePerformanceOverview: Array<{
     gameSlug: GameSlug;
-    mastery: number;
+    performance: number;
     title: string;
   }>;
   name: string;
   roster: TeacherStudent[];
-  strugglingStudents: TeacherStudent[];
   studentsInactive: TeacherInterventionStudent[];
   studentsNeedingAttention: TeacherInterventionStudent[];
   studentsReadyToAdvance: TeacherInterventionStudent[];
@@ -59,7 +61,9 @@ const seeds: StudentSeed[] = [
     id: "student-1",
     games: [
       { accuracy: 93, daysAgo: 0, gameSlug: "quick-math-duel", score: 1880 },
+      { accuracy: 91, daysAgo: 0, gameSlug: "boss-round-battle", score: 1740 },
       { accuracy: 88, daysAgo: 1, gameSlug: "missing-number-puzzle", score: 1540 },
+      { accuracy: 90, daysAgo: 2, gameSlug: "quick-math-duel", score: 1680 },
       { accuracy: 86, daysAgo: 3, gameSlug: "math-grid-puzzle", score: 1410 }
     ]
   },
@@ -94,9 +98,9 @@ const seeds: StudentSeed[] = [
     displayName: "Kai Quest",
     id: "student-5",
     games: [
-      { accuracy: 84, daysAgo: 6, gameSlug: "boss-round-battle", score: 1520 },
-      { accuracy: 80, daysAgo: 8, gameSlug: "quick-math-duel", score: 1440 },
-      { accuracy: 83, daysAgo: 10, gameSlug: "missing-number-puzzle", score: 1505 }
+      { accuracy: 69, daysAgo: 6, gameSlug: "boss-round-battle", score: 1180 },
+      { accuracy: 64, daysAgo: 8, gameSlug: "quick-math-duel", score: 1025 },
+      { accuracy: 61, daysAgo: 10, gameSlug: "missing-number-puzzle", score: 980 }
     ]
   },
   {
@@ -127,24 +131,21 @@ export function getTeacherClassById(id: string) {
 
 function buildClassSummary(id: string, name: string, studentSeeds: StudentSeed[]): TeacherClassSummary {
   const roster = studentSeeds.map(buildStudent);
-  const activeToday = roster.filter((student) => sameDay(student.lastPlayedAt, new Date().toISOString())).length;
+  const activeToday = roster.filter((student) => sameDay(student.lastPlayedAt, new Date())).length;
   const measurableRoster = roster.filter((student) => student.gamesPlayed > 0);
+  const participatingStudents = measurableRoster.length;
   const averageAccuracy = measurableRoster.length
     ? Math.round(measurableRoster.reduce((sum, student) => sum + student.averageAccuracy, 0) / measurableRoster.length)
     : 0;
-  const averageMastery = Math.round(
-    (measurableRoster.length
-      ? measurableRoster.reduce((sum, student) => sum + Math.min(100, 52 + student.averageAccuracy * 0.45), 0) / measurableRoster.length
-      : 0)
-  );
-  const strugglingStudents = roster
-    .filter((student) => student.struggling)
-    .sort((left, right) => left.averageAccuracy - right.averageAccuracy)
-    .slice(0, 3);
+  const averagePracticePerformance = measurableRoster.length
+    ? Math.round(
+        measurableRoster.reduce((sum, student) => sum + (student.last5Accuracy ?? student.averageAccuracy), 0) / measurableRoster.length
+      )
+    : 0;
   const whoPlayedToday = roster
-    .filter((student) => sameDay(student.lastPlayedAt, new Date().toISOString()))
+    .filter((student) => sameDay(student.lastPlayedAt, new Date()))
     .sort((left, right) => right.totalXp - left.totalXp);
-  const masteryOverview = buildMasteryOverview(studentSeeds);
+  const practicePerformanceOverview = buildPracticePerformanceOverview(studentSeeds);
   const leaderboard = [...roster]
     .filter((student) => student.gamesPlayed > 0)
     .sort((left, right) => right.totalXp - left.totalXp)
@@ -169,13 +170,13 @@ function buildClassSummary(id: string, name: string, studentSeeds: StudentSeed[]
   return {
     activeToday,
     averageAccuracy,
-    averageMastery,
+    averagePracticePerformance,
     id,
     leaderboard,
-    masteryOverview,
+    participatingStudents,
+    practicePerformanceOverview,
     name,
     roster,
-    strugglingStudents,
     studentsInactive,
     studentsNeedingAttention,
     studentsReadyToAdvance,
@@ -191,32 +192,38 @@ function buildStudent(seed: StudentSeed): TeacherStudent {
   const bestScore = scoreRows.reduce((max, score) => Math.max(max, score.score), 0);
   const lastPlayedAt = orderedScores[0]?.created_at ?? "";
   const last3Scores = orderedScores.slice(0, 3);
-  const last7Scores = orderedScores.filter((score) => daysSince(score.created_at) <= 7);
+  const last5Scores = orderedScores.slice(0, 5);
+  const recentScores = orderedScores.filter((score) => daysSince(score.created_at) <= 14);
   const recentTrend = last3Scores.length >= 2 ? last3Scores[0].accuracy - last3Scores[last3Scores.length - 1].accuracy : null;
   const last3Accuracy = last3Scores.length ? Math.round(last3Scores.reduce((sum, score) => sum + score.accuracy, 0) / last3Scores.length) : null;
-  const lowAccuracyCountLast7Days = last7Scores.filter((score) => score.accuracy <= 65).length;
+  const last5Accuracy = last5Scores.length ? Math.round(last5Scores.reduce((sum, score) => sum + score.accuracy, 0) / last5Scores.length) : null;
+  const lowAccuracyCountRecent = last5Scores.filter((score) => score.accuracy <= 65).length;
   const latestGameTitle = orderedScores[0] ? getGame(orderedScores[0].game_slug)?.title ?? orderedScores[0].game_slug : null;
-  const masteryBand = !scoreRows.length ? "unknown" : averageAccuracy >= 85 ? "proficient" : averageAccuracy >= 70 ? "developing" : "emerging";
+  const recentActiveDays = new Set(recentScores.map((score) => getLocalDateKey(score.created_at))).size;
+  const recentSessionCount = recentScores.length;
+  const hasHistoricalStruggle = (last5Accuracy !== null && last5Accuracy < 72) || lowAccuracyCountRecent >= 2;
 
   return {
     averageAccuracy,
     bestScore,
     displayName: seed.displayName,
     gamesPlayed: scoreRows.length,
+    hasHistoricalStruggle,
     id: seed.id,
     last3Accuracy,
+    last5Accuracy,
     lastPlayedAt,
     latestGameTitle,
-    lowAccuracyCountLast7Days,
-    masteryBand,
+    lowAccuracyCountRecent,
+    recentActiveDays,
+    recentSessionCount,
     recentTrend,
-    struggling: scoreRows.length > 0 && averageAccuracy < 75,
-    timePlayedMinutes: scoreRows.length ? 8 + scoreRows.length * 6 + Math.round(bestScore / 180) : 0,
+    struggling: Boolean(last5Accuracy !== null && last5Accuracy < 72),
     totalXp
   };
 }
 
-function buildMasteryOverview(studentSeeds: StudentSeed[]) {
+function buildPracticePerformanceOverview(studentSeeds: StudentSeed[]) {
   const allScores = studentSeeds.flatMap((student) =>
     student.games.map((game, index) => createScore(student.id, game.gameSlug, game.score, game.accuracy, game.daysAgo, index))
   );
@@ -228,7 +235,7 @@ function buildMasteryOverview(studentSeeds: StudentSeed[]) {
 
   return [...groups.entries()].map(([gameSlug, scores]) => ({
     gameSlug,
-    mastery: Math.round(scores.reduce((sum, score) => sum + score.accuracy, 0) / scores.length),
+    performance: Math.round(scores.reduce((sum, score) => sum + score.accuracy, 0) / scores.length),
     title: getGame(gameSlug)?.title ?? gameSlug
   }));
 }
@@ -256,12 +263,12 @@ function createScore(
   };
 }
 
-function sameDay(leftIso: string, rightIso: string) {
-  if (!leftIso || !rightIso) {
+function sameDay(leftIso: string, rightDate: Date) {
+  if (!leftIso) {
     return false;
   }
 
-  return leftIso.slice(0, 10) === rightIso.slice(0, 10);
+  return getLocalDateKey(leftIso) === getLocalDateKey(rightDate);
 }
 
 function daysSince(iso: string) {
@@ -299,18 +306,25 @@ function toInactiveIntervention(student: TeacherStudent): TeacherInterventionStu
     return null;
   }
 
+  const previouslyStruggled = student.hasHistoricalStruggle;
+
   return {
-    actionLabel: "Re-engage student",
+    actionLabel: previouslyStruggled ? "Re-engage with support" : "Re-engage student",
     category: "inactive",
     displayName: student.displayName,
     evidence: [
       { label: "Last played", value: `${idleDays} days ago` },
       { label: "Prior sessions", value: `${student.gamesPlayed} saved` },
-      { label: "Last seen in", value: student.latestGameTitle ?? "No recent game" }
+      {
+        label: "Prior evidence",
+        value: previouslyStruggled ? `Last 5 avg ${student.last5Accuracy ?? "?"}%` : `Last 5 avg ${student.last5Accuracy ?? "?"}%`
+      }
     ],
     id: student.id,
-    priority: idleDays >= 7 ? "high" : "medium",
-    reason: "Student has prior activity but no recent play, so the best intervention is re-entry rather than remediation."
+    priority: previouslyStruggled || idleDays >= 7 ? "high" : "medium",
+    reason: previouslyStruggled
+      ? "Inactive — previously struggled. Re-entry should include support because the last usable evidence was below target."
+      : "Inactive with no recent evidence. The next move is to re-establish participation before making a performance judgment."
   };
 }
 
@@ -319,8 +333,8 @@ function toAttentionIntervention(student: TeacherStudent): TeacherInterventionSt
     return null;
   }
 
-  const lowRecentAccuracy = student.last3Accuracy !== null && student.last3Accuracy < 72;
-  const repeatedLowRuns = student.lowAccuracyCountLast7Days >= 2;
+  const lowRecentAccuracy = student.last5Accuracy !== null && student.last5Accuracy < 72;
+  const repeatedLowRuns = student.lowAccuracyCountRecent >= 2;
   const negativeTrend = student.recentTrend !== null && student.recentTrend <= -10;
 
   if (!lowRecentAccuracy && !repeatedLowRuns && !negativeTrend) {
@@ -332,13 +346,13 @@ function toAttentionIntervention(student: TeacherStudent): TeacherInterventionSt
     category: "attention",
     displayName: student.displayName,
     evidence: [
-      { label: "Last 3 accuracy", value: student.last3Accuracy !== null ? `${student.last3Accuracy}%` : "Insufficient data" },
-      { label: "Low runs in 7d", value: `${student.lowAccuracyCountLast7Days}` },
+      { label: "Last 5 accuracy", value: student.last5Accuracy !== null ? `${student.last5Accuracy}%` : "Insufficient data" },
+      { label: "Low recent runs", value: `${student.lowAccuracyCountRecent}` },
       { label: "Trend", value: student.recentTrend !== null ? `${student.recentTrend > 0 ? "+" : ""}${student.recentTrend} pts` : "Flat" }
     ],
     id: student.id,
-    priority: repeatedLowRuns || (student.last3Accuracy !== null && student.last3Accuracy < 65) ? "high" : "medium",
-    reason: "Student is still engaging, but recent accuracy signals suggest support should be targeted before the habit breaks."
+    priority: repeatedLowRuns || (student.last5Accuracy !== null && student.last5Accuracy < 65) ? "high" : "medium",
+    reason: "Student has recent participation, and the latest 3-5 session evidence suggests instruction should shift before disengagement follows."
   };
 }
 
@@ -347,11 +361,11 @@ function toAdvanceIntervention(student: TeacherStudent): TeacherInterventionStud
     return null;
   }
 
-  const readyAccuracy = student.last3Accuracy !== null && student.last3Accuracy >= 85;
-  const stableMastery = student.masteryBand === "proficient";
+  const readyAccuracy = student.last5Accuracy !== null && student.last5Accuracy >= 85;
   const nonNegativeTrend = student.recentTrend === null || student.recentTrend >= -4;
+  const enoughRecentEvidence = student.recentSessionCount >= 5 || (student.recentSessionCount >= 4 && student.recentActiveDays >= 2);
 
-  if (!readyAccuracy || !stableMastery || !nonNegativeTrend || student.gamesPlayed < 3) {
+  if (!readyAccuracy || !nonNegativeTrend || !enoughRecentEvidence) {
     return null;
   }
 
@@ -360,14 +374,23 @@ function toAdvanceIntervention(student: TeacherStudent): TeacherInterventionStud
     category: "advance",
     displayName: student.displayName,
     evidence: [
-      { label: "Last 3 accuracy", value: `${student.last3Accuracy}%` },
-      { label: "Mastery band", value: student.masteryBand },
+      { label: "Last 5 accuracy", value: `${student.last5Accuracy}%` },
+      { label: "Recent evidence", value: `${student.recentSessionCount} sessions across ${student.recentActiveDays} day${student.recentActiveDays === 1 ? "" : "s"}` },
       { label: "Recent game", value: student.latestGameTitle ?? "No recent game" }
     ],
     id: student.id,
-    priority: student.last3Accuracy !== null && student.last3Accuracy >= 90 ? "high" : "medium",
-    reason: "Student is showing stable recent success, so the intervention should increase challenge instead of repeating practice."
+    priority: student.last5Accuracy !== null && student.last5Accuracy >= 90 ? "high" : "medium",
+    reason: "Student has enough recent evidence across multiple attempts to justify harder work instead of more repetition."
   };
+}
+
+function getLocalDateKey(value: Date | string) {
+  const date = typeof value === "string" ? new Date(value) : value;
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }
 
 function isInterventionStudent(value: TeacherInterventionStudent | null): value is TeacherInterventionStudent {

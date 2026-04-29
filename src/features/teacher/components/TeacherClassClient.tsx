@@ -24,19 +24,22 @@ export function TeacherClassClient({ classId }: { classId: string }) {
           <p className="surface-label">Class Detail</p>
           <h1 className="mt-3 font-[var(--font-sora)] text-3xl font-extrabold text-white sm:text-4xl">{teacherClass.name}</h1>
           <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">
-            Read-only pilot view for roster health, accuracy trends, time spent, and class-level game performance.
+            Read-only pilot view for roster participation, recent accuracy evidence, and class-level practice performance.
           </p>
           <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <TopMetric icon={Users} label="Roster" value={teacherClass.roster.length} />
-            <TopMetric icon={Target} label="Class accuracy" value={`${teacherClass.averageAccuracy}%`} />
+            <TopMetric icon={Target} label="Accuracy (participants)" value={`${teacherClass.averageAccuracy}%`} />
             <TopMetric icon={Clock3} label="Played today" value={teacherClass.activeToday} />
-            <TopMetric icon={BarChart3} label="Mastery avg" value={`${teacherClass.averageMastery}%`} />
+            <TopMetric icon={BarChart3} label="Participation" value={`${teacherClass.participatingStudents}/${teacherClass.roster.length}`} />
           </div>
+          <p className="mt-4 text-sm font-semibold text-slate-400">
+            Accuracy is based on students with saved evidence. Participation is shown separately so non-participants stay visible.
+          </p>
         </div>
 
         <div className="panel rounded-[30px] p-5">
           <p className="surface-label text-cyan-200/80">Class Leaderboard</p>
-          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Top momentum</h2>
+          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Top XP</h2>
           <div className="mt-5 grid gap-3">
             {teacherClass.leaderboard.slice(0, 3).map((entry) => (
               <div className="rounded-[24px] border border-white/10 bg-white/6 p-4" key={entry.displayName}>
@@ -77,7 +80,7 @@ export function TeacherClassClient({ classId }: { classId: string }) {
                   </div>
                   <div className="grid grid-cols-3 gap-3 md:min-w-[340px]">
                     <Stat label="Accuracy" value={`${student.averageAccuracy}%`} />
-                    <Stat label="Time" value={`${student.timePlayedMinutes}m`} />
+                    <Stat label="Duration" value="Not tracked yet" />
                     <Stat label="Best" value={student.bestScore.toLocaleString()} />
                   </div>
                 </div>
@@ -89,20 +92,20 @@ export function TeacherClassClient({ classId }: { classId: string }) {
         <div className="panel rounded-[30px] p-5">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="surface-label text-emerald-200/80">Game Breakdown</p>
-              <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Class performance by game</h2>
+              <p className="surface-label text-emerald-200/80">Practice Performance</p>
+              <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Recent practice performance by game</h2>
             </div>
             <BarChart3 className="h-5 w-5 text-cyan-200" />
           </div>
           <div className="mt-5 grid gap-4">
-            {teacherClass.masteryOverview.map((item) => (
+            {teacherClass.practicePerformanceOverview.map((item) => (
               <div className="rounded-[24px] border border-white/10 bg-white/6 p-4" key={item.gameSlug}>
                 <div className="flex items-center justify-between gap-4">
                   <p className="font-black text-white">{item.title}</p>
-                  <p className="font-black text-cyan-200">{item.mastery}%</p>
+                  <p className="font-black text-cyan-200">{item.performance}%</p>
                 </div>
                 <div className="mt-4 h-2.5 rounded-full bg-white/8">
-                  <div className="h-full rounded-full bg-[linear-gradient(90deg,#22d3ee_0%,#0ea5e9_50%,#8b5cf6_100%)]" style={{ width: `${item.mastery}%` }} />
+                  <div className="h-full rounded-full bg-[linear-gradient(90deg,#22d3ee_0%,#0ea5e9_50%,#8b5cf6_100%)]" style={{ width: `${item.performance}%` }} />
                 </div>
               </div>
             ))}

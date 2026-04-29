@@ -22,9 +22,12 @@ export function TeacherDashboardClient() {
           <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <SummaryCard icon={Users} label="Students" value={teacherClass.roster.length} />
             <SummaryCard icon={Clock3} label="Played today" value={teacherClass.activeToday} />
-            <SummaryCard icon={Target} label="Avg accuracy" value={`${teacherClass.averageAccuracy}%`} />
-            <SummaryCard icon={BarChart3} label="Avg mastery" value={`${teacherClass.averageMastery}%`} />
+            <SummaryCard icon={Target} label="Avg accuracy (participants)" value={`${teacherClass.averageAccuracy}%`} />
+            <SummaryCard icon={BarChart3} label="Participation" value={`${teacherClass.participatingStudents}/${teacherClass.roster.length}`} />
           </div>
+          <p className="mt-4 text-sm font-semibold text-slate-400">
+            Participation is shown separately so roster averages do not hide students with no recent evidence.
+          </p>
         </div>
 
         <div className="panel rounded-[30px] p-5">
@@ -69,20 +72,20 @@ export function TeacherDashboardClient() {
       <section className="mt-4 panel rounded-[30px] p-5">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="surface-label">Mastery Overview</p>
-            <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Game-level class mastery</h2>
+            <p className="surface-label">Practice Performance</p>
+            <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Game-level recent practice performance</h2>
           </div>
           <BarChart3 className="h-5 w-5 text-cyan-200" />
         </div>
         <div className="mt-5 grid gap-4 xl:grid-cols-3">
-          {teacherClass.masteryOverview.map((item) => (
+          {teacherClass.practicePerformanceOverview.map((item) => (
             <div className="rounded-[24px] border border-white/10 bg-white/6 p-4" key={item.gameSlug}>
               <div className="flex items-center justify-between gap-4">
                 <p className="font-black text-white">{item.title}</p>
-                <p className="text-sm font-black text-cyan-200">{item.mastery}%</p>
+                <p className="text-sm font-black text-cyan-200">{item.performance}%</p>
               </div>
               <div className="mt-4 h-2.5 rounded-full bg-white/8">
-                <div className="h-full rounded-full bg-[linear-gradient(90deg,#22d3ee_0%,#0ea5e9_50%,#8b5cf6_100%)]" style={{ width: `${item.mastery}%` }} />
+                <div className="h-full rounded-full bg-[linear-gradient(90deg,#22d3ee_0%,#0ea5e9_50%,#8b5cf6_100%)]" style={{ width: `${item.performance}%` }} />
               </div>
             </div>
           ))}
