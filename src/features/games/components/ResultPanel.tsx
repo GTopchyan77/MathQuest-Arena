@@ -79,6 +79,11 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
             <Metric label="Leaderboard" value={insights?.rankAfter ? `#${insights.rankAfter}` : "Next up"} />
             <Metric label="Next unlock" value={insights?.recommendedNextChallenge.title ?? "Ready"} />
           </div>
+          <div className="mt-4 grid gap-3 lg:grid-cols-3">
+            <RewardStep body="You now have a real profile path to build from." step="1" title="Profile activated" />
+            <RewardStep body="XP, streak, and badges are now updating with every saved run." step="2" title="Progress is live" />
+            <RewardStep body="Save another strong run to climb faster and lock in your momentum." step="3" title="Leaderboard push" />
+          </div>
           <p className="mt-4 rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-semibold text-slate-100">
             {leaderboardUnlockMessage}
           </p>
@@ -171,6 +176,20 @@ function Metric({ label, value }: { label: string; value: number | string }) {
     <div className="rounded-2xl border border-white/10 bg-white/6 p-4">
       <p className="text-2xl font-black text-white">{value}</p>
       <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">{label}</p>
+    </div>
+  );
+}
+
+function RewardStep({ body, step, title }: { body: string; step: string; title: string }) {
+  return (
+    <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
+      <div className="flex items-center gap-3">
+        <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-emerald-300/20 bg-emerald-400/12 text-sm font-black text-emerald-100">
+          {step}
+        </div>
+        <p className="font-black text-white">{title}</p>
+      </div>
+      <p className="mt-3 text-sm leading-6 text-slate-300">{body}</p>
     </div>
   );
 }

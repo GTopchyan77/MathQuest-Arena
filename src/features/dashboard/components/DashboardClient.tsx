@@ -2,7 +2,7 @@
 
 import type { Route } from "next";
 import Link from "next/link";
-import { Activity, Award, Brain, Flame, Medal, Play, Rocket, Sparkles, Star, Target, Trophy } from "lucide-react";
+import { Activity, ArrowRight, Award, Brain, Crown, Flame, Medal, Play, Rocket, Sparkles, Star, Target, Trophy } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { DailyChallengeCard } from "@/features/games/components/DailyChallengeCard";
 import { Button } from "@/shared/components/ui/Button";
@@ -92,9 +92,9 @@ export function DashboardClient() {
               </div>
             </div>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button asChild>
+              <Button asChild className={isFirstSession ? "shadow-[0_22px_70px_rgba(34,211,238,0.32)]" : undefined}>
                 <Link href={isFirstSession ? "/games/quick-math-duel" : "/games"}>
-                  <Play className="h-5 w-5" /> {isFirstSession ? "Start your first challenge" : "Launch games"}
+                  <Play className="h-5 w-5" /> {isFirstSession ? "Play Quick Math Duel" : "Launch games"}
                 </Link>
               </Button>
               {!isFirstSession ? (
@@ -105,6 +105,11 @@ export function DashboardClient() {
                 </Button>
               ) : null}
             </div>
+            {isFirstSession ? (
+              <div className="mt-4 rounded-[24px] border border-cyan-300/16 bg-[linear-gradient(135deg,rgba(34,211,238,0.1),rgba(139,92,246,0.08))] px-4 py-3 text-sm font-semibold text-slate-200">
+                One fast win. One saved score. Your dashboard unlocks for real.
+              </div>
+            ) : null}
             {isFirstSession ? (
               <div className="mt-6 grid gap-3 lg:grid-cols-3">
                 <OnboardingStep
@@ -151,14 +156,40 @@ export function DashboardClient() {
           </div>
         </div>
 
-        {!isFirstSession ? (
+        {isFirstSession ? (
+          <div className="panel rounded-[30px] p-5">
+            <p className="surface-label text-amber-200/80">Activation</p>
+            <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Your first save unlocks the board</h2>
+            <div className="mt-5 rounded-[24px] border border-white/10 bg-slate-950/45 p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-amber-300/20 bg-amber-300/10 text-amber-100">
+                  <Crown className="h-5 w-5" />
+                </div>
+                <span className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-slate-400">
+                  Locked until first save
+                </span>
+              </div>
+              <p className="mt-4 font-black text-white">Leaderboard motivation</p>
+              <p className="mt-2 text-sm leading-6 text-slate-300">
+                Save your first score to claim a spot, start your streak, and unlock your first visible badge.
+              </p>
+              <div className="mt-4 flex items-center justify-between rounded-2xl border border-white/10 bg-white/6 px-4 py-3">
+                <div>
+                  <p className="text-sm font-black text-white">First goal</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Enter the arena board</p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-cyan-200" />
+              </div>
+            </div>
+          </div>
+        ) : (
           <div className="panel rounded-[30px] p-5">
             <p className="surface-label text-emerald-200/80">Daily Challenge</p>
             <div className="mt-4">
               <DailyChallengeCard compact />
             </div>
           </div>
-        ) : null}
+        )}
       </section>
 
       {isFirstSession ? null : (
@@ -324,12 +355,15 @@ export function DashboardClient() {
 
 function OnboardingStep({ body, step, title }: { body: string; step: string; title: string }) {
   return (
-    <div className="rounded-[24px] border border-white/10 bg-slate-950/42 p-4 backdrop-blur-xl">
-      <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-400/10 text-sm font-black text-cyan-100">
-        {step}
+    <div className="relative overflow-hidden rounded-[24px] border border-white/10 bg-slate-950/42 p-4 backdrop-blur-xl">
+      <div className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(34,211,238,0.55),transparent)]" />
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-400/10 text-sm font-black text-cyan-100">
+          {step}
+        </div>
+        <p className="font-black text-white">{title}</p>
       </div>
-      <p className="mt-4 font-black text-white">{title}</p>
-      <p className="mt-2 text-sm leading-6 text-slate-300">{body}</p>
+      <p className="mt-3 text-sm leading-6 text-slate-300">{body}</p>
     </div>
   );
 }
@@ -434,7 +468,8 @@ function RecommendedChallengeCard({ href, reason, title }: { href: Route<string>
 
 function ChainStep({ body, eyebrow, title }: { body: string; eyebrow: string; title: string }) {
   return (
-    <div className="rounded-[24px] border border-white/10 bg-slate-950/42 p-4">
+    <div className="relative overflow-hidden rounded-[24px] border border-white/10 bg-slate-950/42 p-4">
+      <div className="absolute left-0 top-0 h-full w-px bg-[linear-gradient(180deg,rgba(34,211,238,0.55),transparent)]" />
       <p className="text-xs font-black uppercase tracking-[0.14em] text-cyan-200">{eyebrow}</p>
       <p className="mt-3 font-black text-white">{title}</p>
       <p className="mt-2 text-sm leading-6 text-slate-300">{body}</p>
