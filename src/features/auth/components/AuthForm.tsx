@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useLocale } from "@/lib/i18n/useLocale";
 import { Button } from "@/shared/components/ui/Button";
 import { createClient, hasSupabaseConfig } from "@/lib/supabase/client";
 import { loginWithEmail, registerWithEmail } from "@/lib/supabase/auth";
@@ -16,6 +17,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { loading: authLoading, user } = useAuth();
+  const { t } = useLocale();
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,20 +42,20 @@ export function AuthForm({ mode }: AuthFormProps) {
     }
 
     if (!confirmationCode) {
-      setMessage("Email confirmed. You can now log in.");
+      setMessage(t("auth.form.confirmed"));
       return;
     }
 
     const supabaseClient = createClient();
     if (!supabaseClient) {
-      setMessage("Email confirmed. You can now log in.");
+      setMessage(t("auth.form.confirmed"));
       return;
     }
     const client = supabaseClient;
 
     const code = confirmationCode;
     if (!code) {
-      setMessage("Email confirmed. You can now log in.");
+      setMessage(t("auth.form.confirmed"));
       return;
     }
 
@@ -75,7 +77,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           console.error("[auth form] confirmation exchange failed", exchangeError);
         }
 
-        setMessage("Email confirmed. You can now log in.");
+        setMessage(t("auth.form.confirmed"));
         return;
       }
 
@@ -88,7 +90,7 @@ export function AuthForm({ mode }: AuthFormProps) {
     return () => {
       cancelled = true;
     };
-  }, [confirmationCode, isConfirmedRedirect, isRegister, router]);
+  }, [confirmationCode, isConfirmedRedirect, isRegister, router, t]);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -96,7 +98,7 @@ export function AuthForm({ mode }: AuthFormProps) {
     setMessage("");
 
     if (!hasSupabaseConfig()) {
-      setError("Add Supabase credentials to .env.local to enable authentication.");
+      setError(t("auth.form.envMissing"));
       return;
     }
 
@@ -131,7 +133,7 @@ export function AuthForm({ mode }: AuthFormProps) {
     }
 
     if (isRegister && !response.data.session) {
-      setMessage("Account created. Check your email to confirm it, then log in to start playing.");
+      setMessage(t("auth.form.createdNeedsConfirm"));
       return;
     }
 
@@ -143,34 +145,34 @@ export function AuthForm({ mode }: AuthFormProps) {
     <form className="grid gap-4" onSubmit={onSubmit}>
       {isRegister ? (
         <label className="grid gap-2 text-sm font-bold text-slate-200">
-          Display name
+          {t("auth.form.displayName")}
           <input
             className="focus-ring h-12 rounded-2xl border border-white/10 bg-white/6 px-4 font-medium text-white outline-none transition placeholder:text-slate-500"
             onChange={(event) => setDisplayName(event.target.value)}
-            placeholder="Ada Explorer"
+            placeholder={t("auth.form.displayNamePlaceholder")}
             type="text"
             value={displayName}
           />
         </label>
       ) : null}
       <label className="grid gap-2 text-sm font-bold text-slate-200">
-        Email
+        {t("auth.form.email")}
         <input
           className="focus-ring h-12 rounded-2xl border border-white/10 bg-white/6 px-4 font-medium text-white outline-none transition placeholder:text-slate-500"
           onChange={(event) => setEmail(event.target.value)}
-          placeholder="you@example.com"
+          placeholder={t("auth.form.emailPlaceholder")}
           required
           type="email"
           value={email}
         />
       </label>
       <label className="grid gap-2 text-sm font-bold text-slate-200">
-        Password
+        {t("auth.form.password")}
         <input
           className="focus-ring h-12 rounded-2xl border border-white/10 bg-white/6 px-4 font-medium text-white outline-none transition placeholder:text-slate-500"
           minLength={6}
           onChange={(event) => setPassword(event.target.value)}
-          placeholder="At least 6 characters"
+          placeholder={t("auth.form.passwordPlaceholder")}
           required
           type="password"
           value={password}
@@ -180,16 +182,16 @@ export function AuthForm({ mode }: AuthFormProps) {
       {message ? <p className="rounded-2xl border border-emerald-400/20 bg-emerald-400/12 px-4 py-3 text-sm font-bold text-emerald-100">{message}</p> : null}
       {isRegister && message && !error ? (
         <Button asChild size="lg" variant="secondary">
-          <Link href="/login">Go to login</Link>
+          <Link href="/login">{t("auth.form.goToLogin")}</Link>
         </Button>
       ) : null}
       <Button disabled={loading || handlingConfirmation || authLoading} size="lg" type="submit">
-        {loading ? "Working..." : isRegister ? "Create account" : "Log in"}
+        {loading ? t("auth.form.working") : isRegister ? t("auth.form.createAccount") : t("auth.form.logIn")}
       </Button>
       <p className="text-center text-sm font-semibold text-slate-400">
-        {isRegister ? "Already registered?" : "New to MathQuest?"}{" "}
+        {isRegister ? t("auth.form.alreadyRegistered") : t("auth.form.newHere")}{" "}
         <Link className="text-cyan-200 hover:text-cyan-100 hover:underline" href={isRegister ? "/login" : "/register"}>
-          {isRegister ? "Log in" : "Create an account"}
+          {isRegister ? t("auth.form.logIn") : t("auth.form.createAccountLink")}
         </Link>
       </p>
     </form>

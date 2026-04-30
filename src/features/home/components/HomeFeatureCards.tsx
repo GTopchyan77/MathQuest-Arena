@@ -3,29 +3,31 @@
 import { Brain, Sparkles, Trophy } from "lucide-react";
 import { FeatureCard } from "@/shared/components/ui/FeatureCard";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useLocale } from "@/lib/i18n/useLocale";
 
 export function HomeFeatureCards() {
   const { user } = useAuth();
+  const { t } = useLocale();
 
   return (
     <div className="grid gap-5 md:grid-cols-3">
       <FeatureCard
-        body="Games scale from quick recall to deeper pattern reasoning."
+        body={t("home.features.adaptiveBody")}
         href="/games"
         icon={Brain}
-        title="Adaptive play"
+        title={t("home.features.adaptiveTitle")}
       />
       <FeatureCard
-        body="Every session can feed XP, streaks, and leaderboard momentum."
+        body={t("home.features.progressBody")}
         href={user ? "/dashboard" : "/register"}
         icon={Trophy}
-        title="Motivating progress"
+        title={t("home.features.progressTitle")}
       />
       <FeatureCard
-        body="Clean responsive screens keep practice focused and rewarding."
+        body={t("home.features.premiumBody")}
         href="/games"
         icon={Sparkles}
-        title="Premium feel"
+        title={t("home.features.premiumTitle")}
       />
     </div>
   );

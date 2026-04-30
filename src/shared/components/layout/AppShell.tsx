@@ -17,11 +17,11 @@ import {
   Sparkles,
   Trophy,
   UserRound,
-  Users,
   X
 } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useLocale } from "@/lib/i18n/useLocale";
 import { logout as logoutUser } from "@/lib/supabase/auth";
 import { cx } from "@/lib/utils";
 import { Button } from "@/shared/components/ui/Button";
@@ -31,7 +31,14 @@ type AppShellProps = {
   children: ReactNode;
 };
 
-type NavItem = {
+type LearnerNavItem = {
+  detailKey: "shell.openSection" | "shell.comingSoon";
+  href?: Route<string>;
+  icon: typeof LayoutGrid;
+  key: "shell.nav.overview" | "shell.nav.games" | "shell.nav.dailyChallenge" | "shell.nav.leaderboard" | "shell.nav.profile" | "shell.nav.achievements";
+};
+
+type TeacherNavItem = {
   href?: Route<string>;
   icon: typeof LayoutGrid;
   label: string;
@@ -39,22 +46,21 @@ type NavItem = {
 
 const shellPrefixes = ["/dashboard", "/games", "/leaderboard", "/profile", "/teacher"];
 
-const navItems: NavItem[] = [
-  { href: "/dashboard", icon: LayoutGrid, label: "Overview" },
-  { href: "/games", icon: Gamepad2, label: "Games" },
-  { icon: Sparkles, label: "Daily Challenge" },
-  { href: "/leaderboard", icon: Trophy, label: "Leaderboard" },
-  { href: "/profile", icon: UserRound, label: "Profile" },
-  { icon: Award, label: "Achievements" }
+const navItems: LearnerNavItem[] = [
+  { detailKey: "shell.openSection", href: "/dashboard", icon: LayoutGrid, key: "shell.nav.overview" },
+  { detailKey: "shell.openSection", href: "/games", icon: Gamepad2, key: "shell.nav.games" },
+  { detailKey: "shell.comingSoon", icon: Sparkles, key: "shell.nav.dailyChallenge" },
+  { detailKey: "shell.openSection", href: "/leaderboard", icon: Trophy, key: "shell.nav.leaderboard" },
+  { detailKey: "shell.openSection", href: "/profile", icon: UserRound, key: "shell.nav.profile" },
+  { detailKey: "shell.comingSoon", icon: Award, key: "shell.nav.achievements" }
 ];
 
-const teacherNavItems: NavItem[] = [
-  { href: "/teacher", icon: GraduationCap, label: "Class Overview" }
-];
+const teacherNavItems: TeacherNavItem[] = [{ href: "/teacher", icon: GraduationCap, label: "Class Overview" }];
 
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const { user } = useAuth();
+  const { t } = useLocale();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const isShellRoute = useMemo(
@@ -100,7 +106,7 @@ export function AppShell({ children }: AppShellProps) {
               <div className="flex min-w-0 flex-1 items-center gap-3 rounded-[22px] border border-white/10 bg-white/6 px-4 py-3 shadow-[0_18px_45px_rgba(2,8,23,0.28)]">
                 <Search className="h-4 w-4 shrink-0 text-slate-400" />
                 <span className="truncate text-sm font-medium text-slate-400">
-                  {isTeacherRoute ? "Search classes, students, mastery" : "Search games, skills, streaks"}
+                  {isTeacherRoute ? "Search classes, students, mastery" : t("shell.searchLearner")}
                 </span>
                 <span className="ml-auto hidden rounded-lg border border-white/10 bg-slate-950/65 px-2 py-1 text-[11px] font-black uppercase tracking-[0.12em] text-slate-500 sm:inline-flex">
                   Cmd K
@@ -108,7 +114,7 @@ export function AppShell({ children }: AppShellProps) {
               </div>
               <div className="hidden items-center gap-3 sm:flex">
                 <div className="rounded-2xl border border-emerald-400/16 bg-emerald-400/10 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-emerald-100">
-                  {isTeacherRoute ? "Pilot demo" : "Daily ready"}
+                  {isTeacherRoute ? "Pilot demo" : t("shell.dailyReady")}
                 </div>
                 <button className="focus-ring rounded-2xl border border-white/10 bg-white/6 p-3 text-slate-200 transition hover:bg-white/10" type="button">
                   <Bell className="h-4 w-4" />
@@ -119,7 +125,7 @@ export function AppShell({ children }: AppShellProps) {
                   </div>
                   <div className="hidden text-left md:block">
                     <p className="text-sm font-black text-white">{displayName}</p>
-                    <p className="text-xs font-semibold text-slate-400">MathQuest Player</p>
+                    <p className="text-xs font-semibold text-slate-400">{t("shell.playerRole")}</p>
                   </div>
                 </div>
               </div>
@@ -172,6 +178,7 @@ function SidebarContent({
   onItemClick?: () => void;
   onLogout: () => void;
 }) {
+  const { t } = useLocale();
   const items = isTeacherRoute ? teacherNavItems : navItems;
 
   return (
@@ -182,16 +189,17 @@ function SidebarContent({
         </span>
         <div>
           <p className="font-[var(--font-sora)] text-base font-extrabold text-white">MathQuest Arena</p>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Learning OS</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{t("shell.learningOs")}</p>
         </div>
       </Link>
 
       <div className="mt-8">
-        <p className="mb-3 px-3 text-[11px] font-black uppercase tracking-[0.16em] text-slate-500">Workspace</p>
+        <p className="mb-3 px-3 text-[11px] font-black uppercase tracking-[0.16em] text-slate-500">{t("shell.workspace")}</p>
         <nav className="grid gap-1.5">
           {items.map((item) => {
             const Icon = item.icon;
             const active = item.href ? currentPath === item.href || currentPath.startsWith(`${item.href}/`) : false;
+            const isLearnerItem = "key" in item;
             const content = (
               <>
                 <span
@@ -205,8 +213,12 @@ function SidebarContent({
                   <Icon className="h-4 w-4" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className={cx("truncate text-sm font-black", active ? "text-white" : "text-slate-200")}>{item.label}</p>
-                  <p className="text-xs font-semibold text-slate-500">{item.href ? "Open section" : "Coming soon"}</p>
+                  <p className={cx("truncate text-sm font-black", active ? "text-white" : "text-slate-200")}>
+                    {isLearnerItem ? t(item.key) : item.label}
+                  </p>
+                  <p className="text-xs font-semibold text-slate-500">
+                    {isLearnerItem ? t(item.detailKey) : "Open section"}
+                  </p>
                 </div>
                 <ChevronRight className={cx("h-4 w-4", active ? "text-cyan-200" : "text-slate-600")} />
               </>
@@ -220,7 +232,7 @@ function SidebarContent({
                     active ? "border-white/12 bg-white/8" : "border-transparent hover:border-white/8 hover:bg-white/5"
                   )}
                   href={item.href}
-                  key={item.label}
+                  key={isLearnerItem ? item.key : item.label}
                   onClick={onItemClick}
                 >
                   {content}
@@ -229,7 +241,7 @@ function SidebarContent({
             }
 
             return (
-              <div className="flex items-center gap-3 rounded-2xl border border-transparent px-3 py-3 opacity-80" key={item.label}>
+              <div className="flex items-center gap-3 rounded-2xl border border-transparent px-3 py-3 opacity-80" key={isLearnerItem ? item.key : item.label}>
                 {content}
               </div>
             );
@@ -238,17 +250,17 @@ function SidebarContent({
       </div>
 
       <div className="mt-8 rounded-[26px] border border-white/10 bg-white/6 p-4">
-        <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200/80">{isTeacherRoute ? "Pilot Mode" : "Daily Focus"}</p>
+        <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200/80">{isTeacherRoute ? "Pilot Mode" : t("shell.dailyFocus")}</p>
         <p className="mt-2 font-[var(--font-sora)] text-lg font-extrabold text-white">
-          {isTeacherRoute ? "Read-only class insight demo" : "Pattern ladder sprint"}
+          {isTeacherRoute ? "Read-only class insight demo" : t("shell.dailyFocusTitle")}
         </p>
         <p className="mt-2 text-sm leading-6 text-slate-400">
           {isTeacherRoute
             ? "Show class engagement, mastery, and student risk signals without write actions."
-            : "One quick challenge to keep your streak active and your XP moving."}
+            : t("shell.dailyFocusBody")}
         </p>
         <Button className="mt-4 w-full" href={isTeacherRoute ? "/teacher" : "/dashboard"}>
-          {isTeacherRoute ? "Open teacher dashboard" : "Open challenge"}
+          {isTeacherRoute ? "Open teacher dashboard" : t("shell.dailyFocusCta")}
         </Button>
       </div>
 
@@ -259,11 +271,11 @@ function SidebarContent({
           </div>
           <div className="min-w-0">
             <p className="truncate text-sm font-black text-white">{displayName}</p>
-            <p className="text-xs font-semibold text-slate-500">Arena learner</p>
+            <p className="text-xs font-semibold text-slate-500">{t("shell.learnerRole")}</p>
           </div>
         </div>
         <Button className="mt-4 w-full" onClick={onLogout} variant="secondary">
-          <LogOut className="h-4 w-4" /> Sign out
+          <LogOut className="h-4 w-4" /> {t("shell.signOut")}
         </Button>
       </div>
     </>

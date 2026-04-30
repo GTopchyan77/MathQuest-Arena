@@ -4,19 +4,28 @@ import type { Route } from "next";
 import Link from "next/link";
 import { Calculator, LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/shared/components/ui/Button";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { logout as logoutUser } from "@/lib/supabase/auth";
+import { locales, type Locale } from "@/lib/i18n/config";
+import { useLocale } from "@/lib/i18n/useLocale";
+import { Button } from "@/shared/components/ui/Button";
 
-const links: Array<{ href: Route<string>; label: string }> = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/games", label: "Games" },
-  { href: "/leaderboard", label: "Leaderboard" },
-  { href: "/profile", label: "Profile" }
+const localeLabels: Record<Locale, string> = {
+  en: "EN",
+  hy: "Հայ",
+  ru: "RU"
+};
+
+const links: Array<{ href: Route<string>; key: "nav.dashboard" | "nav.games" | "nav.leaderboard" | "nav.profile" }> = [
+  { href: "/dashboard", key: "nav.dashboard" },
+  { href: "/games", key: "nav.games" },
+  { href: "/leaderboard", key: "nav.leaderboard" },
+  { href: "/profile", key: "nav.profile" }
 ];
 
 export function SiteHeader() {
   const { user } = useAuth();
+  const { locale, setLocale, t } = useLocale();
   const [open, setOpen] = useState(false);
 
   async function logout() {
@@ -36,21 +45,35 @@ export function SiteHeader() {
         <nav className="hidden items-center gap-1 md:flex">
           {links.map((link) => (
             <Link className="rounded-2xl px-4 py-2 text-sm font-bold text-slate-300 transition hover:bg-white/8 hover:text-white" href={link.href} key={link.href}>
-              {link.label}
+              {t(link.key)}
             </Link>
           ))}
         </nav>
         <div className="hidden items-center gap-2 md:flex">
+          <div className="flex items-center gap-1 rounded-2xl border border-white/10 bg-white/5 p-1">
+            {locales.map((value) => (
+              <button
+                className={`rounded-xl px-2.5 py-1.5 text-xs font-black transition ${
+                  locale === value ? "bg-white/12 text-white" : "text-slate-400 hover:bg-white/8 hover:text-white"
+                }`}
+                key={value}
+                onClick={() => setLocale(value)}
+                type="button"
+              >
+                {localeLabels[value]}
+              </button>
+            ))}
+          </div>
           {user ? (
             <Button onClick={logout} variant="secondary">
-              <LogOut className="h-4 w-4" /> Logout
+              <LogOut className="h-4 w-4" /> {t("nav.logout")}
             </Button>
           ) : (
             <>
               <Button href="/login" variant="ghost">
-                Login
+                {t("nav.login")}
               </Button>
-              <Button href="/register">Register</Button>
+              <Button href="/register">{t("nav.register")}</Button>
             </>
           )}
         </div>
@@ -63,23 +86,40 @@ export function SiteHeader() {
           <nav className="grid gap-2">
             {links.map((link) => (
               <Link className="rounded-2xl px-4 py-3 font-bold text-slate-200 hover:bg-white/8" href={link.href} key={link.href} onClick={() => setOpen(false)}>
-                {link.label}
+                {t(link.key)}
               </Link>
             ))}
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+              <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-slate-400">{t("nav.language")}</p>
+              <div className="grid grid-cols-3 gap-2">
+                {locales.map((value) => (
+                  <button
+                    className={`rounded-2xl px-3 py-2 text-sm font-black transition ${
+                      locale === value ? "bg-white/12 text-white" : "bg-white/4 text-slate-300 hover:bg-white/8 hover:text-white"
+                    }`}
+                    key={value}
+                    onClick={() => setLocale(value)}
+                    type="button"
+                  >
+                    {localeLabels[value]}
+                  </button>
+                ))}
+              </div>
+            </div>
             {user ? (
               <Button onClick={logout} variant="secondary">
-                Logout
+                {t("nav.logout")}
               </Button>
             ) : (
               <div className="grid grid-cols-2 gap-2">
                 <Button asChild variant="secondary">
                   <Link href="/login" onClick={() => setOpen(false)}>
-                    Login
+                    {t("nav.login")}
                   </Link>
                 </Button>
                 <Button asChild>
                   <Link href="/register" onClick={() => setOpen(false)}>
-                    Register
+                    {t("nav.register")}
                   </Link>
                 </Button>
               </div>
