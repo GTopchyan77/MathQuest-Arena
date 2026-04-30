@@ -49,8 +49,7 @@ const navItems: NavItem[] = [
 ];
 
 const teacherNavItems: NavItem[] = [
-  { href: "/teacher", icon: GraduationCap, label: "Class Overview" },
-  { href: "/teacher/class/class-alpha" as Route<string>, icon: Users, label: "Pilot Class" }
+  { href: "/teacher", icon: GraduationCap, label: "Class Overview" }
 ];
 
 export function AppShell({ children }: AppShellProps) {

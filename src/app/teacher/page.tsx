@@ -1,5 +1,10 @@
+import { TeacherProtectedPage } from "@/features/auth/components/TeacherProtectedPage";
 import { TeacherDashboardClient } from "@/features/teacher/components/TeacherDashboardClient";
 
 export default function TeacherPage() {
-  return <TeacherDashboardClient />;
+  return (
+    <TeacherProtectedPage>
+      <TeacherDashboardClient />
+    </TeacherProtectedPage>
+  );
 }

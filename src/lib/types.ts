@@ -8,6 +8,7 @@ export type Profile = {
   display_name: string | null;
   games_played: number;
   id: string;
+  role?: "student" | "teacher";
   total_xp: number;
   updated_at: string;
 };
