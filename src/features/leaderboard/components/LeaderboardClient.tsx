@@ -2,6 +2,7 @@
 
 import { Crown, Medal, Target, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useLocale } from "@/lib/i18n/useLocale";
 import { Button } from "@/shared/components/ui/Button";
 import { StatCard } from "@/shared/components/ui/StatCard";
 import { games } from "@/lib/games/catalog";
@@ -11,6 +12,7 @@ import type { GameSlug, LeaderboardEntry } from "@/lib/types";
 type Filter = "all" | GameSlug;
 
 export function LeaderboardClient() {
+  const { t } = useLocale();
   const [filter, setFilter] = useState<Filter>("all");
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
 
@@ -24,24 +26,24 @@ export function LeaderboardClient() {
     <main className="mx-auto max-w-[1440px] p-4 sm:p-6">
       <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
         <div className="panel-strong rounded-[30px] p-6">
-          <p className="surface-label">Leaderboard</p>
-          <h1 className="mt-3 font-[var(--font-sora)] text-3xl font-extrabold text-white sm:text-4xl">Top players in the arena</h1>
+          <p className="surface-label">{t("leaderboard.label")}</p>
+          <h1 className="mt-3 font-[var(--font-sora)] text-3xl font-extrabold text-white sm:text-4xl">{t("leaderboard.title")}</h1>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-            Scores update from Supabase when connected. Save a run to start climbing the rankings.
+            {t("leaderboard.body")}
           </p>
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            <StatCard icon={Crown} label="Leader score" tone="lemon" value={entries[0]?.best_score ?? 0} />
-            <StatCard icon={Trophy} label="Total runs" tone="coral" value={entries.reduce((sum, entry) => sum + entry.games_played, 0)} />
-            <StatCard icon={Target} label="Board status" tone="mint" value={entries.length ? "Live" : "Empty"} />
+            <StatCard icon={Crown} label={t("leaderboard.leaderScore")} tone="lemon" value={entries[0]?.best_score ?? 0} />
+            <StatCard icon={Trophy} label={t("leaderboard.totalRuns")} tone="coral" value={entries.reduce((sum, entry) => sum + entry.games_played, 0)} />
+            <StatCard icon={Target} label={t("leaderboard.boardStatus")} tone="mint" value={entries.length ? t("leaderboard.live") : t("leaderboard.empty")} />
           </div>
         </div>
 
         <div className="panel rounded-[30px] p-5">
-          <p className="surface-label text-cyan-200/80">Filters</p>
-          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Switch ranking scope</h2>
+          <p className="surface-label text-cyan-200/80">{t("leaderboard.filters")}</p>
+          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">{t("leaderboard.scopeTitle")}</h2>
           <div className="mt-5 flex flex-wrap gap-2">
             <Button onClick={() => setFilter("all")} variant={filter === "all" ? "primary" : "secondary"}>
-              All
+              {t("leaderboard.all")}
             </Button>
             {games.map((game) => (
               <Button key={game.slug} onClick={() => setFilter(game.slug)} variant={filter === game.slug ? "primary" : "secondary"}>
@@ -54,11 +56,11 @@ export function LeaderboardClient() {
 
       <section className="mt-4 panel overflow-hidden rounded-[30px]">
         <div className="hidden grid-cols-[0.4fr_1.4fr_0.7fr_0.7fr_0.7fr] border-b border-white/10 bg-white/6 px-5 py-4 text-xs font-black uppercase tracking-[0.14em] text-slate-400 md:grid">
-          <span>Rank</span>
-          <span>Player</span>
-          <span>Best</span>
-          <span>Total</span>
-          <span>Games</span>
+          <span>{t("leaderboard.rank")}</span>
+          <span>{t("leaderboard.player")}</span>
+          <span>{t("leaderboard.best")}</span>
+          <span>{t("leaderboard.total")}</span>
+          <span>{t("leaderboard.games")}</span>
         </div>
         <div className="divide-y divide-white/10">
           {entries.length ? (
@@ -79,17 +81,17 @@ export function LeaderboardClient() {
                   {entry.rank <= 3 ? <Medal className="h-5 w-5 text-amber-200 md:hidden" /> : null}
                 </div>
                 <div>
-                  <p className="font-black text-white">{entry.display_name || "Anonymous player"}</p>
-                  <p className="text-sm font-semibold text-slate-400">MathQuest competitor</p>
+                  <p className="font-black text-white">{entry.display_name || t("leaderboard.anonymous")}</p>
+                  <p className="text-sm font-semibold text-slate-400">{t("leaderboard.competitor")}</p>
                 </div>
-                <Score label="Best" value={entry.best_score} />
-                <Score label="Total" value={entry.total_score} />
-                <Score label="Games" value={entry.games_played} />
+                <Score label={t("leaderboard.best")} value={entry.best_score} />
+                <Score label={t("leaderboard.total")} value={entry.total_score} />
+                <Score label={t("leaderboard.games")} value={entry.games_played} />
               </div>
             ))
           ) : (
             <p className="px-5 py-6 text-sm font-semibold text-slate-300">
-              No rankings yet. Save a score to claim the first spot.
+              {t("leaderboard.emptyMessage")}
             </p>
           )}
         </div>

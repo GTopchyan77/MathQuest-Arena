@@ -3,15 +3,49 @@
 import { CalendarDays, Flame, Mail, Medal, Target, Trophy, UserRound } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { StatCard } from "@/shared/components/ui/StatCard";
 import { games } from "@/lib/games/catalog";
+import { useLocale } from "@/lib/i18n/useLocale";
 import { getProgressionSnapshot } from "@/lib/progression";
 import { getCurrentProfile } from "@/lib/supabase/profileRepository";
 import { getUserScores } from "@/lib/supabase/scores";
 import type { ScoreRow } from "@/lib/types";
+import { StatCard } from "@/shared/components/ui/StatCard";
+
+function fill(template: string, values: Record<string, string | number>) {
+  return Object.entries(values).reduce((text, [key, value]) => text.replaceAll(`{${key}}`, String(value)), template);
+}
+
+function getBadgeLabel(id: string, t: (key: any) => string) {
+  const labels = {
+    "first-run": t("badge.first-run.label"),
+    "five-runs": t("badge.five-runs.label"),
+    "high-scorer": t("badge.high-scorer.label"),
+    "streak-starter": t("badge.streak-starter.label"),
+    "weekly-streak": t("badge.weekly-streak.label"),
+    "xp-climber": t("badge.xp-climber.label"),
+    "xp-veteran": t("badge.xp-veteran.label")
+  } as const;
+
+  return labels[id as keyof typeof labels] ?? id;
+}
+
+function getBadgeDescription(id: string, t: (key: any) => string) {
+  const descriptions = {
+    "first-run": t("badge.first-run.description"),
+    "five-runs": t("badge.five-runs.description"),
+    "high-scorer": t("badge.high-scorer.description"),
+    "streak-starter": t("badge.streak-starter.description"),
+    "weekly-streak": t("badge.weekly-streak.description"),
+    "xp-climber": t("badge.xp-climber.description"),
+    "xp-veteran": t("badge.xp-veteran.description")
+  } as const;
+
+  return descriptions[id as keyof typeof descriptions] ?? "";
+}
 
 export function ProfileClient() {
   const { user } = useAuth();
+  const { t } = useLocale();
   const [scores, setScores] = useState<ScoreRow[]>([]);
   const [profileName, setProfileName] = useState("");
 
@@ -55,8 +89,8 @@ export function ProfileClient() {
   );
   const earnedBadges = progression.badges.filter((badge) => badge.earned);
 
-  const displayName = profileName || user?.user_metadata?.display_name || user?.email?.split("@")[0] || "MathQuest Player";
-  const joined = user?.created_at ? new Date(user.created_at).toLocaleDateString() : "Preview account";
+  const displayName = profileName || user?.user_metadata?.display_name || user?.email?.split("@")[0] || t("dashboard.playerFallback");
+  const joined = user?.created_at ? new Date(user.created_at).toLocaleDateString() : t("profile.previewJoined");
 
   return (
     <main className="mx-auto max-w-[1440px] p-4 sm:p-6">
@@ -69,28 +103,28 @@ export function ProfileClient() {
             <div className="min-w-0">
               <p className="truncate font-[var(--font-sora)] text-2xl font-extrabold text-white">{displayName}</p>
               <p className="mt-1 flex items-center gap-2 text-sm font-semibold text-slate-400">
-                <Mail className="h-4 w-4" /> {user?.email ?? "preview@mathquest.local"}
+                <Mail className="h-4 w-4" /> {user?.email ?? t("profile.previewEmail")}
               </p>
             </div>
           </div>
           <div className="mt-6 grid gap-3">
-            <ProfileLine icon={CalendarDays} label="Joined" value={joined} />
-            <ProfileLine icon={Trophy} label="Progress source" value={scores.length ? "Saved scores" : "No saved scores yet"} />
+            <ProfileLine icon={CalendarDays} label={t("profile.joined")} value={joined} />
+            <ProfileLine icon={Trophy} label={t("profile.progressSource")} value={scores.length ? t("profile.savedScores") : t("profile.noSavedScores")} />
           </div>
         </aside>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <StatCard icon={Medal} label="Best score" tone="lemon" value={stats.bestScore.toLocaleString()} />
-          <StatCard icon={Flame} label="Total XP" tone="coral" value={stats.totalXp.toLocaleString()} />
-          <StatCard icon={Target} label="Average accuracy" tone="mint" value={`${stats.accuracy}%`} />
-          <StatCard icon={Trophy} label="Best streak" tone="violet" value={stats.bestStreak} />
+          <StatCard icon={Medal} label={t("profile.bestScore")} tone="lemon" value={stats.bestScore.toLocaleString()} />
+          <StatCard icon={Flame} label={t("profile.totalXp")} tone="coral" value={stats.totalXp.toLocaleString()} />
+          <StatCard icon={Target} label={t("profile.averageAccuracy")} tone="mint" value={`${stats.accuracy}%`} />
+          <StatCard icon={Trophy} label={t("profile.bestStreak")} tone="violet" value={stats.bestStreak} />
         </div>
       </section>
 
       <section className="mt-4 grid gap-4 xl:grid-cols-[1fr_0.82fr]">
         <div className="panel rounded-[30px] p-6">
-          <p className="surface-label">Activity</p>
-          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Recent sessions</h2>
+          <p className="surface-label">{t("profile.activity")}</p>
+          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">{t("profile.recentSessions")}</h2>
           <div className="mt-5 grid gap-3">
             {scores.length ? (
               scores.map((score) => (
@@ -100,23 +134,23 @@ export function ProfileClient() {
                     <p className="text-sm font-semibold text-slate-400">{new Date(score.created_at).toLocaleDateString()}</p>
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-center">
-                    <MiniMetric label="Score" value={score.score} />
-                    <MiniMetric label="Accuracy" value={`${score.accuracy}%`} />
-                    <MiniMetric label="Streak" value={score.max_streak} />
+                    <MiniMetric label={t("profile.metricScore")} value={score.score} />
+                    <MiniMetric label={t("profile.metricAccuracy")} value={`${score.accuracy}%`} />
+                    <MiniMetric label={t("profile.metricStreak")} value={score.max_streak} />
                   </div>
                 </div>
               ))
             ) : (
               <p className="rounded-2xl border border-white/10 bg-white/6 p-4 font-semibold text-slate-300">
-                No saved sessions yet. Play and save your first game.
+                {t("profile.emptySavedSessions")}
               </p>
             )}
           </div>
         </div>
 
         <div className="panel rounded-[30px] p-6">
-          <p className="surface-label text-cyan-200/80">Mastery</p>
-          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Skill map</h2>
+          <p className="surface-label text-cyan-200/80">{t("profile.mastery")}</p>
+          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">{t("profile.skillMap")}</h2>
           {scores.length ? (
             <div className="mt-5 grid gap-4">
               {skillMap.map((game) => (
@@ -124,7 +158,7 @@ export function ProfileClient() {
                   <div className="mb-2 flex items-center justify-between gap-4 text-sm font-black text-white">
                     <span>{game.title}</span>
                     <span className="text-cyan-200">
-                      {game.runs ? `${game.averageAccuracy}% accuracy` : "No saved runs"}
+                      {game.runs ? fill(t("profile.skillAccuracy"), { count: game.averageAccuracy }) : t("profile.noSavedRuns")}
                     </span>
                   </div>
                   <div className="h-3 rounded-full bg-white/8">
@@ -134,14 +168,19 @@ export function ProfileClient() {
                     />
                   </div>
                   <p className="mt-2 text-xs font-semibold text-slate-400">
-                    {game.runs ? `Best score ${game.bestScore.toLocaleString()} across ${game.runs} saved run${game.runs === 1 ? "" : "s"}` : "Play and save a run to see game-specific progress."}
+                      {game.runs
+                        ? fill(t("profile.bestScoreRuns"), {
+                          count: game.runs,
+                          score: game.bestScore.toLocaleString()
+                        })
+                      : t("profile.playToSeeProgress")}
                   </p>
                 </div>
               ))}
             </div>
           ) : (
             <p className="mt-5 rounded-2xl border border-white/10 bg-white/6 p-4 font-semibold text-slate-300">
-              No saved sessions yet. Play and save your first game.
+              {t("profile.emptySavedSessions")}
             </p>
           )}
         </div>
@@ -149,29 +188,29 @@ export function ProfileClient() {
 
       <section className="mt-4 grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
         <div className="panel rounded-[30px] p-6">
-          <p className="surface-label text-emerald-200/80">Summary</p>
-          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Performance snapshot</h2>
+          <p className="surface-label text-emerald-200/80">{t("profile.summary")}</p>
+          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">{t("profile.performanceSnapshot")}</h2>
           <div className="mt-5 space-y-4">
-            <MiniBar label="Accuracy trend" value={`${stats.accuracy}%`} width={`${Math.max(stats.accuracy, 14)}%`} />
-            <MiniBar label="XP growth" value={stats.totalXp.toLocaleString()} width={`${Math.min(24 + scores.length * 8, 92)}%`} />
-            <MiniBar label="Consistency" value={`${stats.bestStreak} streak`} width={`${Math.min(22 + stats.bestStreak * 6, 94)}%`} />
+            <MiniBar label={t("profile.accuracyTrend")} value={`${stats.accuracy}%`} width={`${Math.max(stats.accuracy, 14)}%`} />
+            <MiniBar label={t("profile.xpGrowth")} value={stats.totalXp.toLocaleString()} width={`${Math.min(24 + scores.length * 8, 92)}%`} />
+            <MiniBar label={t("profile.consistency")} value={fill(t("profile.consistencyValue"), { count: stats.bestStreak })} width={`${Math.min(22 + stats.bestStreak * 6, 94)}%`} />
           </div>
         </div>
         <div className="panel rounded-[30px] p-6">
-          <p className="surface-label">Achievements</p>
-          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Unlocked highlights</h2>
+          <p className="surface-label">{t("profile.achievements")}</p>
+          <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">{t("profile.unlockedHighlights")}</h2>
           {earnedBadges.length ? (
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
               {earnedBadges.map((badge) => (
                 <div className="rounded-[24px] border border-white/10 bg-white/6 p-4" key={badge.id}>
-                  <p className="text-sm font-black text-white">{badge.label}</p>
-                  <p className="mt-2 text-xs font-black uppercase tracking-[0.14em] text-cyan-200">{badge.description}</p>
+                  <p className="text-sm font-black text-white">{getBadgeLabel(badge.id, t)}</p>
+                  <p className="mt-2 text-xs font-black uppercase tracking-[0.14em] text-cyan-200">{getBadgeDescription(badge.id, t)}</p>
                 </div>
               ))}
             </div>
           ) : (
             <p className="mt-5 rounded-2xl border border-white/10 bg-white/6 p-4 font-semibold text-slate-300">
-              No saved sessions yet. Play and save your first game.
+              {t("profile.emptySavedSessions")}
             </p>
           )}
         </div>

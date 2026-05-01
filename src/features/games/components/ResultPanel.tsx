@@ -14,6 +14,61 @@ type ResultPanelProps = {
   result: GameResult;
 };
 
+function getBadgeLabel(id: string, t: (key: any) => string) {
+  const labels = {
+    "first-run": t("badge.first-run.label"),
+    "five-runs": t("badge.five-runs.label"),
+    "high-scorer": t("badge.high-scorer.label"),
+    "streak-starter": t("badge.streak-starter.label"),
+    "weekly-streak": t("badge.weekly-streak.label"),
+    "xp-climber": t("badge.xp-climber.label"),
+    "xp-veteran": t("badge.xp-veteran.label")
+  } as const;
+
+  return labels[id as keyof typeof labels] ?? id;
+}
+
+function localizeRecommendationReason(reason: string, t: (key: any) => string) {
+  const reasons = {
+    "Run it again while the pattern is fresh and push accuracy above 70%.": t("progression.reason.retryAccuracy"),
+    "This is your weakest recent lane based on saved performance, so it has the biggest upside.": t("progression.reason.weakestLane"),
+    "You have not saved a run here yet, so this is the clearest way to broaden your progress.": t("progression.reason.unseenGame")
+  } as const;
+
+  return reasons[reason as keyof typeof reasons] ?? reason;
+}
+
+function localizeSaveStatus(message: string, t: (key: any) => string) {
+  if (!message) {
+    return message;
+  }
+
+  if (message === "Supabase is not configured yet.") {
+    return t("result.error.supabaseMissing");
+  }
+
+  if (message === "Log in to save your score.") {
+    return t("result.error.loginToSave");
+  }
+
+  if (message === "Unable to save score right now.") {
+    return t("result.error.unableToSave");
+  }
+
+  if (message.startsWith("Score saved.")) {
+    return t("result.scoreSaved");
+  }
+
+  const rankShiftMatch = message.match(/^Rank shift: #(\d+) to #(\d+)\.$/);
+  if (rankShiftMatch) {
+    return t("result.error.rankShift")
+      .replace("{before}", rankShiftMatch[1])
+      .replace("{after}", rankShiftMatch[2]);
+  }
+
+  return message;
+}
+
 export function ResultPanel({ onRestart, result }: ResultPanelProps) {
   const { t } = useLocale();
   const [status, setStatus] = useState("");
@@ -33,6 +88,8 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
   const isFirstSave = insights?.newlyEarnedBadges.some((badge) => badge.id === "first-run") ?? false;
   const firstBadge = insights?.newlyEarnedBadges[0] ?? null;
   const hasRealXpGain = (insights?.xpGained ?? 0) > 0;
+  const localizedStatus = localizeSaveStatus(status, t);
+  const recommendedReason = insights ? localizeRecommendationReason(insights.recommendedNextChallenge.reason, t) : "";
   const leaderboardUnlockMessage =
     insights?.rankAfter !== null && insights?.rankAfter !== undefined
       ? insights.rankBefore === null
@@ -67,7 +124,7 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
         <Metric label={t("result.accuracy")} value={`${result.accuracy}%`} />
         <Metric label={t("result.bestStreak")} value={result.maxStreak} />
       </div>
-      {status ? <p className="mt-4 rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-sm font-bold text-slate-200">{status}</p> : null}
+      {localizedStatus ? <p className="mt-4 rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-sm font-bold text-slate-200">{localizedStatus}</p> : null}
       {isFirstSave ? (
         <div className="mt-4 relative overflow-hidden rounded-[24px] border border-emerald-400/20 bg-[linear-gradient(135deg,rgba(16,185,129,0.14),rgba(34,211,238,0.08))] p-5">
           <div className="absolute right-0 top-0 h-24 w-24 rounded-full bg-emerald-400/10 blur-3xl" />
@@ -78,7 +135,7 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <Metric label={hasRealXpGain ? t("result.xpGained") : t("result.saveStatus")} value={hasRealXpGain ? `+${insights?.xpGained ?? 0}` : t("result.scoreSaved")} />
-            <Metric label={t("result.firstBadge")} value={firstBadge?.label ?? t("result.unlocked")} />
+            <Metric label={t("result.firstBadge")} value={firstBadge ? getBadgeLabel(firstBadge.id, t) : t("result.unlocked")} />
             <Metric label={t("result.leaderboard")} value={insights?.rankAfter ? `#${insights.rankAfter}` : t("result.nextUp")} />
             <Metric label={t("result.nextUnlock")} value={insights?.recommendedNextChallenge.title ?? t("result.ready")} />
           </div>
@@ -136,12 +193,12 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
                 <Crown className="h-4 w-4" />
               </div>
             </div>
-            <p className="mt-2 text-sm leading-6 text-slate-300">{insights.recommendedNextChallenge.reason}</p>
+            <p className="mt-2 text-sm leading-6 text-slate-300">{recommendedReason}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {insights.personalBest ? <Tag>{t("result.newPersonalBest")}</Tag> : null}
               <Tag>{t("result.streakDays").replace("{count}", String(insights.currentStreak))}</Tag>
               {insights.newlyEarnedBadges.map((badge) => (
-                <Tag key={badge.id}>{badge.label}</Tag>
+                <Tag key={badge.id}>{getBadgeLabel(badge.id, t)}</Tag>
               ))}
             </div>
             <Button asChild className="mt-4" variant="secondary">

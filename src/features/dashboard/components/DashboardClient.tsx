@@ -16,6 +16,44 @@ function fill(template: string, values: Record<string, string | number>) {
   return Object.entries(values).reduce((text, [key, value]) => text.replaceAll(`{${key}}`, String(value)), template);
 }
 
+function getBadgeLabel(id: string, t: (key: any) => string) {
+  const labels = {
+    "first-run": t("badge.first-run.label"),
+    "five-runs": t("badge.five-runs.label"),
+    "high-scorer": t("badge.high-scorer.label"),
+    "streak-starter": t("badge.streak-starter.label"),
+    "weekly-streak": t("badge.weekly-streak.label"),
+    "xp-climber": t("badge.xp-climber.label"),
+    "xp-veteran": t("badge.xp-veteran.label")
+  } as const;
+
+  return labels[id as keyof typeof labels] ?? id;
+}
+
+function getBadgeDescription(id: string, t: (key: any) => string) {
+  const descriptions = {
+    "first-run": t("badge.first-run.description"),
+    "five-runs": t("badge.five-runs.description"),
+    "high-scorer": t("badge.high-scorer.description"),
+    "streak-starter": t("badge.streak-starter.description"),
+    "weekly-streak": t("badge.weekly-streak.description"),
+    "xp-climber": t("badge.xp-climber.description"),
+    "xp-veteran": t("badge.xp-veteran.description")
+  } as const;
+
+  return descriptions[id as keyof typeof descriptions] ?? "";
+}
+
+function localizeRecommendationReason(reason: string, t: (key: any) => string) {
+  const reasons = {
+    "Run it again while the pattern is fresh and push accuracy above 70%.": t("progression.reason.retryAccuracy"),
+    "This is your weakest recent lane based on saved performance, so it has the biggest upside.": t("progression.reason.weakestLane"),
+    "You have not saved a run here yet, so this is the clearest way to broaden your progress.": t("progression.reason.unseenGame")
+  } as const;
+
+  return reasons[reason as keyof typeof reasons] ?? reason;
+}
+
 export function DashboardClient() {
   const { user } = useAuth();
   const { t } = useLocale();
@@ -75,8 +113,10 @@ export function DashboardClient() {
   const isFirstReturn = scores.length === 1;
   const xpRange = Math.max(getLevelCeiling(stats.progression.level) - getLevelFloor(stats.progression.level), 1);
   const latestBadge = stats.progression.badges.find((badge) => badge.earned) ?? null;
-  const playerName = user?.user_metadata?.display_name ?? user?.email?.split("@")[0] ?? "math explorer";
+  const playerName = user?.user_metadata?.display_name ?? user?.email?.split("@")[0] ?? t("dashboard.playerFallback");
   const streakText = t("common.dayStreak").replace("{count}", String(stats.progression.currentStreak));
+  const recommendedReason = localizeRecommendationReason(stats.recommendedNext.reason, t);
+  const latestBadgeLabel = latestBadge ? getBadgeLabel(latestBadge.id, t) : null;
 
   return (
     <main className="mx-auto max-w-[1440px] p-4 sm:p-6">
@@ -198,13 +238,13 @@ export function DashboardClient() {
               <ChainStep
                 body={
                   latestBadge
-                    ? fill(t("dashboard.firstReturn.markersBodyWithBadge"), { badge: latestBadge.label, count: streakText })
+                    ? fill(t("dashboard.firstReturn.markersBodyWithBadge"), { badge: latestBadgeLabel ?? "", count: streakText })
                     : fill(t("dashboard.firstReturn.markersBodyNoBadge"), { count: streakText })
                 }
                 eyebrow={t("dashboard.firstReturn.unlockedEyebrow")}
-                title={latestBadge ? latestBadge.label : t("dashboard.firstReturn.markersTitle")}
+                title={latestBadgeLabel ?? t("dashboard.firstReturn.markersTitle")}
               />
-              <ChainStep body={stats.recommendedNext.reason} eyebrow={t("dashboard.firstReturn.nextChallengeEyebrow")} title={stats.recommendedNext.title} />
+              <ChainStep body={recommendedReason} eyebrow={t("dashboard.firstReturn.nextChallengeEyebrow")} title={stats.recommendedNext.title} />
             </div>
             <Button asChild className="mt-5 w-full" size="lg">
               <Link href={stats.recommendedNext.href as Route<string>}>
@@ -240,13 +280,13 @@ export function DashboardClient() {
             <ChainStep
               body={
                 latestBadge
-                  ? fill(t("dashboard.chain.badgeBodyWithBadge"), { badge: latestBadge.label, count: streakText })
+                  ? fill(t("dashboard.chain.badgeBodyWithBadge"), { badge: latestBadgeLabel ?? "", count: streakText })
                   : fill(t("dashboard.chain.badgeBodyNoBadge"), { count: streakText })
               }
               eyebrow={t("dashboard.chain.badgeEyebrow")}
-              title={latestBadge ? latestBadge.label : t("dashboard.chain.badgeFallback")}
+              title={latestBadgeLabel ?? t("dashboard.chain.badgeFallback")}
             />
-            <ChainStep body={stats.recommendedNext.reason} eyebrow={t("dashboard.chain.nextEyebrow")} title={stats.recommendedNext.title} />
+            <ChainStep body={recommendedReason} eyebrow={t("dashboard.chain.nextEyebrow")} title={stats.recommendedNext.title} />
           </div>
         </section>
       )}
@@ -291,7 +331,7 @@ export function DashboardClient() {
             <p className="surface-label">{t("dashboard.next.surface")}</p>
             <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">{t("dashboard.next.title")}</h2>
             <div className="mt-5 grid gap-3">
-              <RecommendedChallengeCard badgeLabel={t("dashboard.next.recommended")} href={stats.recommendedNext.href as Route<string>} reason={stats.recommendedNext.reason} title={stats.recommendedNext.title} />
+              <RecommendedChallengeCard badgeLabel={t("dashboard.next.recommended")} href={stats.recommendedNext.href as Route<string>} reason={recommendedReason} title={stats.recommendedNext.title} />
               <QuickAction href="/leaderboard" icon={Trophy} subtitle={t("dashboard.next.leaderboardBody")} title={t("dashboard.next.leaderboardTitle")} />
               <QuickAction href="/profile" icon={Brain} subtitle={t("dashboard.next.profileBody")} title={t("dashboard.next.profileTitle")} />
             </div>
@@ -362,8 +402,8 @@ export function DashboardClient() {
                         {badge.earned ? t("dashboard.games.earned") : `${badge.progress}/${badge.target}`}
                       </span>
                     </div>
-                    <p className="mt-4 font-black text-white">{badge.label}</p>
-                    <p className="mt-1 text-sm font-semibold text-slate-400">{badge.description}</p>
+                    <p className="mt-4 font-black text-white">{getBadgeLabel(badge.id, t)}</p>
+                    <p className="mt-1 text-sm font-semibold text-slate-400">{getBadgeDescription(badge.id, t)}</p>
                     <div className="mt-3 h-2.5 rounded-full bg-white/8">
                       <div
                         className={`h-full rounded-full ${badge.earned ? "bg-[linear-gradient(90deg,#34d399_0%,#22d3ee_100%)]" : "bg-[linear-gradient(90deg,#22d3ee_0%,#8b5cf6_100%)]"}`}
