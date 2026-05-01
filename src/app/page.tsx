@@ -42,7 +42,7 @@ export default function HomePage() {
             </div>
             <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3">
               {[
-                { label: t("home.hero.statGamesLabel"), value: t("home.hero.statGamesValue") },
+                { label: t("home.hero.statGamesLabel"), value: String(games.length) },
                 { label: t("home.hero.statRoundsLabel"), value: t("home.hero.statRoundsValue") },
                 { label: t("home.hero.statProgressLabel"), value: t("home.hero.statProgressValue") }
               ].map((item) => (
