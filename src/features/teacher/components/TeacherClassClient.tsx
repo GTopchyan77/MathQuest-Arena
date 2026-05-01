@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { BarChart3, Clock3, Medal, Target, Trophy, Users } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useLocale } from "@/lib/i18n/useLocale";
 import { getTeacherClassLive, type TeacherClassSummary } from "@/lib/supabase/teacher";
 
 export function TeacherClassClient({ classId }: { classId: string }) {
+  const { t } = useLocale();
   const [teacherClass, setTeacherClass] = useState<TeacherClassSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -23,7 +25,7 @@ export function TeacherClassClient({ classId }: { classId: string }) {
       } catch (loadError) {
         console.error("[teacher class] Failed to load class detail.", loadError);
         if (!active) return;
-        setError(loadError instanceof Error ? loadError.message : "Unable to load class details right now.");
+        setError(loadError instanceof Error ? loadError.message : t("teacher.class.errorTitle"));
       } finally {
         if (active) {
           setLoading(false);
@@ -36,58 +38,54 @@ export function TeacherClassClient({ classId }: { classId: string }) {
     return () => {
       active = false;
     };
-  }, [classId]);
+  }, [classId, t]);
 
   return (
     <main className="mx-auto max-w-[1440px] p-4 sm:p-6">
       <div className="mb-4 rounded-[24px] border border-amber-300/20 bg-[linear-gradient(135deg,rgba(245,158,11,0.12),rgba(239,68,68,0.08))] px-5 py-4">
-        <p className="text-sm font-black uppercase tracking-[0.14em] text-amber-100">Internal Preview</p>
-        <p className="mt-2 text-sm font-semibold leading-6 text-slate-200">
-          Internal Preview - using live classroom data in read-only pilot mode. Not for live pilot decisions yet.
-        </p>
+        <p className="text-sm font-black uppercase tracking-[0.14em] text-amber-100">{t("teacher.preview.title")}</p>
+        <p className="mt-2 text-sm font-semibold leading-6 text-slate-200">{t("teacher.preview.body")}</p>
       </div>
 
       <div className="mb-4">
         <Link className="text-sm font-semibold text-cyan-200 transition hover:text-cyan-100" href="/teacher">
-          Back to teacher dashboard
+          {t("teacher.class.back")}
         </Link>
       </div>
 
       {loading ? (
         <TeacherStatePanel
-          body="Loading live class roster, leaderboard, and practice performance."
-          title="Loading class detail"
+          body={t("teacher.class.loadingBody")}
+          label={t("teacher.class.detailLabel")}
+          title={t("teacher.class.loadingTitle")}
         />
       ) : error ? (
-        <TeacherStatePanel body={error} title="Unable to load class detail" tone="amber" />
+        <TeacherStatePanel body={error} label={t("teacher.class.detailLabel")} title={t("teacher.class.errorTitle")} tone="amber" />
       ) : !teacherClass ? (
         <TeacherStatePanel
-          body="This class was not found, or you do not have access to it in the current read-only pilot view."
-          title="Class unavailable"
+          body={t("teacher.class.unavailableBody")}
+          label={t("teacher.class.detailLabel")}
+          title={t("teacher.class.unavailableTitle")}
         />
       ) : (
         <>
           <section className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
             <div className="panel-strong rounded-[30px] p-6">
-              <p className="surface-label">Class Detail</p>
+              <p className="surface-label">{t("teacher.class.detailLabel")}</p>
               <h1 className="mt-3 font-[var(--font-sora)] text-3xl font-extrabold text-white sm:text-4xl">{teacherClass.name}</h1>
-              <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">
-                Read-only pilot view for roster participation, recent accuracy evidence, and class-level practice performance.
-              </p>
+              <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">{t("teacher.class.detailBody")}</p>
               <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <TopMetric icon={Users} label="Roster" value={teacherClass.roster.length} />
-                <TopMetric icon={Target} label="Accuracy (participants)" value={`${teacherClass.averageAccuracy}%`} />
-                <TopMetric icon={Clock3} label="Played today" value={teacherClass.activeToday} />
-                <TopMetric icon={BarChart3} label="Participation" value={`${teacherClass.participatingStudents}/${teacherClass.roster.length}`} />
+                <TopMetric icon={Users} label={t("teacher.class.metricRoster")} value={teacherClass.roster.length} />
+                <TopMetric icon={Target} label={t("teacher.class.metricAccuracy")} value={`${teacherClass.averageAccuracy}%`} />
+                <TopMetric icon={Clock3} label={t("teacher.class.metricPlayedToday")} value={teacherClass.activeToday} />
+                <TopMetric icon={BarChart3} label={t("teacher.class.metricParticipation")} value={`${teacherClass.participatingStudents}/${teacherClass.roster.length}`} />
               </div>
-              <p className="mt-4 text-sm font-semibold text-slate-400">
-                Accuracy is based on students with saved evidence. Participation is shown separately so non-participants stay visible.
-              </p>
+              <p className="mt-4 text-sm font-semibold text-slate-400">{t("teacher.class.metricsHelper")}</p>
             </div>
 
             <div className="panel rounded-[30px] p-5">
-              <p className="surface-label text-cyan-200/80">Class Leaderboard</p>
-              <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Top XP</h2>
+              <p className="surface-label text-cyan-200/80">{t("teacher.class.leaderboardLabel")}</p>
+              <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">{t("teacher.class.leaderboardTitle")}</h2>
               <div className="mt-5 grid gap-3">
                 {teacherClass.leaderboard.length ? (
                   teacherClass.leaderboard.slice(0, 3).map((entry) => (
@@ -99,16 +97,16 @@ export function TeacherClassClient({ classId }: { classId: string }) {
                           </div>
                           <div>
                             <p className="font-black text-white">{entry.displayName}</p>
-                            <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Rank #{entry.rank}</p>
+                            <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">{t("teacher.class.rank").replace("{rank}", String(entry.rank))}</p>
                           </div>
                         </div>
-                        <p className="font-black text-white">{entry.totalXp.toLocaleString()} XP</p>
+                        <p className="font-black text-white">{t("teacher.class.xp").replace("{count}", entry.totalXp.toLocaleString())}</p>
                       </div>
                     </div>
                   ))
                 ) : (
                   <div className="rounded-[24px] border border-white/10 bg-white/6 p-4 text-sm font-semibold text-slate-300">
-                    No saved student scores yet. The leaderboard will appear once the class starts playing.
+                    {t("teacher.class.leaderboardEmpty")}
                   </div>
                 )}
               </div>
@@ -119,8 +117,8 @@ export function TeacherClassClient({ classId }: { classId: string }) {
             <div className="panel rounded-[30px] p-5">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="surface-label">Roster</p>
-                  <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Accuracy by student</h2>
+                  <p className="surface-label">{t("teacher.class.rosterLabel")}</p>
+                  <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">{t("teacher.class.rosterTitle")}</h2>
                 </div>
                 <Users className="h-5 w-5 text-cyan-200" />
               </div>
@@ -135,13 +133,13 @@ export function TeacherClassClient({ classId }: { classId: string }) {
                           <div>
                             <p className="font-black text-white">{student.displayName}</p>
                             <p className="text-sm font-semibold text-slate-400">
-                              {notStarted ? "Not started" : `${student.gamesPlayed} runs saved`}
+                              {notStarted ? t("teacher.class.notStarted") : t("teacher.class.runsSaved").replace("{count}", String(student.gamesPlayed))}
                             </p>
                           </div>
                           <div className="grid grid-cols-3 gap-3 md:min-w-[340px]">
-                            <Stat label="Accuracy" value={notStarted ? "No evidence yet" : `${student.averageAccuracy}%`} />
-                            <Stat label="Duration" value="Not tracked yet" />
-                            <Stat label="Best" value={notStarted ? "Not started" : student.bestScore.toLocaleString()} />
+                            <Stat label={t("teacher.evidence.accuracy")} value={notStarted ? t("teacher.class.noEvidence") : `${student.averageAccuracy}%`} />
+                            <Stat label={t("teacher.evidence.duration")} value={t("teacher.class.notTracked")} />
+                            <Stat label={t("teacher.evidence.best")} value={notStarted ? t("teacher.class.notStarted") : student.bestScore.toLocaleString()} />
                           </div>
                         </div>
                       </div>
@@ -149,7 +147,7 @@ export function TeacherClassClient({ classId }: { classId: string }) {
                   })
                 ) : (
                   <div className="rounded-[24px] border border-white/10 bg-white/6 p-4 text-sm font-semibold text-slate-300">
-                    No students are enrolled in this class yet.
+                    {t("teacher.class.noStudents")}
                   </div>
                 )}
               </div>
@@ -158,8 +156,8 @@ export function TeacherClassClient({ classId }: { classId: string }) {
             <div className="panel rounded-[30px] p-5">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="surface-label text-emerald-200/80">Practice Performance</p>
-                  <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Recent practice performance by game</h2>
+                  <p className="surface-label text-emerald-200/80">{t("teacher.class.performanceLabel")}</p>
+                  <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">{t("teacher.class.performanceTitle")}</h2>
                 </div>
                 <BarChart3 className="h-5 w-5 text-cyan-200" />
               </div>
@@ -168,12 +166,12 @@ export function TeacherClassClient({ classId }: { classId: string }) {
                   teacherClass.practicePerformanceOverview.map((item) => (
                     <div className="rounded-[24px] border border-white/10 bg-white/6 p-4" key={item.gameSlug}>
                       <div className="flex items-center justify-between gap-4">
-                        <p className="font-black text-white">{item.title}</p>
-                        <p className="text-right font-black text-cyan-200">
-                          {item.performance}%
-                          <span className="block text-xs font-semibold text-slate-400">{item.participantCount} students</span>
-                        </p>
-                      </div>
+                      <p className="font-black text-white">{item.title}</p>
+                      <p className="text-right font-black text-cyan-200">
+                        {item.performance}%
+                          <span className="block text-xs font-semibold text-slate-400">{t("teacher.class.studentsCount").replace("{count}", String(item.participantCount))}</span>
+                      </p>
+                    </div>
                       <div className="mt-4 h-2.5 rounded-full bg-white/8">
                         <div className="h-full rounded-full bg-[linear-gradient(90deg,#22d3ee_0%,#0ea5e9_50%,#8b5cf6_100%)]" style={{ width: `${item.performance}%` }} />
                       </div>
@@ -181,7 +179,7 @@ export function TeacherClassClient({ classId }: { classId: string }) {
                   ))
                 ) : (
                   <div className="rounded-[24px] border border-white/10 bg-white/6 p-4 text-sm font-semibold text-slate-300">
-                    No saved game performance yet. This view will fill in once the class generates live play data.
+                    {t("teacher.class.performanceEmpty")}
                   </div>
                 )}
               </div>
@@ -191,8 +189,8 @@ export function TeacherClassClient({ classId }: { classId: string }) {
           <section className="mt-4 panel rounded-[30px] p-5">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="surface-label text-amber-200/80">Class Leaderboard</p>
-                <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Read-only rank snapshot</h2>
+                <p className="surface-label text-amber-200/80">{t("teacher.class.snapshotLabel")}</p>
+                <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">{t("teacher.class.snapshotTitle")}</h2>
               </div>
               <Trophy className="h-5 w-5 text-amber-200" />
             </div>
@@ -201,15 +199,15 @@ export function TeacherClassClient({ classId }: { classId: string }) {
                 teacherClass.leaderboard.map((entry) => (
                   <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 rounded-[24px] border border-white/10 bg-white/6 px-4 py-4" key={entry.displayName}>
                     <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-slate-950/55 text-sm font-black text-white">
-                      #{entry.rank}
+                      {`#${entry.rank}`}
                     </div>
                     <p className="font-black text-white">{entry.displayName}</p>
-                    <p className="font-black text-cyan-100">{entry.totalXp.toLocaleString()} XP</p>
+                    <p className="font-black text-cyan-100">{t("teacher.class.xp").replace("{count}", entry.totalXp.toLocaleString())}</p>
                   </div>
                 ))
               ) : (
                 <div className="rounded-[24px] border border-white/10 bg-white/6 p-4 text-sm font-semibold text-slate-300">
-                  No ranked students yet. Save data will populate this snapshot automatically.
+                  {t("teacher.class.snapshotEmpty")}
                 </div>
               )}
             </div>
@@ -222,10 +220,12 @@ export function TeacherClassClient({ classId }: { classId: string }) {
 
 function TeacherStatePanel({
   body,
+  label,
   title,
   tone = "cyan"
 }: {
   body: string;
+  label: string;
   title: string;
   tone?: "amber" | "cyan";
 }) {
@@ -236,7 +236,7 @@ function TeacherStatePanel({
 
   return (
     <section className={`rounded-[30px] border p-6 ${styles}`}>
-      <p className="surface-label">Class Detail</p>
+      <p className="surface-label">{label}</p>
       <h1 className="mt-3 font-[var(--font-sora)] text-3xl font-extrabold text-white sm:text-4xl">{title}</h1>
       <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">{body}</p>
     </section>
