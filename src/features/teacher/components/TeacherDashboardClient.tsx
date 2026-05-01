@@ -10,8 +10,136 @@ import {
   type TeacherClassOption,
   type TeacherClassSummary
 } from "@/lib/supabase/teacher";
+import type { MessageKey } from "@/lib/i18n/messages";
 import { useLocale } from "@/lib/i18n/useLocale";
 import type { TeacherInterventionStudent } from "@/lib/types";
+
+type Translate = (key: MessageKey) => string;
+
+type LocalizedTeacherInterventionStudent = TeacherInterventionStudent & {
+  evidence: Array<{
+    label: string;
+    value: string;
+  }>;
+  localizedPriority: string;
+};
+
+const actionKeyMap: Record<string, MessageKey> = {
+  "Assign targeted practice": "teacher.action.assignTargetedPractice",
+  "Invite to first session": "teacher.action.inviteFirstSession",
+  "Promote to stretch work": "teacher.action.promoteToStretchWork",
+  "Re-engage student": "teacher.action.reengageStudent",
+  "Re-engage with support": "teacher.action.reengageWithSupport"
+};
+
+const reasonKeyMap: Record<string, MessageKey> = {
+  "Inactive - previously struggled. Re-entry should include support because the last usable evidence was below target.":
+    "teacher.reason.inactivePreviouslyStruggled",
+  "Inactive with no recent evidence. The next move is to re-establish participation before making a performance judgment.":
+    "teacher.reason.inactiveNoRecentEvidence",
+  "No play data yet, so the teacher should first confirm access before judging performance.": "teacher.reason.noPlayData",
+  "Student has enough recent evidence across multiple attempts to justify harder work instead of more repetition.":
+    "teacher.reason.advance",
+  "Student has recent participation, and the latest 3-5 session evidence suggests instruction should shift before disengagement follows.":
+    "teacher.reason.practiceSupport"
+};
+
+const evidenceLabelKeyMap: Record<string, MessageKey> = {
+  "Data status": "teacher.evidence.dataStatus",
+  "Last 5 accuracy": "teacher.evidence.last5Accuracy",
+  "Last played": "teacher.evidence.lastPlayed",
+  "Low recent runs": "teacher.evidence.lowRecentRuns",
+  "Play history": "teacher.evidence.playHistory",
+  "Prior evidence": "teacher.evidence.priorEvidence",
+  "Prior sessions": "teacher.evidence.priorSessions",
+  "Recent evidence": "teacher.evidence.recentEvidence",
+  "Recent game": "teacher.evidence.recentGame",
+  "Recommended move": "teacher.evidence.recommendedMove",
+  Trend: "teacher.evidence.trend"
+};
+
+const evidenceValueKeyMap: Record<string, MessageKey> = {
+  Flat: "teacher.value.flat",
+  "Insufficient baseline": "teacher.value.insufficientBaseline",
+  "Insufficient data": "teacher.value.insufficientData",
+  "No recent game": "teacher.value.noRecentGame",
+  "No saved sessions": "teacher.value.noSavedSessions",
+  "Verify access and launch support": "teacher.value.verifyAccess"
+};
+
+function localizeActionLabel(actionLabel: string, t: Translate) {
+  const key = actionKeyMap[actionLabel];
+  return key ? t(key) : actionLabel;
+}
+
+function localizeReason(reason: string, t: Translate) {
+  const key = reasonKeyMap[reason];
+  return key ? t(key) : reason;
+}
+
+function localizeEvidenceLabel(label: string, t: Translate) {
+  const key = evidenceLabelKeyMap[label];
+  return key ? t(key) : label;
+}
+
+function localizeEvidenceValue(value: string, t: Translate) {
+  const key = evidenceValueKeyMap[value];
+  if (key) {
+    return t(key);
+  }
+
+  const daysAgoMatch = value.match(/^(\d+) days ago$/);
+  if (daysAgoMatch) {
+    return t("teacher.value.daysAgo").replace("{count}", daysAgoMatch[1]);
+  }
+
+  const savedMatch = value.match(/^(\d+) saved$/);
+  if (savedMatch) {
+    return t("teacher.value.savedCount").replace("{count}", savedMatch[1]);
+  }
+
+  const last5Match = value.match(/^Last 5 avg (.+)$/);
+  if (last5Match) {
+    return t("teacher.value.last5Avg").replace("{value}", last5Match[1]);
+  }
+
+  const trendMatch = value.match(/^([+-]?\d+) pts$/);
+  if (trendMatch) {
+    return t("teacher.value.trendPoints").replace("{count}", trendMatch[1]);
+  }
+
+  const recentEvidenceMatch = value.match(/^(\d+) sessions across (\d+) day(?:s)?$/);
+  if (recentEvidenceMatch) {
+    return t("teacher.value.recentEvidence")
+      .replace("{sessions}", recentEvidenceMatch[1])
+      .replace("{days}", recentEvidenceMatch[2]);
+  }
+
+  return value;
+}
+
+function localizePriority(priority: TeacherInterventionStudent["priority"], t: Translate) {
+  const keyMap: Record<TeacherInterventionStudent["priority"], MessageKey> = {
+    high: "teacher.priority.high",
+    low: "teacher.priority.low",
+    medium: "teacher.priority.medium"
+  };
+
+  return t(keyMap[priority]);
+}
+
+function localizeInterventionStudent(student: TeacherInterventionStudent, t: Translate): LocalizedTeacherInterventionStudent {
+  return {
+    ...student,
+    actionLabel: localizeActionLabel(student.actionLabel, t),
+    evidence: student.evidence.map((item) => ({
+      label: localizeEvidenceLabel(item.label, t),
+      value: localizeEvidenceValue(item.value, t)
+    })),
+    localizedPriority: localizePriority(student.priority, t),
+    reason: localizeReason(student.reason, t)
+  };
+}
 
 export function TeacherDashboardClient() {
   const { t } = useLocale();
@@ -48,7 +176,7 @@ export function TeacherDashboardClient() {
       } catch (loadError) {
         console.error("[teacher dashboard] Failed to load teacher classes.", loadError);
         if (!active) return;
-        setError(loadError instanceof Error ? loadError.message : t("teacher.dashboard.errorTitle"));
+        setError(t("teacher.error.generic"));
       } finally {
         if (active) {
           setClassesLoading(false);
@@ -82,7 +210,7 @@ export function TeacherDashboardClient() {
       } catch (loadError) {
         console.error("[teacher dashboard] Failed to load selected class.", loadError);
         if (!active) return;
-        setError(loadError instanceof Error ? loadError.message : t("teacher.dashboard.errorTitle"));
+        setError(t("teacher.error.classData"));
       } finally {
         if (active) {
           setClassLoading(false);
@@ -102,6 +230,18 @@ export function TeacherDashboardClient() {
   const selectedClassName = useMemo(
     () => classes.find((item) => item.id === selectedClassId)?.name ?? teacherClass?.name ?? t("teacher.dashboard.noClassSelected"),
     [classes, selectedClassId, teacherClass, t]
+  );
+  const localizedInactiveStudents = useMemo(
+    () => teacherClass?.studentsInactive.map((student) => localizeInterventionStudent(student, t)) ?? [],
+    [teacherClass, t]
+  );
+  const localizedAttentionStudents = useMemo(
+    () => teacherClass?.studentsNeedingAttention.map((student) => localizeInterventionStudent(student, t)) ?? [],
+    [teacherClass, t]
+  );
+  const localizedAdvanceStudents = useMemo(
+    () => teacherClass?.studentsReadyToAdvance.map((student) => localizeInterventionStudent(student, t)) ?? [],
+    [teacherClass, t]
   );
 
   return (
@@ -202,7 +342,7 @@ export function TeacherDashboardClient() {
               icon={Clock3}
               openClassDetail={t("teacher.panel.openClassDetail")}
               priorityLabel={t("teacher.panel.priority")}
-              students={teacherClass.studentsInactive}
+              students={localizedInactiveStudents}
               teacherMoveLabel={t("teacher.panel.teacherMove")}
               title={t("teacher.dashboard.inactiveTitle")}
               tone="cyan"
@@ -217,7 +357,7 @@ export function TeacherDashboardClient() {
               icon={AlertTriangle}
               openClassDetail={t("teacher.panel.openClassDetail")}
               priorityLabel={t("teacher.panel.priority")}
-              students={teacherClass.studentsNeedingAttention}
+              students={localizedAttentionStudents}
               teacherMoveLabel={t("teacher.panel.teacherMove")}
               title={t("teacher.dashboard.attentionTitle")}
               tone="amber"
@@ -232,7 +372,7 @@ export function TeacherDashboardClient() {
               icon={CheckCircle2}
               openClassDetail={t("teacher.panel.openClassDetail")}
               priorityLabel={t("teacher.panel.priority")}
-              students={teacherClass.studentsReadyToAdvance}
+              students={localizedAdvanceStudents}
               teacherMoveLabel={t("teacher.panel.teacherMove")}
               title={t("teacher.dashboard.advanceTitle")}
               tone="emerald"
@@ -325,7 +465,7 @@ function InterventionPanel({
   icon: typeof Users;
   openClassDetail: string;
   priorityLabel: string;
-  students: TeacherInterventionStudent[];
+  students: LocalizedTeacherInterventionStudent[];
   teacherMoveLabel: string;
   title: string;
   tone: "amber" | "cyan" | "emerald";
@@ -367,7 +507,7 @@ function InterventionPanel({
                   <div className="flex items-center gap-3">
                     <p className="font-black text-white">{student.displayName}</p>
                     <span className="rounded-full border border-white/10 bg-slate-950/45 px-2.5 py-1 text-[0.65rem] font-black uppercase tracking-[0.14em] text-slate-300">
-                      {priorityLabel.replace("{level}", student.priority)}
+                      {priorityLabel.replace("{level}", student.localizedPriority)}
                     </span>
                   </div>
                   <p className="mt-2 text-sm leading-6 text-slate-300">{student.reason}</p>

@@ -25,7 +25,7 @@ export function TeacherClassClient({ classId }: { classId: string }) {
       } catch (loadError) {
         console.error("[teacher class] Failed to load class detail.", loadError);
         if (!active) return;
-        setError(loadError instanceof Error ? loadError.message : t("teacher.class.errorTitle"));
+        setError(t("teacher.error.classData"));
       } finally {
         if (active) {
           setLoading(false);
