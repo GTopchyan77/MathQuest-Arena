@@ -5,6 +5,7 @@ const hy = {
   "nav.games": "Խաղեր",
   "nav.leaderboard": "Առաջատարներ",
   "nav.profile": "Պրոֆիլ",
+  "nav.teacherDashboard": "Ուսուցչի վահանակ",
   "nav.login": "Մուտք",
   "nav.register": "Գրանցում",
   "nav.logout": "Ելք",

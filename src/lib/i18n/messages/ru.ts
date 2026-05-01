@@ -5,6 +5,7 @@ const ru = {
   "nav.games": "Игры",
   "nav.leaderboard": "Рейтинг",
   "nav.profile": "Профиль",
+  "nav.teacherDashboard": "Панель учителя",
   "nav.login": "Вход",
   "nav.register": "Регистрация",
   "nav.logout": "Выйти",

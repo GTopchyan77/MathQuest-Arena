@@ -3,6 +3,7 @@ const en = {
   "nav.games": "Games",
   "nav.leaderboard": "Leaderboard",
   "nav.profile": "Profile",
+  "nav.teacherDashboard": "Teacher Dashboard",
   "nav.login": "Login",
   "nav.register": "Register",
   "nav.logout": "Logout",

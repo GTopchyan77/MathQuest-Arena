@@ -3,11 +3,12 @@
 import type { Route } from "next";
 import Link from "next/link";
 import { Calculator, LogOut, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { logout as logoutUser } from "@/lib/supabase/auth";
 import { locales, type Locale } from "@/lib/i18n/config";
 import { useLocale } from "@/lib/i18n/useLocale";
+import { getCurrentProfile } from "@/lib/supabase/profileRepository";
 import { Button } from "@/shared/components/ui/Button";
 
 const localeLabels: Record<Locale, string> = {
@@ -16,7 +17,7 @@ const localeLabels: Record<Locale, string> = {
   ru: "RU"
 };
 
-const links: Array<{ href: Route<string>; key: "nav.dashboard" | "nav.games" | "nav.leaderboard" | "nav.profile" }> = [
+const baseLinks: Array<{ href: Route<string>; key: "nav.dashboard" | "nav.games" | "nav.leaderboard" | "nav.profile" }> = [
   { href: "/dashboard", key: "nav.dashboard" },
   { href: "/games", key: "nav.games" },
   { href: "/leaderboard", key: "nav.leaderboard" },
@@ -27,6 +28,39 @@ export function SiteHeader() {
   const { user } = useAuth();
   const { locale, setLocale, t } = useLocale();
   const [open, setOpen] = useState(false);
+  const [isTeacherUser, setIsTeacherUser] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadRole() {
+      if (!user?.id) {
+        if (active) {
+          setIsTeacherUser(false);
+        }
+        return;
+      }
+
+      const profile = await getCurrentProfile(user.id);
+      if (active) {
+        setIsTeacherUser(profile?.role === "teacher");
+      }
+    }
+
+    loadRole();
+
+    return () => {
+      active = false;
+    };
+  }, [user?.id]);
+
+  const links = useMemo(
+    () =>
+      isTeacherUser
+        ? [...baseLinks, { href: "/teacher" as Route<string>, key: "nav.teacherDashboard" as const }]
+        : baseLinks,
+    [isTeacherUser]
+  );
 
   async function logout() {
     await logoutUser();

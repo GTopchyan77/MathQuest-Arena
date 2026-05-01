@@ -19,10 +19,11 @@ import {
   UserRound,
   X
 } from "lucide-react";
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useLocale } from "@/lib/i18n/useLocale";
 import { logout as logoutUser } from "@/lib/supabase/auth";
+import { getCurrentProfile } from "@/lib/supabase/profileRepository";
 import { cx } from "@/lib/utils";
 import { Button } from "@/shared/components/ui/Button";
 import { SiteHeader } from "@/shared/components/layout/SiteHeader";
@@ -41,7 +42,8 @@ type LearnerNavItem = {
 type TeacherNavItem = {
   href?: Route<string>;
   icon: typeof LayoutGrid;
-  label: string;
+  detailKey: "shell.openSection";
+  key: "nav.teacherDashboard";
 };
 
 const shellPrefixes = ["/dashboard", "/games", "/leaderboard", "/profile", "/teacher"];
@@ -55,18 +57,43 @@ const navItems: LearnerNavItem[] = [
   { detailKey: "shell.comingSoon", icon: Award, key: "shell.nav.achievements" }
 ];
 
-const teacherNavItems: TeacherNavItem[] = [{ href: "/teacher", icon: GraduationCap, label: "Class Overview" }];
+const teacherNavItems: TeacherNavItem[] = [{ detailKey: "shell.openSection", href: "/teacher", icon: GraduationCap, key: "nav.teacherDashboard" }];
 
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const { user } = useAuth();
   const { t } = useLocale();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isTeacherUser, setIsTeacherUser] = useState(false);
 
   const isShellRoute = useMemo(
     () => shellPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)),
     [pathname]
   );
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadRole() {
+      if (!user?.id) {
+        if (active) {
+          setIsTeacherUser(false);
+        }
+        return;
+      }
+
+      const profile = await getCurrentProfile(user.id);
+      if (active) {
+        setIsTeacherUser(profile?.role === "teacher");
+      }
+    }
+
+    loadRole();
+
+    return () => {
+      active = false;
+    };
+  }, [user?.id]);
 
   async function logout() {
     await logoutUser();
@@ -90,7 +117,14 @@ export function AppShell({ children }: AppShellProps) {
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.08),transparent_24%),radial-gradient(circle_at_top_right,rgba(139,92,246,0.08),transparent_26%),linear-gradient(180deg,rgba(8,12,24,0.96),rgba(5,8,22,1))]">
       <div className="flex min-h-screen">
         <aside className="hidden w-[280px] shrink-0 border-r border-white/8 bg-slate-950/70 px-5 py-5 backdrop-blur-2xl lg:flex lg:flex-col">
-          <SidebarContent currentPath={pathname} displayName={displayName} initial={initial} isTeacherRoute={isTeacherRoute} onLogout={logout} />
+          <SidebarContent
+            currentPath={pathname}
+            displayName={displayName}
+            initial={initial}
+            isTeacherRoute={isTeacherRoute}
+            isTeacherUser={isTeacherUser}
+            onLogout={logout}
+          />
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
@@ -153,6 +187,7 @@ export function AppShell({ children }: AppShellProps) {
               displayName={displayName}
               initial={initial}
               isTeacherRoute={isTeacherRoute}
+              isTeacherUser={isTeacherUser}
               onItemClick={() => setSidebarOpen(false)}
               onLogout={logout}
             />
@@ -168,6 +203,7 @@ function SidebarContent({
   displayName,
   initial,
   isTeacherRoute,
+  isTeacherUser,
   onItemClick,
   onLogout
 }: {
@@ -175,11 +211,12 @@ function SidebarContent({
   displayName: string;
   initial: string;
   isTeacherRoute: boolean;
+  isTeacherUser: boolean;
   onItemClick?: () => void;
   onLogout: () => void;
 }) {
   const { t } = useLocale();
-  const items = isTeacherRoute ? teacherNavItems : navItems;
+  const items = isTeacherUser ? [...navItems, ...teacherNavItems] : navItems;
 
   return (
     <>
@@ -214,10 +251,10 @@ function SidebarContent({
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className={cx("truncate text-sm font-black", active ? "text-white" : "text-slate-200")}>
-                    {isLearnerItem ? t(item.key) : item.label}
+                    {t(item.key)}
                   </p>
                   <p className="text-xs font-semibold text-slate-500">
-                    {isLearnerItem ? t(item.detailKey) : "Open section"}
+                    {t(item.detailKey)}
                   </p>
                 </div>
                 <ChevronRight className={cx("h-4 w-4", active ? "text-cyan-200" : "text-slate-600")} />
@@ -232,7 +269,7 @@ function SidebarContent({
                     active ? "border-white/12 bg-white/8" : "border-transparent hover:border-white/8 hover:bg-white/5"
                   )}
                   href={item.href}
-                  key={isLearnerItem ? item.key : item.label}
+                  key={item.key}
                   onClick={onItemClick}
                 >
                   {content}
@@ -241,7 +278,7 @@ function SidebarContent({
             }
 
             return (
-              <div className="flex items-center gap-3 rounded-2xl border border-transparent px-3 py-3 opacity-80" key={isLearnerItem ? item.key : item.label}>
+              <div className="flex items-center gap-3 rounded-2xl border border-transparent px-3 py-3 opacity-80" key={item.key}>
                 {content}
               </div>
             );
