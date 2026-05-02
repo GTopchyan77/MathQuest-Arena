@@ -140,7 +140,7 @@ export function AppShell({ children }: AppShellProps) {
               <div className="flex min-w-0 flex-1 items-center gap-3 rounded-[22px] border border-white/10 bg-white/6 px-4 py-3 shadow-[0_18px_45px_rgba(2,8,23,0.28)]">
                 <Search className="h-4 w-4 shrink-0 text-slate-400" />
                 <span className="truncate text-sm font-medium text-slate-400">
-                  {isTeacherRoute ? "Search classes, students, mastery" : t("shell.searchLearner")}
+                  {isTeacherRoute ? t("shell.searchTeacher") : t("shell.searchLearner")}
                 </span>
                 <span className="ml-auto hidden rounded-lg border border-white/10 bg-slate-950/65 px-2 py-1 text-[11px] font-black uppercase tracking-[0.12em] text-slate-500 sm:inline-flex">
                   Cmd K
@@ -148,7 +148,7 @@ export function AppShell({ children }: AppShellProps) {
               </div>
               <div className="hidden items-center gap-3 sm:flex">
                 <div className="rounded-2xl border border-emerald-400/16 bg-emerald-400/10 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-emerald-100">
-                  {isTeacherRoute ? "Pilot demo" : t("shell.dailyReady")}
+                  {isTeacherRoute ? t("shell.teacherModeBadge") : t("shell.dailyReady")}
                 </div>
                 <button className="focus-ring rounded-2xl border border-white/10 bg-white/6 p-3 text-slate-200 transition hover:bg-white/10" type="button">
                   <Bell className="h-4 w-4" />
@@ -159,7 +159,7 @@ export function AppShell({ children }: AppShellProps) {
                   </div>
                   <div className="hidden text-left md:block">
                     <p className="text-sm font-black text-white">{displayName}</p>
-                    <p className="text-xs font-semibold text-slate-400">{t("shell.playerRole")}</p>
+                    <p className="text-xs font-semibold text-slate-400">{isTeacherRoute ? t("shell.teacherRole") : t("shell.playerRole")}</p>
                   </div>
                 </div>
               </div>
@@ -287,17 +287,17 @@ function SidebarContent({
       </div>
 
       <div className="mt-8 rounded-[26px] border border-white/10 bg-white/6 p-4">
-        <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200/80">{isTeacherRoute ? "Pilot Mode" : t("shell.dailyFocus")}</p>
+        <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200/80">{isTeacherRoute ? t("shell.teacherPreview") : t("shell.dailyFocus")}</p>
         <p className="mt-2 font-[var(--font-sora)] text-lg font-extrabold text-white">
-          {isTeacherRoute ? "Read-only class insight demo" : t("shell.dailyFocusTitle")}
+          {isTeacherRoute ? t("shell.teacherPreviewTitle") : t("shell.dailyFocusTitle")}
         </p>
         <p className="mt-2 text-sm leading-6 text-slate-400">
           {isTeacherRoute
-            ? "Show class engagement, mastery, and student risk signals without write actions."
+            ? t("shell.teacherPreviewBody")
             : t("shell.dailyFocusBody")}
         </p>
         <Button className="mt-4 w-full" href={isTeacherRoute ? "/teacher" : "/dashboard"}>
-          {isTeacherRoute ? "Open teacher dashboard" : t("shell.dailyFocusCta")}
+          {isTeacherRoute ? t("shell.teacherPreviewCta") : t("shell.dailyFocusCta")}
         </Button>
       </div>
 
@@ -308,7 +308,7 @@ function SidebarContent({
           </div>
           <div className="min-w-0">
             <p className="truncate text-sm font-black text-white">{displayName}</p>
-            <p className="text-xs font-semibold text-slate-500">{t("shell.learnerRole")}</p>
+            <p className="text-xs font-semibold text-slate-500">{isTeacherRoute ? t("shell.teacherRole") : t("shell.learnerRole")}</p>
           </div>
         </div>
         <Button className="mt-4 w-full" onClick={onLogout} variant="secondary">
