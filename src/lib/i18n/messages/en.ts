@@ -39,6 +39,7 @@ const en = {
   "home.hero.explore": "Explore games",
   "home.hero.statGamesLabel": "Mini-games",
   "home.hero.statGamesValue": "3",
+  "home.stats.miniGames": "{count} MINI-GAMES",
   "home.hero.statRoundsLabel": "Round style",
   "home.hero.statRoundsValue": "Fast",
   "home.hero.statProgressLabel": "Progress",

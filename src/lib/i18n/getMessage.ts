@@ -3,11 +3,14 @@ import { messages, type MessageKey } from "@/lib/i18n/messages";
 
 const warnedMissingKeys = new Set<string>();
 
-export function getMessage(locale: Locale, key: MessageKey) {
+export type MessageParams = Record<string, string | number>;
+
+export function getMessage(locale: Locale, key: MessageKey, params?: MessageParams) {
   const localized = messages[locale]?.[key];
+  const template = localized ?? messages[defaultLocale][key] ?? String(key);
 
   if (localized) {
-    return localized;
+    return interpolateMessage(template, params);
   }
 
   const fallback = messages[defaultLocale][key];
@@ -25,5 +28,16 @@ export function getMessage(locale: Locale, key: MessageKey) {
     }
   }
 
-  return fallback ?? String(key);
+  return interpolateMessage(template, params);
+}
+
+function interpolateMessage(message: string, params?: MessageParams) {
+  if (!params) {
+    return message;
+  }
+
+  return Object.entries(params).reduce(
+    (result, [paramKey, value]) => result.replaceAll(`{${paramKey}}`, String(value)),
+    message
+  );
 }

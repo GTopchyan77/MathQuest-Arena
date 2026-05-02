@@ -41,6 +41,7 @@ const hy = {
   "home.hero.explore": "Տեսնել խաղերը",
   "home.hero.statGamesLabel": "Մինի խաղեր",
   "home.hero.statGamesValue": "3",
+  "home.stats.miniGames": "{count} խաղ",
   "home.hero.statRoundsLabel": "Փուլի ձևաչափ",
   "home.hero.statRoundsValue": "Արագ",
   "home.hero.statProgressLabel": "Առաջընթաց",

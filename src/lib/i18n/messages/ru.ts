@@ -41,6 +41,7 @@ const ru = {
   "home.hero.explore": "Открыть игры",
   "home.hero.statGamesLabel": "Мини-игры",
   "home.hero.statGamesValue": "3",
+  "home.stats.miniGames": "{count} мини-игры",
   "home.hero.statRoundsLabel": "Формат раунда",
   "home.hero.statRoundsValue": "Быстрый",
   "home.hero.statProgressLabel": "Прогресс",
