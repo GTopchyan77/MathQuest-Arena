@@ -322,6 +322,7 @@ export function TeacherDashboardClient() {
             <div className="panel rounded-[30px] p-5">
               <p className="surface-label text-cyan-200/80">{t("teacher.dashboard.actionsLabel")}</p>
               <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">{t("teacher.dashboard.actionsTitle")}</h2>
+              <p className="mt-2 text-xs font-black uppercase tracking-[0.14em] text-slate-500">{t("teacher.panel.liveEvidenceFooter")}</p>
               <div className="mt-5 grid gap-3">
                 <TeacherLink href={classDetailHref} subtitle={t("teacher.dashboard.viewClassSubtitle")} title={t("teacher.dashboard.viewClassTitle")} />
                 <TeacherInfo title={t("teacher.dashboard.inactiveTitle")} value={`${teacherClass.studentsInactive.length}`} />
@@ -337,7 +338,6 @@ export function TeacherDashboardClient() {
               actionPanelLabel={t("teacher.dashboard.actionPanelLabel")}
               emptyState={t("teacher.dashboard.inactiveEmpty")}
               evidenceHint={t("teacher.panel.evidenceHint")}
-              footer={t("teacher.panel.liveEvidenceFooter")}
               helper={t("teacher.dashboard.inactiveHelper")}
               icon={Clock3}
               openClassDetail={t("teacher.panel.openClassDetail")}
@@ -352,7 +352,6 @@ export function TeacherDashboardClient() {
               actionPanelLabel={t("teacher.dashboard.actionPanelLabel")}
               emptyState={t("teacher.dashboard.attentionEmpty")}
               evidenceHint={t("teacher.panel.evidenceHint")}
-              footer={t("teacher.panel.liveEvidenceFooter")}
               helper={t("teacher.dashboard.attentionHelper")}
               icon={AlertTriangle}
               openClassDetail={t("teacher.panel.openClassDetail")}
@@ -367,7 +366,6 @@ export function TeacherDashboardClient() {
               actionPanelLabel={t("teacher.dashboard.actionPanelLabel")}
               emptyState={t("teacher.dashboard.advanceEmpty")}
               evidenceHint={t("teacher.panel.evidenceHint")}
-              footer={t("teacher.panel.liveEvidenceFooter")}
               helper={t("teacher.dashboard.advanceHelper")}
               icon={CheckCircle2}
               openClassDetail={t("teacher.panel.openClassDetail")}
@@ -446,7 +444,6 @@ function InterventionPanel({
   classDetailHref,
   emptyState,
   evidenceHint,
-  footer,
   helper,
   icon: Icon,
   openClassDetail,
@@ -460,7 +457,6 @@ function InterventionPanel({
   classDetailHref: Route<string>;
   emptyState: string;
   evidenceHint: string;
-  footer: string;
   helper: string;
   icon: typeof Users;
   openClassDetail: string;
@@ -537,7 +533,6 @@ function InterventionPanel({
           <div className="rounded-[24px] border border-white/10 bg-white/6 p-4 text-sm font-semibold text-slate-300">{emptyState}</div>
         )}
       </div>
-      <p className="mt-4 text-xs font-black uppercase tracking-[0.14em] text-slate-500">{footer}</p>
     </div>
   );
 }
