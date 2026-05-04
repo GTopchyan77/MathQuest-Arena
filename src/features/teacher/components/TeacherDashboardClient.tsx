@@ -497,7 +497,14 @@ function InterventionPanel({
       <div className="mt-5 grid gap-3">
         {students.length ? (
           students.map((student) => (
-            <div className={`rounded-[24px] border p-4 ${panelTone[tone].card}`} key={student.id}>
+            <div
+              className={`rounded-[24px] border p-4 ${panelTone[tone].card} ${
+                tone === "amber" || student.priority === "high"
+                  ? "shadow-[0_0_0_1px_rgba(251,191,36,0.10),0_18px_50px_rgba(245,158,11,0.10)] animate-[pulse_1.4s_ease-out_2]"
+                  : ""
+              }`}
+              key={student.id}
+            >
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-3">

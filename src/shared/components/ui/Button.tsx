@@ -27,7 +27,7 @@ const sizes = {
 
 export function Button({ asChild, children, className, href, size = "md", variant = "primary", ...props }: ButtonProps) {
   const classes = cx(
-    "focus-ring inline-flex items-center justify-center gap-2 rounded-2xl font-bold transition duration-200 disabled:cursor-not-allowed disabled:opacity-60",
+    "focus-ring inline-flex items-center justify-center gap-2 rounded-2xl font-bold transition duration-200 active:scale-[0.98] active:shadow-none disabled:cursor-not-allowed disabled:opacity-60",
     variants[variant],
     sizes[size],
     className

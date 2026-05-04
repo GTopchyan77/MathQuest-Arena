@@ -18,7 +18,6 @@ export default function HomePage() {
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute left-[8%] top-10 h-56 w-56 rounded-full bg-cyan-400/12 blur-3xl [animation:floatY_10s_ease-in-out_infinite]" />
           <div className="absolute right-[10%] top-16 h-64 w-64 rounded-full bg-[rgba(139,92,246,0.14)] blur-3xl [animation:floatY_14s_ease-in-out_infinite_reverse]" />
-          <div className="absolute right-[22%] top-[56%] h-20 w-20 rounded-full border border-white/10 bg-[rgba(34,211,238,0.05)] backdrop-blur-xl [animation:floatY_12s_ease-in-out_infinite]" />
         </div>
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.02fr_0.98fr]">
           <div className="py-12 sm:py-16 lg:py-20">

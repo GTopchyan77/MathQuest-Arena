@@ -64,7 +64,7 @@ export function GameCard({ game }: { game: GameMeta }) {
 
   return (
     <Link
-      className="panel group relative overflow-hidden rounded-[28px] p-6 transition duration-300 hover:-translate-y-2 hover:border-cyan-300/25 hover:bg-white/8 hover:shadow-[0_28px_80px_rgba(8,15,38,0.58)]"
+      className="panel group relative overflow-hidden rounded-[28px] p-6 transition duration-300 hover:-translate-y-2 hover:scale-[1.01] hover:border-cyan-300/25 hover:bg-white/8 hover:shadow-[0_28px_80px_rgba(8,15,38,0.58)] active:scale-[0.99]"
       href={`/games/${game.slug}`}
     >
       <div className="pointer-events-none absolute inset-0 opacity-0 transition duration-300 group-hover:opacity-100">

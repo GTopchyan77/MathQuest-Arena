@@ -18,16 +18,14 @@ function RegisterContent() {
           {t("auth.register.subtitle")}
         </p>
 
-        <AuthForm mode="register" />
+        <Suspense fallback={<div className="text-slate-300">Loading...</div>}>
+          <AuthForm mode="register" />
+        </Suspense>
       </section>
     </main>
   );
 }
 
 export default function RegisterPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <RegisterContent />
-    </Suspense>
-  );
+  return <RegisterContent />;
 }

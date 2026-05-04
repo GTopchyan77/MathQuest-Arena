@@ -3,7 +3,7 @@
 import type { Route } from "next";
 import Link from "next/link";
 import { CheckCircle2, Crown, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocale } from "@/lib/i18n/useLocale";
 import { Button } from "@/shared/components/ui/Button";
 import type { GameResult, PostGameInsights } from "@/lib/types";
@@ -69,6 +69,32 @@ function localizeSaveStatus(message: string, t: (key: any) => string) {
   return message;
 }
 
+function useAnimatedNumber(value: number, durationMs = 420) {
+  const [animatedValue, setAnimatedValue] = useState(0);
+
+  useEffect(() => {
+    let frame = 0;
+    const start = performance.now();
+
+    function tick(now: number) {
+      const progress = Math.min((now - start) / durationMs, 1);
+      const eased = 1 - (1 - progress) * (1 - progress);
+      setAnimatedValue(Math.round(value * eased));
+
+      if (progress < 1) {
+        frame = requestAnimationFrame(tick);
+      }
+    }
+
+    setAnimatedValue(0);
+    frame = requestAnimationFrame(tick);
+
+    return () => cancelAnimationFrame(frame);
+  }, [durationMs, value]);
+
+  return animatedValue;
+}
+
 export function ResultPanel({ onRestart, result }: ResultPanelProps) {
   const { t } = useLocale();
   const [status, setStatus] = useState("");
@@ -90,6 +116,8 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
   const hasRealXpGain = (insights?.xpGained ?? 0) > 0;
   const localizedStatus = localizeSaveStatus(status, t);
   const recommendedReason = insights ? localizeRecommendationReason(insights.recommendedNextChallenge.reason, t) : "";
+  const animatedScore = useAnimatedNumber(result.score);
+  const animatedAccuracy = useAnimatedNumber(result.accuracy);
   const leaderboardUnlockMessage =
     insights?.rankAfter !== null && insights?.rankAfter !== undefined
       ? insights.rankBefore === null
@@ -119,9 +147,9 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
         </div>
       </div>
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Metric label={t("result.score")} value={result.score} />
+        <Metric label={t("result.score")} value={animatedScore} />
         <Metric label={t("result.correct")} value={`${result.correct}/${result.total}`} />
-        <Metric label={t("result.accuracy")} value={`${result.accuracy}%`} />
+        <Metric label={t("result.accuracy")} value={`${animatedAccuracy}%`} />
         <Metric label={t("result.bestStreak")} value={result.maxStreak} />
       </div>
       {localizedStatus ? <p className="mt-4 rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-sm font-bold text-slate-200">{localizedStatus}</p> : null}
@@ -212,6 +240,12 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
         <Button className={!saved ? "shadow-[0_24px_80px_rgba(34,211,238,0.34)]" : undefined} disabled={saving || saved} onClick={save} size="lg">
           {saving ? t("auth.form.working") : saved ? t("result.scoreSaved") : t("result.unlockSaveCta")}
         </Button>
+        {saved ? (
+          <div className="inline-flex items-center gap-2 self-start rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-emerald-100 [animation:fadeIn_220ms_ease-out] sm:self-center">
+            <CheckCircle2 className="h-4 w-4" />
+            {t("result.scoreSaved")}
+          </div>
+        ) : null}
         <Button onClick={onRestart} variant="secondary">
           {t("result.playAgain")}
         </Button>
