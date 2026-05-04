@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { AuthForm } from "@/features/auth/components/AuthForm";
 import { useLocale } from "@/lib/i18n/useLocale";
 
@@ -12,7 +13,10 @@ export default function LoginPage() {
         <p className="surface-label">{t("auth.login.eyebrow")}</p>
         <h1 className="mt-3 font-[var(--font-sora)] text-3xl font-extrabold text-white">{t("auth.login.title")}</h1>
         <p className="mb-7 mt-3 leading-7 text-slate-300">{t("auth.login.subtitle")}</p>
-        <AuthForm mode="login" />
+
+        <Suspense fallback={<div className="text-slate-300">Loading...</div>}>
+          <AuthForm mode="login" />
+        </Suspense>
       </section>
     </main>
   );
