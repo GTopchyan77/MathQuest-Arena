@@ -28,6 +28,7 @@ const hy = {
   "auth.form.createdNeedsConfirm": "Հաշիվը ստեղծված է։ Ստուգեք էլ. փոստը, հաստատեք այն, հետո մուտք գործեք՝ խաղը սկսելու համար։",
   "auth.form.goToLogin": "Գնալ մուտքի էջ",
   "auth.form.working": "Աշխատում է...",
+  "auth.form.continueGoogle": "Շարունակել Google-ով",
   "auth.form.createAccount": "Ստեղծել հաշիվ",
   "auth.form.logIn": "Մուտք գործել",
   "auth.form.alreadyRegistered": "Արդեն գրանցվա՞ծ եք",

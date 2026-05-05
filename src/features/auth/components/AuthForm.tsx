@@ -7,7 +7,7 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useLocale } from "@/lib/i18n/useLocale";
 import { Button } from "@/shared/components/ui/Button";
 import { createClient, hasSupabaseConfig } from "@/lib/supabase/client";
-import { loginWithEmail, registerWithEmail } from "@/lib/supabase/auth";
+import { loginWithEmail, registerWithEmail, signInWithGoogle } from "@/lib/supabase/auth";
 
 type AuthFormProps = {
   mode: "login" | "register";
@@ -24,6 +24,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState(false);
   const [handlingConfirmation, setHandlingConfirmation] = useState(false);
 
   const isRegister = mode === "register";
@@ -97,10 +98,6 @@ export function AuthForm({ mode }: AuthFormProps) {
     setError("");
     setMessage("");
 
-    if (!hasSupabaseConfig()) {
-      setError(t("auth.form.envMissing"));
-      return;
-    }
 
     setLoading(true);
     let response;
@@ -139,6 +136,23 @@ export function AuthForm({ mode }: AuthFormProps) {
 
     router.push(isRegister ? "/games/quick-math-duel" : "/dashboard");
     router.refresh();
+  }
+
+  async function onGoogleSignIn() {
+    setError("");
+    setMessage("");
+
+    setOauthLoading(true);
+    const response = await signInWithGoogle();
+    setOauthLoading(false);
+
+    if (response.error) {
+      if (process.env.NODE_ENV !== "production") {
+        console.error("[auth form] Google OAuth failed", response.error);
+      }
+
+      setError(response.error.message);
+    }
   }
 
   return (
@@ -185,6 +199,15 @@ export function AuthForm({ mode }: AuthFormProps) {
           <Link href="/login">{t("auth.form.goToLogin")}</Link>
         </Button>
       ) : null}
+      <Button
+        disabled={loading || oauthLoading || handlingConfirmation || authLoading}
+        onClick={onGoogleSignIn}
+        size="lg"
+        type="button"
+        variant="secondary"
+      >
+        {oauthLoading ? t("auth.form.working") : t("auth.form.continueGoogle")}
+      </Button>
       <Button disabled={loading || handlingConfirmation || authLoading} size="lg" type="submit">
         {loading ? t("auth.form.working") : isRegister ? t("auth.form.createAccount") : t("auth.form.logIn")}
       </Button>

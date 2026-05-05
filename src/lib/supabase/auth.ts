@@ -53,6 +53,26 @@ export async function loginWithEmail(email: string, password: string) {
   }
 }
 
+export async function signInWithGoogle() {
+  const supabase = createClient();
+
+  if (!supabase) {
+    return { data: null, error: new Error("Add Supabase credentials to .env.local to enable authentication.") };
+  }
+
+  try {
+    return await supabase.auth.signInWithOAuth({
+      options: {
+        redirectTo: typeof window === "undefined" ? undefined : `${window.location.origin}/auth/callback`
+      },
+      provider: "google"
+    });
+  } catch (error) {
+    logAuthError("signInWithOAuth(google)", error);
+    return { data: null, error: toError(error) };
+  }
+}
+
 export async function logout() {
   const supabase = createClient();
   if (!supabase) return;

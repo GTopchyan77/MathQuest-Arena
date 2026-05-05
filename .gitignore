@@ -4,3 +4,5 @@ node_modules/
 tsconfig.tsbuildinfo
 .next-dev*.log
 .browser-check/
+.vercel
+.env*.local

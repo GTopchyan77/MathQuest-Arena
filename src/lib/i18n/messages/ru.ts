@@ -28,6 +28,7 @@ const ru = {
   "auth.form.createdNeedsConfirm": "Аккаунт создан. Подтвердите email и затем войдите, чтобы начать играть.",
   "auth.form.goToLogin": "Перейти ко входу",
   "auth.form.working": "Загрузка...",
+  "auth.form.continueGoogle": "Продолжить через Google",
   "auth.form.createAccount": "Создать аккаунт",
   "auth.form.logIn": "Войти",
   "auth.form.alreadyRegistered": "Уже зарегистрированы?",

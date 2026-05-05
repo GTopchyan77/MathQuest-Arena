@@ -26,6 +26,7 @@ const en = {
   "auth.form.createdNeedsConfirm": "Account created. Check your email to confirm it, then log in to start playing.",
   "auth.form.goToLogin": "Go to login",
   "auth.form.working": "Working...",
+  "auth.form.continueGoogle": "Continue with Google",
   "auth.form.createAccount": "Create account",
   "auth.form.logIn": "Log in",
   "auth.form.alreadyRegistered": "Already registered?",
