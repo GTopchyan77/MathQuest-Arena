@@ -98,6 +98,7 @@ function useAnimatedNumber(value: number, durationMs = 420) {
 export function ResultPanel({ onRestart, result }: ResultPanelProps) {
   const { t } = useLocale();
   const [status, setStatus] = useState("");
+  const [statusReason, setStatusReason] = useState<"auth_required" | "not_configured" | "save_failed" | undefined>();
   const [insights, setInsights] = useState<PostGameInsights | null>(null);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -107,6 +108,7 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
     const response = await saveGameResult(result);
     setSaving(false);
     setStatus(response.message);
+    setStatusReason(response.reason);
     setInsights(response.insights ?? null);
     setSaved(response.ok);
   }
@@ -115,6 +117,7 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
   const firstBadge = insights?.newlyEarnedBadges[0] ?? null;
   const hasRealXpGain = (insights?.xpGained ?? 0) > 0;
   const localizedStatus = localizeSaveStatus(status, t);
+  const shouldShowAuthCta = statusReason === "auth_required";
   const recommendedReason = insights ? localizeRecommendationReason(insights.recommendedNextChallenge.reason, t) : "";
   const animatedScore = useAnimatedNumber(result.score);
   const animatedAccuracy = useAnimatedNumber(result.accuracy);
@@ -152,7 +155,19 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
         <Metric label={t("result.accuracy")} value={`${animatedAccuracy}%`} />
         <Metric label={t("result.bestStreak")} value={result.maxStreak} />
       </div>
-      {localizedStatus ? <p className="mt-4 rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-sm font-bold text-slate-200">{localizedStatus}</p> : null}
+      {shouldShowAuthCta ? (
+        <div className="mt-4 rounded-[24px] border border-cyan-300/16 bg-cyan-400/8 p-4">
+          <p className="text-sm font-bold text-slate-100">Log in to save progress</p>
+          <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+            <Button asChild>
+              <Link href="/login">{t("auth.form.logIn")}</Link>
+            </Button>
+            <Button asChild variant="secondary">
+              <Link href="/register">{t("auth.form.createAccount")}</Link>
+            </Button>
+          </div>
+        </div>
+      ) : localizedStatus ? <p className="mt-4 rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-sm font-bold text-slate-200">{localizedStatus}</p> : null}
       {isFirstSave ? (
         <div className="mt-4 relative overflow-hidden rounded-[24px] border border-emerald-400/20 bg-[linear-gradient(135deg,rgba(16,185,129,0.14),rgba(34,211,238,0.08))] p-5">
           <div className="absolute right-0 top-0 h-24 w-24 rounded-full bg-emerald-400/10 blur-3xl" />

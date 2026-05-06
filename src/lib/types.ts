@@ -101,6 +101,7 @@ export type SaveGameResultResponse = {
   insights?: PostGameInsights;
   message: string;
   ok: boolean;
+  reason?: "auth_required" | "not_configured" | "save_failed";
 };
 
 export type UserStats = {

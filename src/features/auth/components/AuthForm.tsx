@@ -8,6 +8,7 @@ import { useLocale } from "@/lib/i18n/useLocale";
 import { Button } from "@/shared/components/ui/Button";
 import { createClient, hasSupabaseConfig } from "@/lib/supabase/client";
 import { loginWithEmail, registerWithEmail, signInWithGoogle } from "@/lib/supabase/auth";
+import { getCurrentProfile } from "@/lib/supabase/profileRepository";
 
 type AuthFormProps = {
   mode: "login" | "register";
@@ -31,11 +32,23 @@ export function AuthForm({ mode }: AuthFormProps) {
   const confirmationCode = searchParams.get("code");
   const isConfirmedRedirect = searchParams.get("confirmed") === "1";
 
+  async function redirectForRole(userId: string, learnerFallback: "/dashboard" | "/games/quick-math-duel" = "/dashboard") {
+    const profile = await getCurrentProfile(userId);
+    const destination = profile?.role === "teacher" ? "/teacher" : learnerFallback;
+    router.replace(destination);
+    router.refresh();
+  }
+
   useEffect(() => {
-    if (!authLoading && user) {
-      router.replace("/dashboard");
+    if (authLoading || !user?.id) {
+      return;
     }
-  }, [authLoading, router, user]);
+
+    redirectForRole(user.id).catch(() => {
+      router.replace("/dashboard");
+      router.refresh();
+    });
+  }, [authLoading, router, user?.id]);
 
   useEffect(() => {
     if (isRegister || !isConfirmedRedirect) {
@@ -82,8 +95,20 @@ export function AuthForm({ mode }: AuthFormProps) {
         return;
       }
 
-      router.replace("/dashboard");
-      router.refresh();
+      const {
+        data: { user: confirmedUser }
+      } = await client.auth.getUser();
+
+      if (!confirmedUser?.id) {
+        router.replace("/dashboard");
+        router.refresh();
+        return;
+      }
+
+      redirectForRole(confirmedUser.id).catch(() => {
+        router.replace("/dashboard");
+        router.refresh();
+      });
     }
 
     handleConfirmation();
@@ -131,6 +156,14 @@ export function AuthForm({ mode }: AuthFormProps) {
 
     if (isRegister && !response.data.session) {
       setMessage(t("auth.form.createdNeedsConfirm"));
+      return;
+    }
+
+    if (response.data.user?.id) {
+      redirectForRole(response.data.user.id, isRegister ? "/games/quick-math-duel" : "/dashboard").catch(() => {
+        router.push(isRegister ? "/games/quick-math-duel" : "/dashboard");
+        router.refresh();
+      });
       return;
     }
 

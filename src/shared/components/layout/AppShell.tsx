@@ -61,7 +61,7 @@ const teacherNavItems: TeacherNavItem[] = [{ detailKey: "shell.openSection", hre
 
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { configured, loading, user } = useAuth();
   const { t } = useLocale();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isTeacherUser, setIsTeacherUser] = useState(false);
@@ -101,6 +101,15 @@ export function AppShell({ children }: AppShellProps) {
   }
 
   if (!isShellRoute) {
+    return (
+      <>
+        <SiteHeader />
+        {children}
+      </>
+    );
+  }
+
+  if (loading || !configured || !user) {
     return (
       <>
         <SiteHeader />
@@ -236,12 +245,11 @@ function SidebarContent({
           {items.map((item) => {
             const Icon = item.icon;
             const active = item.href ? currentPath === item.href || currentPath.startsWith(`${item.href}/`) : false;
-            const isLearnerItem = "key" in item;
             const content = (
               <>
                 <span
                   className={cx(
-                    "flex h-10 w-10 items-center justify-center rounded-xl border transition",
+                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition",
                     active
                       ? "border-cyan-300/22 bg-cyan-400/12 text-cyan-100 shadow-[0_0_24px_rgba(34,211,238,0.14)]"
                       : "border-white/8 bg-white/6 text-slate-400"
@@ -257,7 +265,13 @@ function SidebarContent({
                     {t(item.detailKey)}
                   </p>
                 </div>
-                <ChevronRight className={cx("h-4 w-4", active ? "text-cyan-200" : "text-slate-600")} />
+                {item.href ? (
+                  <ChevronRight className={cx("h-4 w-4 shrink-0", active ? "text-cyan-200" : "text-slate-600")} />
+                ) : (
+                  <span className="shrink-0 rounded-full border border-white/10 bg-white/6 px-2 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
+                    {t("shell.comingSoon")}
+                  </span>
+                )}
               </>
             );
 
@@ -265,7 +279,7 @@ function SidebarContent({
               return (
                 <Link
                   className={cx(
-                    "flex items-center gap-3 rounded-2xl border px-3 py-3 transition",
+                    "box-border flex w-full min-w-0 max-w-full items-center gap-3 overflow-hidden rounded-2xl border px-3 py-3 transition",
                     active ? "border-white/12 bg-white/8" : "border-transparent hover:border-white/8 hover:bg-white/5"
                   )}
                   href={item.href}
@@ -278,7 +292,11 @@ function SidebarContent({
             }
 
             return (
-              <div className="flex items-center gap-3 rounded-2xl border border-transparent px-3 py-3 opacity-80" key={item.key}>
+              <div
+                aria-disabled="true"
+                className="box-border flex w-full min-w-0 max-w-full cursor-default items-center gap-3 overflow-hidden rounded-2xl border border-white/6 bg-white/[0.03] px-3 py-3 opacity-75"
+                key={item.key}
+              >
                 {content}
               </div>
             );
@@ -296,9 +314,11 @@ function SidebarContent({
             ? t("shell.teacherPreviewBody")
             : t("shell.dailyFocusBody")}
         </p>
-        <Button className="mt-4 w-full" href={isTeacherRoute ? "/teacher" : "/dashboard"}>
-          {isTeacherRoute ? t("shell.teacherPreviewCta") : t("shell.dailyFocusCta")}
-        </Button>
+        {isTeacherRoute ? null : (
+          <Button className="mt-4 w-full" href="/dashboard">
+            {t("shell.dailyFocusCta")}
+          </Button>
+        )}
       </div>
 
       <div className="mt-auto rounded-[26px] border border-white/10 bg-slate-950/55 p-4">

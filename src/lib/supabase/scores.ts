@@ -25,7 +25,7 @@ export async function saveGameResult(result: GameResult): Promise<SaveGameResult
     const supabase = createClient();
 
     if (!supabase) {
-      return { ok: false, message: "Supabase is not configured yet." };
+      return { ok: false, message: "Supabase is not configured yet.", reason: "not_configured" };
     }
 
     const {
@@ -33,7 +33,7 @@ export async function saveGameResult(result: GameResult): Promise<SaveGameResult
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return { ok: false, message: "Log in to save your score." };
+      return { ok: false, message: "Log in to save your score.", reason: "auth_required" };
     }
 
     const [profileBefore, allScoresBefore, gameScoresBefore, leaderboardBefore] = await Promise.all([
@@ -62,7 +62,7 @@ export async function saveGameResult(result: GameResult): Promise<SaveGameResult
       .single();
 
     if (sessionError) {
-      return { ok: false, message: sessionError.message };
+      return { ok: false, message: sessionError.message, reason: "save_failed" };
     }
 
     const { error } = await supabase.from("scores").insert({
@@ -75,7 +75,7 @@ export async function saveGameResult(result: GameResult): Promise<SaveGameResult
     });
 
     if (error) {
-      return { ok: false, message: error.message };
+      return { ok: false, message: error.message, reason: "save_failed" };
     }
 
     const [profileAfter, scoresAfter, leaderboardAfter] = await Promise.all([getUserProfile(), getUserScoresForUser(user.id), getLeaderboard()]);
@@ -116,7 +116,8 @@ export async function saveGameResult(result: GameResult): Promise<SaveGameResult
   } catch (error) {
     return {
       ok: false,
-      message: error instanceof Error ? error.message : "Unable to save score right now."
+      message: error instanceof Error ? error.message : "Unable to save score right now.",
+      reason: "save_failed"
     };
   }
 }
