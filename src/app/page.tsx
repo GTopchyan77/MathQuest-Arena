@@ -31,13 +31,16 @@ export default function HomePage() {
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">{t("home.hero.subtitle")}</p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Button asChild className="sm:min-w-[190px]" size="lg">
-                <Link href="/register">
-                  {t("home.hero.start")} <ArrowRight className="h-5 w-5" />
+                <Link href="/games/quick-math-duel">
+                  Start Quick Math Duel <ArrowRight className="h-5 w-5" />
                 </Link>
               </Button>
               <Button asChild className="sm:min-w-[190px]" size="lg" variant="secondary">
                 <Link href="/games">{t("home.hero.explore")}</Link>
               </Button>
+            </div>
+            <div className="mt-4 max-w-2xl rounded-[22px] border border-white/10 bg-white/[0.05] px-4 py-3 text-sm leading-6 text-slate-300 backdrop-blur-xl">
+              You can play without an account. Log in to save XP, streaks, and leaderboard progress.
             </div>
             <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3">
               {[
@@ -63,6 +66,24 @@ export default function HomePage() {
               <div className="flex items-center gap-2">
                 <Trophy className="h-4 w-4 text-amber-200" />
                 {t("home.hero.leaderboardEnergy")}
+              </div>
+            </div>
+            <div className="mt-8 grid max-w-3xl gap-3 sm:grid-cols-2">
+              <div className="rounded-[24px] border border-white/10 bg-slate-950/40 px-4 py-4 backdrop-blur-xl">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200">Student</p>
+                <p className="mt-2 font-[var(--font-sora)] text-lg font-extrabold text-white">Play games and track progress</p>
+                <p className="mt-2 text-sm leading-6 text-slate-400">Start with Quick Math Duel, then use your dashboard and profile to follow XP, streaks, and saved results.</p>
+                <Button asChild className="mt-4" variant="secondary">
+                  <Link href="/games/quick-math-duel">Start Quick Math Duel</Link>
+                </Button>
+              </div>
+              <div className="rounded-[24px] border border-white/10 bg-slate-950/40 px-4 py-4 backdrop-blur-xl">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-emerald-200">Teacher</p>
+                <p className="mt-2 font-[var(--font-sora)] text-lg font-extrabold text-white">Open the class dashboard</p>
+                <p className="mt-2 text-sm leading-6 text-slate-400">Review student activity, see who played today, and check class mastery in the read-only teacher view.</p>
+                <Button asChild className="mt-4" variant="secondary">
+                  <Link href="/teacher">Open Teacher Dashboard</Link>
+                </Button>
               </div>
             </div>
           </div>

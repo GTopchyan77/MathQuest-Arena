@@ -61,6 +61,7 @@ const skillKeys: Record<
 
 export function GameCard({ game }: { game: GameMeta }) {
   const { t } = useLocale();
+  const isRecommendedFirst = game.slug === "quick-math-duel";
 
   return (
     <Link
@@ -72,8 +73,15 @@ export function GameCard({ game }: { game: GameMeta }) {
         <div className="absolute -left-10 bottom-0 h-24 w-24 rounded-full bg-violet/10 blur-2xl" />
       </div>
       <div className="flex items-start justify-between gap-4">
-        <div className={`rounded-2xl border px-3 py-1.5 text-xs font-black uppercase tracking-[0.16em] ${accentClasses[game.accent]}`}>
-          {t(durationKeys[game.duration])}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className={`rounded-2xl border px-3 py-1.5 text-xs font-black uppercase tracking-[0.16em] ${accentClasses[game.accent]}`}>
+            {t(durationKeys[game.duration])}
+          </div>
+          {isRecommendedFirst ? (
+            <div className="rounded-2xl border border-emerald-300/20 bg-emerald-400/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.16em] text-emerald-100">
+              Recommended first
+            </div>
+          ) : null}
         </div>
         <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-cyan-300/20 bg-[linear-gradient(135deg,rgba(34,211,238,0.16),rgba(139,92,246,0.18))] text-cyan-100 transition group-hover:rotate-6 group-hover:scale-105">
           <ArrowUpRight className="h-5 w-5" />

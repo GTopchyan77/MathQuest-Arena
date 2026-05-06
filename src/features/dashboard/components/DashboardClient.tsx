@@ -203,9 +203,19 @@ export function DashboardClient() {
 
         {isFirstSession ? (
           <div className="panel rounded-[30px] p-5">
-            <p className="surface-label text-amber-200/80">{t("dashboard.firstSession.activation")}</p>
-            <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">{t("dashboard.firstSession.unlockBoardTitle")}</h2>
+            <p className="surface-label text-cyan-200/80">Your next step</p>
+            <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">Start with Quick Math Duel</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-300">
+              Solve quick challenges, earn XP, and track your progress.
+            </p>
+            <Button asChild className="mt-5 w-full" size="lg">
+              <Link href="/games/quick-math-duel">
+                <Play className="h-5 w-5" /> Start Quick Math Duel
+              </Link>
+            </Button>
             <div className="mt-5 rounded-[24px] border border-white/10 bg-slate-950/45 p-4">
+              <p className="surface-label text-amber-200/80">{t("dashboard.firstSession.activation")}</p>
+              <h3 className="mt-2 font-[var(--font-sora)] text-xl font-extrabold text-white">{t("dashboard.firstSession.unlockBoardTitle")}</h3>
               <div className="flex items-start justify-between gap-4">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-amber-300/20 bg-amber-300/10 text-amber-100">
                   <Crown className="h-5 w-5" />
