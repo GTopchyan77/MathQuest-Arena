@@ -157,9 +157,9 @@ export function ResultPanel({ onRestart, result }: ResultPanelProps) {
       </div>
       {shouldShowAuthCta ? (
         <div className="mt-4 rounded-[24px] border border-cyan-300/16 bg-cyan-400/8 p-4">
-          <p className="text-sm font-bold text-slate-100">Log in to save progress</p>
+          <p className="text-sm font-bold text-slate-100">{t("result.loginToSaveProgress")}</p>
           <p className="mt-2 text-sm leading-6 text-slate-300">
-            You can play without an account. Log in to save XP, streaks, and leaderboard progress.
+            {t("home.hero.guestHelper")}
           </p>
           <div className="mt-3 flex flex-col gap-3 sm:flex-row">
             <Button asChild>

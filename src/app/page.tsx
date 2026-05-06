@@ -32,7 +32,7 @@ export default function HomePage() {
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Button asChild className="sm:min-w-[190px]" size="lg">
                 <Link href="/games/quick-math-duel">
-                  Start Quick Math Duel <ArrowRight className="h-5 w-5" />
+                  {t("home.paths.studentCta")} <ArrowRight className="h-5 w-5" />
                 </Link>
               </Button>
               <Button asChild className="sm:min-w-[190px]" size="lg" variant="secondary">
@@ -40,7 +40,7 @@ export default function HomePage() {
               </Button>
             </div>
             <div className="mt-4 max-w-2xl rounded-[22px] border border-white/10 bg-white/[0.05] px-4 py-3 text-sm leading-6 text-slate-300 backdrop-blur-xl">
-              You can play without an account. Log in to save XP, streaks, and leaderboard progress.
+              {t("home.hero.guestHelper")}
             </div>
             <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3">
               {[
@@ -70,19 +70,19 @@ export default function HomePage() {
             </div>
             <div className="mt-8 grid max-w-3xl gap-3 sm:grid-cols-2">
               <div className="rounded-[24px] border border-white/10 bg-slate-950/40 px-4 py-4 backdrop-blur-xl">
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200">Student</p>
-                <p className="mt-2 font-[var(--font-sora)] text-lg font-extrabold text-white">Play games and track progress</p>
-                <p className="mt-2 text-sm leading-6 text-slate-400">Start with Quick Math Duel, then use your dashboard and profile to follow XP, streaks, and saved results.</p>
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200">{t("home.paths.studentLabel")}</p>
+                <p className="mt-2 font-[var(--font-sora)] text-lg font-extrabold text-white">{t("home.paths.studentTitle")}</p>
+                <p className="mt-2 text-sm leading-6 text-slate-400">{t("home.paths.studentDescription")}</p>
                 <Button asChild className="mt-4" variant="secondary">
-                  <Link href="/games/quick-math-duel">Start Quick Math Duel</Link>
+                  <Link href="/games/quick-math-duel">{t("home.paths.studentCta")}</Link>
                 </Button>
               </div>
               <div className="rounded-[24px] border border-white/10 bg-slate-950/40 px-4 py-4 backdrop-blur-xl">
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-emerald-200">Teacher</p>
-                <p className="mt-2 font-[var(--font-sora)] text-lg font-extrabold text-white">Open the class dashboard</p>
-                <p className="mt-2 text-sm leading-6 text-slate-400">Review student activity, see who played today, and check class mastery in the read-only teacher view.</p>
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-emerald-200">{t("home.paths.teacherLabel")}</p>
+                <p className="mt-2 font-[var(--font-sora)] text-lg font-extrabold text-white">{t("home.paths.teacherTitle")}</p>
+                <p className="mt-2 text-sm leading-6 text-slate-400">{t("home.paths.teacherDescription")}</p>
                 <Button asChild className="mt-4" variant="secondary">
-                  <Link href="/teacher">Open Teacher Dashboard</Link>
+                  <Link href="/teacher">{t("home.paths.teacherCta")}</Link>
                 </Button>
               </div>
             </div>
