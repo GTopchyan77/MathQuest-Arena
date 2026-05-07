@@ -3,7 +3,8 @@
 import { Heart, ShieldAlert, Sparkles, Star, Swords, Trophy } from "lucide-react";
 import { useMemo, useState } from "react";
 import { createGameState, finishGame, submitGameAnswer } from "@/lib/games/engine";
-import { bossRoundBattle } from "@/lib/games/bossRound";
+import { bossRoundBattle, bossRoundQuestions } from "@/lib/games/bossRound";
+import { useLocale } from "@/lib/i18n/useLocale";
 import { saveGameResult } from "@/lib/supabase/scores";
 import type { GameResult } from "@/lib/types";
 import { Button } from "@/shared/components/ui/Button";
@@ -16,15 +17,17 @@ const playerMaxHearts = 3;
 const damagePerHit = 34;
 
 export function BossRoundBattle() {
+  const { t } = useLocale();
   const [game, setGame] = useState(() => createGameState(bossRoundBattle));
   const [bossHp, setBossHp] = useState(bossMaxHp);
   const [hearts, setHearts] = useState(playerMaxHearts);
   const [attackTone, setAttackTone] = useState<AttackTone>("idle");
-  const [attackFeedback, setAttackFeedback] = useState("Solve to charge your next attack.");
+  const [attackFeedback, setAttackFeedback] = useState(() => t("game.bossRound.solveToCharge"));
   const [outcome, setOutcome] = useState<BattleOutcome>(null);
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const localizedAttackLabel = localizeAttackLabel(game.question.attackLabel, t);
 
   const result = useMemo<GameResult>(() => {
     const answered = Math.max(game.totalAnswered, 1);
@@ -64,10 +67,10 @@ export function BossRoundBattle() {
     setAttackTone(won ? "victory" : feedback.isCorrect ? "hit" : "miss");
     setAttackFeedback(
       won
-        ? `${attackLabel} lands the final blow. Treasure burst unlocked.`
+        ? t("game.bossRound.feedbackFinalBlow", { attack: localizeAttackLabel(attackLabel, t) })
         : feedback.isCorrect
-          ? `${attackLabel} hits the monster for big damage.`
-          : "Oof. The monster blocks that one. Try the next spell and protect your hearts."
+          ? t("game.bossRound.feedbackHit", { attack: localizeAttackLabel(attackLabel, t) })
+          : t("game.bossRound.feedbackMiss")
     );
 
     if (won) {
@@ -78,7 +81,7 @@ export function BossRoundBattle() {
 
     if (lost) {
       setOutcome("lose");
-      setAttackFeedback("The monster is still standing, but you learned its pattern. Take a breath and try again.");
+      setAttackFeedback(t("game.bossRound.feedbackLose"));
       setGame(finishGame(feedback.state));
       return;
     }
@@ -91,7 +94,7 @@ export function BossRoundBattle() {
     setBossHp(bossMaxHp);
     setHearts(playerMaxHearts);
     setAttackTone("idle");
-    setAttackFeedback("Solve to charge your next attack.");
+    setAttackFeedback(t("game.bossRound.solveToCharge"));
     setOutcome(null);
     setStatus("");
     setSaving(false);
@@ -117,22 +120,22 @@ export function BossRoundBattle() {
       <div className="panel-strong rounded-[30px] p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <p className="surface-label text-rose-200/80">Boss Round</p>
-            <h1 className="mt-2 font-[var(--font-sora)] text-3xl font-extrabold text-white">Battle the math monster</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">Five questions. Land enough correct hits to knock out Umbra before your hearts run dry.</p>
+            <p className="surface-label text-rose-200/80">{t("game.bossRound.label")}</p>
+            <h1 className="mt-2 font-[var(--font-sora)] text-3xl font-extrabold text-white">{t("game.bossRound.cardTitle")}</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">{t("game.bossRound.cardDescription")}</p>
           </div>
           <div className="grid grid-cols-3 gap-2 text-center">
-            <Metric label="Question" value={`${game.totalAnswered + 1}/5`} />
-            <Metric label="Score" value={game.score} />
-            <Metric label="Streak" value={game.streak} />
+            <Metric label={t("game.bossRound.question")} value={`${game.totalAnswered + 1}/${bossRoundQuestions}`} />
+            <Metric label={t("game.bossRound.score")} value={game.score} />
+            <Metric label={t("game.bossRound.streak")} value={game.streak} />
           </div>
         </div>
 
         <div className="mt-6 rounded-[28px] border border-white/10 bg-[linear-gradient(160deg,rgba(15,23,42,0.6),rgba(30,41,59,0.35))] p-5">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">Boss HP</p>
-              <h2 className="mt-1 font-[var(--font-sora)] text-2xl font-extrabold text-white">Umbra Crunch</h2>
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">{t("game.bossRound.bossHp")}</p>
+              <h2 className="mt-1 font-[var(--font-sora)] text-2xl font-extrabold text-white">{t("game.bossRound.bossName")}</h2>
             </div>
             <div className="rounded-2xl border border-rose-300/20 bg-rose-400/10 px-3 py-2 text-sm font-black text-rose-100">
               {bossHp} HP
@@ -175,9 +178,15 @@ export function BossRoundBattle() {
                   {attackTone === "miss" ? <ShieldAlert className="h-5 w-5" /> : attackTone === "victory" ? <Trophy className="h-5 w-5" /> : <Swords className="h-5 w-5" />}
                 </div>
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">Attack feedback</p>
+                  <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">{t("game.bossRound.attackFeedback")}</p>
                   <p className="mt-1 font-[var(--font-sora)] text-xl font-extrabold text-white">
-                    {attackTone === "miss" ? "Blocked strike" : attackTone === "victory" ? "Boss defeated" : attackTone === "hit" ? "Direct hit" : "Battle ready"}
+                    {attackTone === "miss"
+                      ? t("game.bossRound.blockedStrike")
+                      : attackTone === "victory"
+                        ? t("game.bossRound.bossDefeated")
+                        : attackTone === "hit"
+                          ? t("game.bossRound.directHit")
+                          : t("game.bossRound.battleReady")}
                   </p>
                 </div>
               </div>
@@ -187,9 +196,9 @@ export function BossRoundBattle() {
         </div>
 
         <div className="mt-6 rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
-          <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">Charge attack</p>
+          <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">{t("game.bossRound.chargeAttack")}</p>
           <h2 className="mt-2 font-[var(--font-sora)] text-5xl font-extrabold text-white">{game.question.expression}</h2>
-          <p className="mt-2 text-sm font-bold text-cyan-100">{game.question.attackLabel}</p>
+          <p className="mt-2 text-sm font-bold text-cyan-100">{localizedAttackLabel}</p>
           <div className="mt-6 grid grid-cols-2 gap-3">
             {game.question.options.map((option) => (
               <button
@@ -206,7 +215,7 @@ export function BossRoundBattle() {
       </div>
 
       <aside className="panel rounded-[30px] p-6">
-        <p className="surface-label text-emerald-200/80">Player hearts</p>
+        <p className="surface-label text-emerald-200/80">{t("game.bossRound.playerHearts")}</p>
         <div className="mt-4 flex gap-3">
           {Array.from({ length: playerMaxHearts }, (_, index) => {
             const active = index < hearts;
@@ -225,18 +234,18 @@ export function BossRoundBattle() {
         </div>
 
         <div className="mt-6 rounded-[24px] border border-white/10 bg-white/6 p-4">
-          <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">Round rules</p>
+          <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">{t("game.bossRound.roundRules")}</p>
           <ul className="mt-3 space-y-3 text-sm leading-6 text-slate-300">
-            <li>Correct answers blast the boss HP bar.</li>
-            <li>Wrong answers cost one heart.</li>
-            <li>You get up to 5 questions to finish the fight.</li>
+            <li>{t("game.bossRound.ruleCorrect")}</li>
+            <li>{t("game.bossRound.ruleWrong")}</li>
+            <li>{t("game.bossRound.ruleLimit", { count: bossRoundQuestions })}</li>
           </ul>
         </div>
 
         <div className="mt-4 rounded-[24px] border border-white/10 bg-[linear-gradient(135deg,rgba(34,211,238,0.08),rgba(139,92,246,0.1))] p-4">
-          <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">Victory reward</p>
-          <h3 className="mt-2 font-[var(--font-sora)] text-xl font-extrabold text-white">Mini treasure burst</h3>
-          <p className="mt-2 text-sm leading-6 text-slate-300">Defeat the boss and you’ll trigger a shiny reward moment before you decide whether to save the run.</p>
+          <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">{t("game.bossRound.victoryReward")}</p>
+          <h3 className="mt-2 font-[var(--font-sora)] text-xl font-extrabold text-white">{t("game.bossRound.rewardTitle")}</h3>
+          <p className="mt-2 text-sm leading-6 text-slate-300">{t("game.bossRound.rewardDescription")}</p>
           <div className="mt-4 flex gap-2">
             <RewardGem />
             <RewardGem />
@@ -265,7 +274,9 @@ function BossEndPanel({
   saving: boolean;
   status: string;
 }) {
+  const { t } = useLocale();
   const isWin = outcome === "win";
+  const localizedStatus = localizeSaveStatus(status, t);
 
   return (
     <section className="panel-strong rounded-[30px] p-6">
@@ -282,14 +293,14 @@ function BossEndPanel({
             {isWin ? <Trophy className="h-6 w-6" /> : <Heart className="h-6 w-6" />}
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-300">{isWin ? "Victory reward" : "Retry ready"}</p>
+            <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-300">{isWin ? t("game.bossRound.victoryReward") : t("game.bossRound.retryReady")}</p>
             <h2 className="mt-2 font-[var(--font-sora)] text-3xl font-extrabold text-white">
-              {isWin ? "Boss defeated." : "Nice try. You can beat this one."}
+              {isWin ? t("game.bossRound.winTitle") : t("game.bossRound.loseTitle")}
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-200">
               {isWin
-                ? "Your final strike cracked the monster shield and popped open a tiny treasure burst."
-                : "You chipped away at the boss and learned the rhythm. Jump back in and land a few more clean hits."}
+                ? t("game.bossRound.winDescription")
+                : t("game.bossRound.loseDescription")}
             </p>
             {isWin ? (
               <div className="mt-4 flex gap-2">
@@ -304,26 +315,65 @@ function BossEndPanel({
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Metric label="Score" value={result.score} />
-        <Metric label="Correct" value={`${result.correct}/${result.total}`} />
-        <Metric label="Accuracy" value={`${result.accuracy}%`} />
-        <Metric label="Best streak" value={result.maxStreak} />
+        <Metric label={t("game.bossRound.score")} value={result.score} />
+        <Metric label={t("result.correct")} value={`${result.correct}/${result.total}`} />
+        <Metric label={t("result.accuracy")} value={`${result.accuracy}%`} />
+        <Metric label={t("result.bestStreak")} value={result.maxStreak} />
       </div>
 
-      {status ? <p className="mt-4 rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-sm font-bold text-slate-200">{status}</p> : null}
+      {localizedStatus ? <p className="mt-4 rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-sm font-bold text-slate-200">{localizedStatus}</p> : null}
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
         {isWin && onSave ? (
           <Button disabled={saving || saved} onClick={onSave}>
-            {saving ? "Saving..." : saved ? "Score saved" : "Save score"}
+            {saving ? t("game.bossRound.saving") : saved ? t("result.scoreSaved") : t("game.bossRound.saveScore")}
           </Button>
         ) : null}
         <Button onClick={onRestart} variant="secondary">
-          {isWin ? "Battle again" : "Retry battle"}
+          {isWin ? t("game.bossRound.battleAgain") : t("game.bossRound.retryBattle")}
         </Button>
       </div>
     </section>
   );
+}
+
+function localizeAttackLabel(label: string, t: ReturnType<typeof useLocale>["t"]) {
+  switch (label) {
+    case "Comet Zap":
+      return t("game.bossRound.attackLabel.cometZap");
+    case "Spark Sword":
+      return t("game.bossRound.attackLabel.sparkSword");
+    case "Moon Blast":
+      return t("game.bossRound.attackLabel.moonBlast");
+    case "Nova Pop":
+      return t("game.bossRound.attackLabel.novaPop");
+    default:
+      return label;
+  }
+}
+
+function localizeSaveStatus(message: string, t: ReturnType<typeof useLocale>["t"]) {
+  if (!message) {
+    return message;
+  }
+
+  if (message === "Supabase is not configured yet.") {
+    return t("result.error.supabaseMissing");
+  }
+
+  if (message === "Log in to save your score.") {
+    return t("result.error.loginToSave");
+  }
+
+  if (message === "Unable to save score right now.") {
+    return t("result.error.unableToSave");
+  }
+
+  if (message.startsWith("Score saved.")) {
+    return t("result.scoreSaved");
+  }
+
+  return message;
 }
 
 function MonsterFace({ tone }: { tone: AttackTone }) {
