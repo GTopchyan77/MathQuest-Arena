@@ -1,25 +1,29 @@
 "use client";
 
+import { useRef } from "react";
 import Link from "next/link";
 import { ArrowRight, Brain, ChevronRight, Crown, Medal, Sparkles, Target, Trophy, Zap } from "lucide-react";
 import { DailyChallengeCard } from "@/features/games/components/DailyChallengeCard";
 import { GameCard } from "@/features/games/components/GameCard";
 import { HomeFeatureCards } from "@/features/home/components/HomeFeatureCards";
+import { PointerTrailOverlay } from "@/features/home/components/PointerTrailOverlay";
 import { useLocale } from "@/lib/i18n/useLocale";
 import { games } from "@/lib/games/catalog";
 import { Button } from "@/shared/components/ui/Button";
 
 export default function HomePage() {
   const { t } = useLocale();
+  const heroSectionRef = useRef<HTMLElement>(null);
 
   return (
     <main>
-      <section className="premium-grid relative overflow-hidden px-4 pb-16 pt-10 sm:px-6 lg:px-8">
+      <section className="premium-grid relative overflow-hidden px-4 pb-16 pt-10 sm:px-6 lg:px-8" ref={heroSectionRef}>
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute left-[8%] top-10 h-56 w-56 rounded-full bg-cyan-400/12 blur-3xl [animation:floatY_10s_ease-in-out_infinite]" />
           <div className="absolute right-[10%] top-16 h-64 w-64 rounded-full bg-[rgba(139,92,246,0.14)] blur-3xl [animation:floatY_14s_ease-in-out_infinite_reverse]" />
         </div>
-        <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.02fr_0.98fr]">
+        <PointerTrailOverlay containerRef={heroSectionRef} enabled />
+        <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.02fr_0.98fr]">
           <div className="py-12 sm:py-16 lg:py-20">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-white/8 px-4 py-2 text-sm font-semibold text-cyan-100 shadow-[0_10px_30px_rgba(8,15,38,0.35)] backdrop-blur-xl">
               <Sparkles className="h-4 w-4 text-cyan-300" />
