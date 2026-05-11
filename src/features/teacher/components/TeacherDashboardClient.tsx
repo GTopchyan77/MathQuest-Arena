@@ -245,7 +245,7 @@ export function TeacherDashboardClient() {
   );
 
   return (
-    <main className="mx-auto max-w-[1440px] p-4 sm:p-6">
+    <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <div className="mb-4 rounded-[24px] border border-amber-300/20 bg-[linear-gradient(135deg,rgba(245,158,11,0.12),rgba(239,68,68,0.08))] px-5 py-4">
         <p className="text-sm font-black uppercase tracking-[0.14em] text-amber-100">{t("teacher.preview.title")}</p>
         <p className="mt-2 text-sm font-semibold leading-6 text-slate-200">{t("teacher.preview.body")}</p>
@@ -272,7 +272,7 @@ export function TeacherDashboardClient() {
               <p className="surface-label">{t("teacher.dashboard.overviewLabel")}</p>
               <h1 className="mt-3 font-[var(--font-sora)] text-3xl font-extrabold text-white sm:text-4xl">{teacherClass.name}</h1>
               <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">{t("teacher.dashboard.overviewBody")}</p>
-              <div className="mt-5 rounded-[24px] border border-white/10 bg-slate-950/45 p-4">
+              <div className="mt-6 rounded-[26px] border border-cyan-300/16 bg-[linear-gradient(90deg,rgba(18,33,57,0.95),rgba(31,44,74,0.9))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
                 <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">{t("teacher.dashboard.selectedClass")}</p>
                 <p className="mt-2 text-lg font-black text-white">{selectedClassName}</p>
                 <p className="mt-1 text-sm font-semibold text-slate-400">
@@ -332,7 +332,7 @@ export function TeacherDashboardClient() {
             </div>
           </section>
 
-          <section className="mt-4 grid gap-4 xl:grid-cols-3">
+          <section className="mt-5 grid gap-4 xl:grid-cols-3">
             <InterventionPanel
               classDetailHref={classDetailHref}
               actionPanelLabel={t("teacher.dashboard.actionPanelLabel")}
@@ -377,7 +377,7 @@ export function TeacherDashboardClient() {
             />
           </section>
 
-          <section className="mt-4 panel rounded-[30px] p-5">
+          <section className="mt-5 panel rounded-[30px] p-5">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="surface-label">{t("teacher.dashboard.performanceLabel")}</p>
@@ -388,7 +388,7 @@ export function TeacherDashboardClient() {
             <div className="mt-5 grid gap-4 xl:grid-cols-3">
               {teacherClass.practicePerformanceOverview.length ? (
                 teacherClass.practicePerformanceOverview.map((item) => (
-                  <div className="rounded-[24px] border border-white/10 bg-white/6 p-4" key={item.gameSlug}>
+                  <div className="rounded-[24px] border border-white/10 bg-[rgba(255,255,255,0.035)] p-4" key={item.gameSlug}>
                     <div className="flex items-center justify-between gap-4">
                       <p className="font-black text-white">{item.title}</p>
                       <p className="text-right text-sm font-black text-cyan-200">
@@ -546,8 +546,8 @@ function InterventionPanel({
 
 function SummaryCard({ icon: Icon, label, value }: { icon: typeof Users; label: string; value: number | string }) {
   return (
-    <div className="rounded-[24px] border border-white/10 bg-slate-950/45 p-4">
-      <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-400/10 text-cyan-100">
+    <div className="rounded-[24px] border border-white/10 bg-[rgba(10,18,34,0.72)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+      <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-cyan-300/18 bg-cyan-400/10 text-cyan-100">
         <Icon className="h-5 w-5" />
       </div>
       <p className="mt-4 text-2xl font-black text-white">{value}</p>
@@ -558,7 +558,7 @@ function SummaryCard({ icon: Icon, label, value }: { icon: typeof Users; label: 
 
 function TeacherLink({ href, subtitle, title }: { href: Route<string>; subtitle: string; title: string }) {
   return (
-    <Link className="rounded-[24px] border border-white/10 bg-white/6 p-4 transition hover:border-cyan-300/20 hover:bg-white/10" href={href}>
+    <Link className="rounded-[24px] border border-white/10 bg-[rgba(255,255,255,0.035)] p-4 transition hover:border-cyan-300/20 hover:bg-white/[0.08]" href={href}>
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="font-black text-white">{title}</p>
@@ -572,7 +572,7 @@ function TeacherLink({ href, subtitle, title }: { href: Route<string>; subtitle:
 
 function TeacherInfo({ title, value }: { title: string; value: string }) {
   return (
-    <div className="rounded-[24px] border border-white/10 bg-white/6 p-4">
+    <div className="rounded-[24px] border border-white/10 bg-[rgba(255,255,255,0.035)] p-4">
       <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">{title}</p>
       <p className="mt-2 font-black text-white">{value}</p>
     </div>

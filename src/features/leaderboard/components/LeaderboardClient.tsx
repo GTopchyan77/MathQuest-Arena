@@ -24,16 +24,15 @@ export function LeaderboardClient() {
   }, [filter]);
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+    <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <section className="relative overflow-hidden py-2">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.14),transparent_58%)]" />
-        <div className="relative flex flex-col gap-4">
-          <div className="flex items-start gap-4">
-            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[24px] border border-cyan-300/18 bg-[linear-gradient(180deg,rgba(30,64,175,0.2),rgba(15,23,42,0.72))] text-cyan-100 shadow-[0_0_32px_rgba(56,189,248,0.12)]">
+        <div className="relative flex flex-col items-center gap-4 text-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[24px] border border-amber-300/18 bg-[linear-gradient(180deg,rgba(120,53,15,0.26),rgba(15,23,42,0.72))] text-amber-100 shadow-[0_0_32px_rgba(251,191,36,0.12)]">
               <Trophy className="h-9 w-9" />
             </div>
             <div className="min-w-0 pt-1">
-              <p className="surface-label text-cyan-200/80">{t("leaderboard.label")}</p>
               <h1 className="mt-2 font-[var(--font-sora)] text-3xl font-extrabold text-white sm:text-[3.25rem] sm:leading-none">{t("leaderboard.title")}</h1>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
                 {t("leaderboard.body")}
@@ -52,8 +51,8 @@ export function LeaderboardClient() {
             }}
           >
             <SummaryStripItem icon={Users} label={t("leaderboard.summaryPlayers")} value={entries.length.toLocaleString()} />
-            <SummaryStripItem icon={Trophy} label={t("leaderboard.totalRuns")} value={totalRuns.toLocaleString()} />
-            <SummaryStripItem icon={Target} label={t("leaderboard.leaderScore")} value={(leader?.best_score ?? 0).toLocaleString()} />
+            <SummaryStripItem icon={Medal} label={t("leaderboard.totalRuns")} value={totalRuns.toLocaleString()} />
+            <SummaryStripItem icon={Trophy} label={t("leaderboard.leaderScore")} value={(leader?.best_score ?? 0).toLocaleString()} />
             <SummaryStripItem icon={Crown} label={t("leaderboard.summaryLeader")} value={leader?.display_name || t("leaderboard.anonymous")} />
           </div>
         </div>
@@ -88,7 +87,7 @@ export function LeaderboardClient() {
         <div className="m-5 overflow-x-auto rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(8,16,36,0.98),rgba(6,12,28,0.96))] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
           <table className="w-full min-w-[760px] border-collapse">
             <thead>
-              <tr className="border-b border-white/10 bg-white/[0.025] text-[11px] font-black uppercase tracking-[0.16em] text-slate-500">
+              <tr className="border-b border-white/10 bg-white/[0.025] text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">
                 <th className="w-20 px-6 py-4 text-left">{t("leaderboard.rank")}</th>
                 <th className="px-4 py-4 text-left">{t("leaderboard.player")}</th>
                 <th className="w-[140px] px-4 py-4 text-right">{t("leaderboard.bestScore")}</th>
@@ -137,7 +136,10 @@ export function LeaderboardClient() {
                         }`}>
                           {getPlayerInitials(entry.display_name || t("leaderboard.anonymous"))}
                         </span>
-                        <span className="min-w-0 truncate text-[17px] font-extrabold text-white">{entry.display_name || t("leaderboard.anonymous")}</span>
+                        <div className="min-w-0">
+                          <p className="min-w-0 truncate text-[17px] font-extrabold text-white">{entry.display_name || t("leaderboard.anonymous")}</p>
+                          <p className="text-sm font-medium text-slate-500">{t("leaderboard.competitor")}</p>
+                        </div>
                         {entry.rank <= 3 ? (
                           <span className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] ${
                             entry.rank === 1

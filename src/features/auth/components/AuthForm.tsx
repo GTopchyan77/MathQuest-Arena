@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
+import { GraduationCap, Sparkles } from "lucide-react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useLocale } from "@/lib/i18n/useLocale";
 import { Button } from "@/shared/components/ui/Button";
@@ -191,16 +192,49 @@ export function AuthForm({ mode }: AuthFormProps) {
   return (
     <form className="grid gap-4" onSubmit={onSubmit}>
       {isRegister ? (
-        <label className="grid gap-2 text-sm font-bold text-slate-200">
-          {t("auth.form.displayName")}
-          <input
-            className="focus-ring h-12 rounded-2xl border border-white/10 bg-white/6 px-4 font-medium text-white outline-none transition placeholder:text-slate-500"
-            onChange={(event) => setDisplayName(event.target.value)}
-            placeholder={t("auth.form.displayNamePlaceholder")}
-            type="text"
-            value={displayName}
-          />
-        </label>
+        <>
+          <div className="grid gap-3">
+            <p className="text-sm font-bold text-slate-200">{t("auth.form.accountType")}</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-[24px] border border-cyan-300/18 bg-cyan-400/10 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-cyan-300/18 bg-cyan-400/10 text-cyan-100">
+                    <Sparkles className="h-5 w-5" />
+                  </div>
+                  <span className="rounded-full border border-cyan-300/18 bg-cyan-400/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-cyan-100">
+                    {t("auth.form.studentDefault")}
+                  </span>
+                </div>
+                <p className="mt-4 font-[var(--font-sora)] text-lg font-extrabold text-white">{t("auth.form.student")}</p>
+                <p className="mt-2 text-sm leading-6 text-slate-300">{t("auth.form.studentDescription")}</p>
+              </div>
+
+              <div className="rounded-[24px] border border-white/10 bg-white/[0.04] p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/6 text-slate-100">
+                    <GraduationCap className="h-5 w-5" />
+                  </div>
+                  <span className="rounded-full border border-amber-300/16 bg-amber-300/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-amber-100">
+                    {t("auth.form.teacherSetupRequired")}
+                  </span>
+                </div>
+                <p className="mt-4 font-[var(--font-sora)] text-lg font-extrabold text-white">{t("auth.form.teacher")}</p>
+                <p className="mt-2 text-sm leading-6 text-slate-300">{t("auth.form.teacherDescription")}</p>
+              </div>
+            </div>
+          </div>
+
+          <label className="grid gap-2 text-sm font-bold text-slate-200">
+            {t("auth.form.displayName")}
+            <input
+              className="focus-ring h-12 rounded-2xl border border-white/10 bg-white/6 px-4 font-medium text-white outline-none transition placeholder:text-slate-500"
+              onChange={(event) => setDisplayName(event.target.value)}
+              placeholder={t("auth.form.displayNamePlaceholder")}
+              type="text"
+              value={displayName}
+            />
+          </label>
+        </>
       ) : null}
       <label className="grid gap-2 text-sm font-bold text-slate-200">
         {t("auth.form.email")}

@@ -119,7 +119,7 @@ export function DashboardClient() {
   const latestBadgeLabel = latestBadge ? getBadgeLabel(latestBadge.id, t) : null;
 
   return (
-    <main className="mx-auto max-w-[1440px] p-4 sm:p-6">
+    <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <section className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
         <div className="panel-strong relative overflow-hidden rounded-[30px] p-6 text-white">
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.02),transparent),radial-gradient(circle_at_top_left,rgba(34,211,238,.16),transparent_28%),radial-gradient(circle_at_92%_12%,rgba(139,92,246,.18),transparent_24%)]" />
@@ -140,7 +140,7 @@ export function DashboardClient() {
                 {isFirstSession ? t("dashboard.firstSession.badge") : t("dashboard.returning.badge")}
               </div>
             </div>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <Button asChild className={isFirstSession ? "shadow-[0_22px_70px_rgba(34,211,238,0.32)]" : undefined}>
                 <Link href={isFirstSession || isFirstReturn ? "/games/quick-math-duel" : "/games"}>
                   <Play className="h-5 w-5" />{" "}
@@ -168,7 +168,7 @@ export function DashboardClient() {
               </div>
             ) : null}
             {!isFirstReturn ? (
-              <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="mt-7 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <MetricCard icon={Flame} label={t("dashboard.metrics.totalXp")} tone="cyan" value={stats.totalXp.toLocaleString()} />
                 <MetricCard icon={Rocket} label={t("dashboard.metrics.dailyStreak")} tone="violet" value={stats.progression.currentStreak} />
                 <MetricCard icon={Medal} label={t("dashboard.metrics.gamesCompleted")} tone="green" value={stats.completed} />
@@ -273,7 +273,7 @@ export function DashboardClient() {
       </section>
 
       {isFirstSession || isFirstReturn ? null : (
-        <section className="mt-4 panel-strong rounded-[30px] p-5">
+        <section className="mt-5 panel-strong rounded-[30px] p-5">
           <p className="surface-label text-cyan-200/80">{t("dashboard.chain.surface")}</p>
           <h2 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">{t("dashboard.chain.title")}</h2>
           <div className="mt-5 grid gap-3 lg:grid-cols-4">
@@ -302,7 +302,7 @@ export function DashboardClient() {
       )}
 
       {isFirstSession || isFirstReturn ? null : (
-        <section className="mt-4 grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+        <section className="mt-5 grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
           <div className="panel rounded-[30px] p-5">
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -350,7 +350,7 @@ export function DashboardClient() {
       )}
 
       {isFirstSession || isFirstReturn ? null : (
-        <section className="mt-4 grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
+        <section className="mt-5 grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
           <div className="panel rounded-[30px] p-5">
             <div className="flex items-center justify-between gap-3">
               <div>

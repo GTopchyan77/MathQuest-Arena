@@ -93,7 +93,7 @@ export function ProfileClient() {
   const joined = user?.created_at ? new Date(user.created_at).toLocaleDateString() : t("profile.previewJoined");
 
   return (
-    <main className="mx-auto max-w-[1440px] p-4 sm:p-6">
+    <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <section className="grid gap-4 xl:grid-cols-[0.8fr_1.2fr]">
         <aside className="panel-strong rounded-[30px] p-6">
           <div className="flex items-center gap-4">

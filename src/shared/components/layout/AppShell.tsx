@@ -123,9 +123,9 @@ export function AppShell({ children }: AppShellProps) {
   const isTeacherRoute = pathname === "/teacher" || pathname.startsWith("/teacher/");
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.08),transparent_24%),radial-gradient(circle_at_top_right,rgba(139,92,246,0.08),transparent_26%),linear-gradient(180deg,rgba(8,12,24,0.96),rgba(5,8,22,1))]">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.08),transparent_22%),radial-gradient(circle_at_top_right,rgba(99,102,241,0.08),transparent_24%),linear-gradient(180deg,rgba(8,13,26,0.98),rgba(5,9,18,1))]">
       <div className="flex min-h-screen">
-        <aside className="hidden w-[280px] shrink-0 border-r border-white/8 bg-slate-950/70 px-5 py-5 backdrop-blur-2xl lg:flex lg:flex-col">
+        <aside className="hidden w-[280px] shrink-0 border-r border-white/8 bg-[rgba(7,11,23,0.78)] px-5 py-5 backdrop-blur-2xl lg:flex lg:flex-col">
           <SidebarContent
             currentPath={pathname}
             displayName={displayName}
@@ -137,8 +137,8 @@ export function AppShell({ children }: AppShellProps) {
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <div className="sticky top-0 z-40 border-b border-white/8 bg-slate-950/55 px-4 py-3 backdrop-blur-2xl sm:px-6">
-            <div className="flex items-center gap-3">
+          <div className="sticky top-0 z-40 border-b border-white/8 bg-[rgba(6,10,21,0.72)] px-4 py-3 backdrop-blur-2xl sm:px-6">
+            <div className="mx-auto flex max-w-5xl items-center gap-3">
               <button
                 className="focus-ring rounded-2xl border border-white/10 bg-white/6 p-2 text-slate-100 lg:hidden"
                 onClick={() => setSidebarOpen(true)}
@@ -146,7 +146,7 @@ export function AppShell({ children }: AppShellProps) {
               >
                 <Menu className="h-5 w-5" />
               </button>
-              <div className="flex min-w-0 flex-1 items-center gap-3 rounded-[22px] border border-white/10 bg-white/6 px-4 py-3 shadow-[0_18px_45px_rgba(2,8,23,0.28)]">
+              <div className="flex min-w-0 flex-1 items-center gap-3 rounded-[22px] border border-white/10 bg-white/[0.045] px-4 py-3 shadow-[0_18px_45px_rgba(2,8,23,0.22)]">
                 <Search className="h-4 w-4 shrink-0 text-slate-400" />
                 <span className="truncate text-sm font-medium text-slate-400">
                   {isTeacherRoute ? t("shell.searchTeacher") : t("shell.searchLearner")}
@@ -156,13 +156,13 @@ export function AppShell({ children }: AppShellProps) {
                 </span>
               </div>
               <div className="hidden items-center gap-3 sm:flex">
-                <div className="rounded-2xl border border-emerald-400/16 bg-emerald-400/10 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-emerald-100">
+                <div className="rounded-full border border-emerald-400/16 bg-emerald-400/10 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-emerald-100">
                   {isTeacherRoute ? t("shell.teacherModeBadge") : t("shell.dailyReady")}
                 </div>
-                <button className="focus-ring rounded-2xl border border-white/10 bg-white/6 p-3 text-slate-200 transition hover:bg-white/10" type="button">
+                <button className="focus-ring rounded-2xl border border-white/10 bg-white/[0.045] p-3 text-slate-200 transition hover:bg-white/[0.08]" type="button">
                   <Bell className="h-4 w-4" />
                 </button>
-                <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/6 px-3 py-2">
+                <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.045] px-3 py-2">
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[linear-gradient(135deg,rgba(34,211,238,0.24),rgba(139,92,246,0.3))] text-sm font-black text-white">
                     {initial}
                   </div>
@@ -181,7 +181,7 @@ export function AppShell({ children }: AppShellProps) {
 
       {sidebarOpen ? (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm lg:hidden">
-          <div className="absolute inset-y-0 left-0 w-[292px] border-r border-white/8 bg-slate-950/95 px-5 py-5">
+          <div className="absolute inset-y-0 left-0 w-[292px] border-r border-white/8 bg-[rgba(6,10,21,0.95)] px-5 py-5">
             <div className="mb-4 flex justify-end">
               <button
                 className="focus-ring rounded-2xl border border-white/10 bg-white/6 p-2 text-slate-100"
@@ -230,7 +230,7 @@ function SidebarContent({
   return (
     <>
       <Link className="flex items-center gap-3" href="/">
-        <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-cyan-300/20 bg-[linear-gradient(135deg,rgba(34,211,238,0.24),rgba(139,92,246,0.3))] text-cyan-100 shadow-[0_12px_34px_rgba(34,211,238,0.18)]">
+        <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-cyan-300/18 bg-[linear-gradient(135deg,rgba(34,211,238,0.18),rgba(99,102,241,0.18))] text-cyan-100 shadow-[0_12px_28px_rgba(34,211,238,0.14)]">
           <Calculator className="h-5 w-5" />
         </span>
         <div>
@@ -304,7 +304,7 @@ function SidebarContent({
         </nav>
       </div>
 
-      <div className="mt-8 rounded-[26px] border border-white/10 bg-white/6 p-4">
+      <div className="mt-8 rounded-[26px] border border-white/10 bg-white/[0.045] p-4">
         <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200/80">{isTeacherRoute ? t("shell.teacherPreview") : t("shell.dailyFocus")}</p>
         <p className="mt-2 font-[var(--font-sora)] text-lg font-extrabold text-white">
           {isTeacherRoute ? t("shell.teacherPreviewTitle") : t("shell.dailyFocusTitle")}
@@ -321,7 +321,7 @@ function SidebarContent({
         )}
       </div>
 
-      <div className="mt-auto rounded-[26px] border border-white/10 bg-slate-950/55 p-4">
+      <div className="mt-auto rounded-[26px] border border-white/10 bg-[rgba(6,10,21,0.7)] p-4">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(34,211,238,0.24),rgba(139,92,246,0.3))] text-sm font-black text-white">
             {initial}
