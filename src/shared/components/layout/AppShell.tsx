@@ -3,7 +3,7 @@
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Award, Bell, BookOpen, Calculator, CircleDot, GraduationCap, LayoutGrid, LogOut, Menu, Search, Settings, UserRound, X } from "lucide-react";
+import { Award, Bell, BookOpen, Calculator, CircleDot, GraduationCap, LayoutGrid, LogOut, Menu, Search, Settings, Trophy, UserRound, X } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useLocale } from "@/lib/i18n/useLocale";
@@ -18,14 +18,17 @@ type AppShellProps = {
 };
 
 type LearnerNavItem = {
+  badgeKey?: "shell.comingSoon";
+  disabled?: boolean;
   icon: typeof LayoutGrid;
-  key: "nav.dashboard" | "shell.nav.achievements" | "shell.nav.learn" | "shell.nav.practice" | "shell.nav.profile";
-  secondary?: "comingSoon" | "open";
+  key: "nav.dashboard" | "nav.games" | "nav.leaderboard" | "shell.nav.achievements" | "shell.nav.learn" | "shell.nav.practice" | "shell.nav.profile";
   detailKey: "shell.openSection" | "shell.comingSoon";
   href?: Route<string>;
 };
 
 type TeacherNavItem = {
+  badgeKey?: never;
+  disabled?: false;
   href?: Route<string>;
   icon: typeof LayoutGrid;
   detailKey: "shell.openSection";
@@ -37,11 +40,11 @@ const shellPrefixes = ["/dashboard", "/games", "/leaderboard", "/profile", "/tea
 const navItems: LearnerNavItem[] = [
   { detailKey: "shell.openSection", href: "/dashboard", icon: LayoutGrid, key: "nav.dashboard" },
   { detailKey: "shell.openSection", href: "/profile", icon: UserRound, key: "shell.nav.profile" },
-  { detailKey: "shell.comingSoon", icon: Award, key: "shell.nav.achievements" },
-  { detailKey: "shell.openSection", href: "/games", icon: BookOpen, key: "shell.nav.learn" },
-  { detailKey: "shell.openSection", href: "/games", icon: CircleDot, key: "shell.nav.practice" }
+  { detailKey: "shell.openSection", href: "/games", icon: BookOpen, key: "nav.games" },
+  { detailKey: "shell.openSection", href: "/leaderboard", icon: Trophy, key: "nav.leaderboard" },
+  { badgeKey: "shell.comingSoon", detailKey: "shell.comingSoon", disabled: true, icon: Award, key: "shell.nav.achievements" },
+  { badgeKey: "shell.comingSoon", detailKey: "shell.comingSoon", disabled: true, icon: CircleDot, key: "shell.nav.practice" }
 ];
-
 const teacherNavItems: TeacherNavItem[] = [{ detailKey: "shell.openSection", href: "/teacher", icon: GraduationCap, key: "nav.teacherDashboard" }];
 
 export function AppShell({ children }: AppShellProps) {
@@ -110,7 +113,7 @@ export function AppShell({ children }: AppShellProps) {
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.08),transparent_22%),radial-gradient(circle_at_top_right,rgba(99,102,241,0.08),transparent_24%),linear-gradient(180deg,rgba(8,13,26,0.98),rgba(5,9,18,1))]">
       <div className="flex min-h-screen">
-        <aside className="hidden w-[252px] shrink-0 border-r border-white/6 bg-[rgba(8,12,25,0.76)] px-4 py-5 backdrop-blur-2xl lg:flex lg:flex-col">
+      <aside className="hidden w-[252px] shrink-0 border-r border-white/6 bg-[rgba(8,12,25,0.72)] px-4 py-5 backdrop-blur-2xl lg:flex lg:flex-col">
           <SidebarContent
             currentPath={pathname}
             displayName={displayName}
@@ -229,7 +232,9 @@ function SidebarContent({
         <nav className="grid gap-1.5">
           {items.map((item) => {
             const Icon = item.icon;
-            const active = item.href ? currentPath === item.href || currentPath.startsWith(`${item.href}/`) : false;
+            const isDisabled = "disabled" in item && Boolean(item.disabled);
+            const badgeKey = "badgeKey" in item ? item.badgeKey : undefined;
+            const active = !isDisabled && item.href ? currentPath === item.href || currentPath.startsWith(`${item.href}/`) : false;
             const content = (
               <>
                 <span
@@ -243,11 +248,19 @@ function SidebarContent({
                   <Icon className="h-4 w-4" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className={cx("text-[15px] font-bold", active ? "text-white" : "text-slate-200")}>{t(item.key)}</p>
+                  <p
+                    className={cx(
+                      "truncate text-[14px] font-bold leading-tight",
+                      active ? "text-white" : isDisabled ? "text-slate-500" : "text-slate-200"
+                    )}
+                  >
+                    {t(item.key)}
+                  </p>
                 </div>
-                {!item.href ? (
-                  <span className="shrink-0 rounded-full bg-white/[0.05] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
-                    {t("shell.comingSoon")}
+
+                {badgeKey ? (
+                  <span className="ml-2 shrink-0 rounded-full bg-white/[0.06] px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.08em] text-slate-500">
+                    Soon
                   </span>
                 ) : null}
               </>
@@ -272,7 +285,7 @@ function SidebarContent({
             return (
               <div
                 aria-disabled="true"
-                className="box-border flex w-full min-w-0 max-w-full cursor-default items-center gap-3 overflow-hidden rounded-2xl border border-transparent bg-white/[0.025] px-3 py-3 opacity-75"
+                className="box-border flex w-full min-w-0 max-w-full cursor-default items-center gap-3 overflow-hidden rounded-2xl border border-transparent px-3 py-3 opacity-70"
                 key={item.key}
               >
                 {content}
