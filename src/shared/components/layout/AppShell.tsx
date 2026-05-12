@@ -9,6 +9,7 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useLocale } from "@/lib/i18n/useLocale";
 import { logout as logoutUser } from "@/lib/supabase/auth";
 import { getCurrentProfile } from "@/lib/supabase/profileRepository";
+import { MathCursorTrail } from "@/shared/components/effects/MathCursorTrail";
 import { cx } from "@/lib/utils";
 import { Button } from "@/shared/components/ui/Button";
 import { SiteHeader } from "@/shared/components/layout/SiteHeader";
@@ -58,6 +59,24 @@ export function AppShell({ children }: AppShellProps) {
     () => shellPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)),
     [pathname]
   );
+  const effectRoutes = useMemo(() => ["/", "/dashboard", "/games", "/leaderboard", "/profile"], []);
+  const shouldShowMathTrail = useMemo(() => {
+    const isTrackedRoute =
+      pathname === "/" ||
+      effectRoutes
+        .filter((route) => route !== "/")
+        .some((route) => pathname === route || pathname.startsWith(`${route}/`));
+
+    if (!isTrackedRoute || loading) {
+      return false;
+    }
+
+    if (pathname === "/") {
+      return true;
+    }
+
+    return !user;
+  }, [effectRoutes, loading, pathname, user]);
 
   useEffect(() => {
     let active = true;
@@ -92,7 +111,8 @@ export function AppShell({ children }: AppShellProps) {
     return (
       <>
         <SiteHeader />
-        {children}
+        <MathCursorTrail enabled={shouldShowMathTrail} />
+        <div className="relative z-10">{children}</div>
       </>
     );
   }
@@ -101,7 +121,8 @@ export function AppShell({ children }: AppShellProps) {
     return (
       <>
         <SiteHeader />
-        {children}
+        <MathCursorTrail enabled={shouldShowMathTrail} />
+        <div className="relative z-10">{children}</div>
       </>
     );
   }
@@ -112,6 +133,7 @@ export function AppShell({ children }: AppShellProps) {
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.08),transparent_22%),radial-gradient(circle_at_top_right,rgba(99,102,241,0.08),transparent_24%),linear-gradient(180deg,rgba(8,13,26,0.98),rgba(5,9,18,1))]">
+      <MathCursorTrail enabled={shouldShowMathTrail} />
       <div className="flex min-h-screen">
       <aside className="hidden w-[252px] shrink-0 border-r border-white/6 bg-[rgba(8,12,25,0.72)] px-4 py-5 backdrop-blur-2xl lg:flex lg:flex-col">
           <SidebarContent
@@ -163,7 +185,7 @@ export function AppShell({ children }: AppShellProps) {
             </div>
           </div>
 
-          <div className="min-w-0 flex-1">{children}</div>
+          <div className="relative z-10 min-w-0 flex-1">{children}</div>
         </div>
       </div>
 

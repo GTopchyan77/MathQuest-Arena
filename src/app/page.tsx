@@ -1,6 +1,5 @@
 "use client";
 
-import { useRef } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -17,7 +16,6 @@ import {
   TrendingUp,
   Users
 } from "lucide-react";
-import { PointerTrailOverlay } from "@/features/home/components/PointerTrailOverlay";
 import { games } from "@/lib/games/catalog";
 import { useLocale } from "@/lib/i18n/useLocale";
 import { Button } from "@/shared/components/ui/Button";
@@ -33,19 +31,17 @@ const homeGameDurationKeys = {
 
 export default function HomePage() {
   const { t } = useLocale();
-  const heroSectionRef = useRef<HTMLElement>(null);
   const homeGames = homeGameSlugs
     .map((slug) => games.find((game) => game.slug === slug))
     .filter((game): game is NonNullable<typeof game> => Boolean(game));
 
   return (
     <main className="pb-16">
-      <section className="premium-grid relative overflow-hidden px-4 pb-14 pt-6 sm:px-6 sm:pb-16 lg:px-8" ref={heroSectionRef}>
+      <section className="premium-grid relative overflow-hidden px-4 pb-14 pt-6 sm:px-6 sm:pb-16 lg:px-8">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute left-[8%] top-12 h-56 w-56 rounded-full bg-cyan-400/10 blur-3xl" />
           <div className="absolute right-[10%] top-10 h-64 w-64 rounded-full bg-[rgba(99,102,241,0.10)] blur-3xl" />
         </div>
-        <PointerTrailOverlay containerRef={heroSectionRef} enabled />
 
         <div className="relative z-10 mx-auto max-w-[1360px]">
           <div className="grid items-start gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-14">
