@@ -361,6 +361,8 @@ const en = {
   "shell.nav.leaderboard": "Leaderboard",
   "shell.nav.profile": "Profile",
   "shell.nav.achievements": "Achievements",
+  "shell.nav.learn": "Learn",
+  "shell.nav.practice": "Practice",
   "shell.workspace": "Workspace",
   "shell.openSection": "Open section",
   "shell.comingSoon": "Coming soon",
@@ -380,7 +382,10 @@ const en = {
   "shell.teacherPreviewBody": "Show class engagement, mastery, and student risk signals without write actions.",
   "shell.teacherPreviewCta": "Open teacher dashboard",
   "shell.learnerRole": "Arena learner",
+  "shell.settings": "Settings",
   "shell.signOut": "Sign out",
+  "dashboard.welcomeBack": "Welcome back, {name}!",
+  "dashboard.heroSubtitle": "Ready to continue your math journey?",
 
   "protected.loading": "Loading your arena...",
   "protected.setupTitle": "Supabase setup needed",
@@ -609,3 +614,4 @@ const en = {
 export type Messages = { [Key in keyof typeof en]: string };
 
 export default en;
+

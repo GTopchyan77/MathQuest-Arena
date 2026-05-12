@@ -3,22 +3,7 @@
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Award,
-  Bell,
-  Calculator,
-  ChevronRight,
-  GraduationCap,
-  Gamepad2,
-  LayoutGrid,
-  LogOut,
-  Menu,
-  Search,
-  Sparkles,
-  Trophy,
-  UserRound,
-  X
-} from "lucide-react";
+import { Award, Bell, BookOpen, Calculator, CircleDot, GraduationCap, LayoutGrid, LogOut, Menu, Search, Settings, UserRound, X } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useLocale } from "@/lib/i18n/useLocale";
@@ -33,10 +18,11 @@ type AppShellProps = {
 };
 
 type LearnerNavItem = {
+  icon: typeof LayoutGrid;
+  key: "nav.dashboard" | "shell.nav.achievements" | "shell.nav.learn" | "shell.nav.practice" | "shell.nav.profile";
+  secondary?: "comingSoon" | "open";
   detailKey: "shell.openSection" | "shell.comingSoon";
   href?: Route<string>;
-  icon: typeof LayoutGrid;
-  key: "shell.nav.overview" | "shell.nav.games" | "shell.nav.dailyChallenge" | "shell.nav.leaderboard" | "shell.nav.profile" | "shell.nav.achievements";
 };
 
 type TeacherNavItem = {
@@ -49,12 +35,11 @@ type TeacherNavItem = {
 const shellPrefixes = ["/dashboard", "/games", "/leaderboard", "/profile", "/teacher"];
 
 const navItems: LearnerNavItem[] = [
-  { detailKey: "shell.openSection", href: "/dashboard", icon: LayoutGrid, key: "shell.nav.overview" },
-  { detailKey: "shell.openSection", href: "/games", icon: Gamepad2, key: "shell.nav.games" },
-  { detailKey: "shell.comingSoon", icon: Sparkles, key: "shell.nav.dailyChallenge" },
-  { detailKey: "shell.openSection", href: "/leaderboard", icon: Trophy, key: "shell.nav.leaderboard" },
+  { detailKey: "shell.openSection", href: "/dashboard", icon: LayoutGrid, key: "nav.dashboard" },
   { detailKey: "shell.openSection", href: "/profile", icon: UserRound, key: "shell.nav.profile" },
-  { detailKey: "shell.comingSoon", icon: Award, key: "shell.nav.achievements" }
+  { detailKey: "shell.comingSoon", icon: Award, key: "shell.nav.achievements" },
+  { detailKey: "shell.openSection", href: "/games", icon: BookOpen, key: "shell.nav.learn" },
+  { detailKey: "shell.openSection", href: "/games", icon: CircleDot, key: "shell.nav.practice" }
 ];
 
 const teacherNavItems: TeacherNavItem[] = [{ detailKey: "shell.openSection", href: "/teacher", icon: GraduationCap, key: "nav.teacherDashboard" }];
@@ -125,7 +110,7 @@ export function AppShell({ children }: AppShellProps) {
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.08),transparent_22%),radial-gradient(circle_at_top_right,rgba(99,102,241,0.08),transparent_24%),linear-gradient(180deg,rgba(8,13,26,0.98),rgba(5,9,18,1))]">
       <div className="flex min-h-screen">
-        <aside className="hidden w-[280px] shrink-0 border-r border-white/8 bg-[rgba(7,11,23,0.78)] px-5 py-5 backdrop-blur-2xl lg:flex lg:flex-col">
+        <aside className="hidden w-[252px] shrink-0 border-r border-white/6 bg-[rgba(8,12,25,0.76)] px-4 py-5 backdrop-blur-2xl lg:flex lg:flex-col">
           <SidebarContent
             currentPath={pathname}
             displayName={displayName}
@@ -137,8 +122,8 @@ export function AppShell({ children }: AppShellProps) {
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <div className="sticky top-0 z-40 border-b border-white/8 bg-[rgba(6,10,21,0.72)] px-4 py-3 backdrop-blur-2xl sm:px-6">
-            <div className="mx-auto flex max-w-5xl items-center gap-3">
+          <div className="sticky top-0 z-40 border-b border-white/8 bg-[rgba(6,10,21,0.78)] px-4 py-3 backdrop-blur-2xl sm:px-6 lg:hidden">
+            <div className="mx-auto flex max-w-[1120px] items-center gap-3">
               <button
                 className="focus-ring rounded-2xl border border-white/10 bg-white/6 p-2 text-slate-100 lg:hidden"
                 onClick={() => setSidebarOpen(true)}
@@ -181,7 +166,7 @@ export function AppShell({ children }: AppShellProps) {
 
       {sidebarOpen ? (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm lg:hidden">
-          <div className="absolute inset-y-0 left-0 w-[292px] border-r border-white/8 bg-[rgba(6,10,21,0.95)] px-5 py-5">
+          <div className="absolute inset-y-0 left-0 w-[272px] border-r border-white/8 bg-[rgba(6,10,21,0.95)] px-4 py-5">
             <div className="mb-4 flex justify-end">
               <button
                 className="focus-ring rounded-2xl border border-white/10 bg-white/6 p-2 text-slate-100"
@@ -258,20 +243,13 @@ function SidebarContent({
                   <Icon className="h-4 w-4" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className={cx("truncate text-sm font-black", active ? "text-white" : "text-slate-200")}>
-                    {t(item.key)}
-                  </p>
-                  <p className="text-xs font-semibold text-slate-500">
-                    {t(item.detailKey)}
-                  </p>
+                  <p className={cx("text-[15px] font-bold", active ? "text-white" : "text-slate-200")}>{t(item.key)}</p>
                 </div>
-                {item.href ? (
-                  <ChevronRight className={cx("h-4 w-4 shrink-0", active ? "text-cyan-200" : "text-slate-600")} />
-                ) : (
-                  <span className="shrink-0 rounded-full border border-white/10 bg-white/6 px-2 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
+                {!item.href ? (
+                  <span className="shrink-0 rounded-full bg-white/[0.05] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
                     {t("shell.comingSoon")}
                   </span>
-                )}
+                ) : null}
               </>
             );
 
@@ -280,7 +258,7 @@ function SidebarContent({
                 <Link
                   className={cx(
                     "box-border flex w-full min-w-0 max-w-full items-center gap-3 overflow-hidden rounded-2xl border px-3 py-3 transition",
-                    active ? "border-white/12 bg-white/8" : "border-transparent hover:border-white/8 hover:bg-white/5"
+                    active ? "border-transparent bg-white/[0.08]" : "border-transparent hover:bg-white/[0.045]"
                   )}
                   href={item.href}
                   key={item.key}
@@ -294,7 +272,7 @@ function SidebarContent({
             return (
               <div
                 aria-disabled="true"
-                className="box-border flex w-full min-w-0 max-w-full cursor-default items-center gap-3 overflow-hidden rounded-2xl border border-white/6 bg-white/[0.03] px-3 py-3 opacity-75"
+                className="box-border flex w-full min-w-0 max-w-full cursor-default items-center gap-3 overflow-hidden rounded-2xl border border-transparent bg-white/[0.025] px-3 py-3 opacity-75"
                 key={item.key}
               >
                 {content}
@@ -304,34 +282,17 @@ function SidebarContent({
         </nav>
       </div>
 
-      <div className="mt-8 rounded-[26px] border border-white/10 bg-white/[0.045] p-4">
-        <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200/80">{isTeacherRoute ? t("shell.teacherPreview") : t("shell.dailyFocus")}</p>
-        <p className="mt-2 font-[var(--font-sora)] text-lg font-extrabold text-white">
-          {isTeacherRoute ? t("shell.teacherPreviewTitle") : t("shell.dailyFocusTitle")}
-        </p>
-        <p className="mt-2 text-sm leading-6 text-slate-400">
-          {isTeacherRoute
-            ? t("shell.teacherPreviewBody")
-            : t("shell.dailyFocusBody")}
-        </p>
-        {isTeacherRoute ? null : (
-          <Button className="mt-4 w-full" href="/dashboard">
-            {t("shell.dailyFocusCta")}
-          </Button>
-        )}
-      </div>
-
-      <div className="mt-auto rounded-[26px] border border-white/10 bg-[rgba(6,10,21,0.7)] p-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(34,211,238,0.24),rgba(139,92,246,0.3))] text-sm font-black text-white">
-            {initial}
+      <div className="mt-auto space-y-2 border-t border-white/8 pt-4">
+        <div className="flex items-center gap-3 rounded-2xl px-2 py-2 text-slate-300">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.04] text-slate-300">
+            <Settings className="h-4 w-4" />
           </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-black text-white">{displayName}</p>
-            <p className="text-xs font-semibold text-slate-500">{isTeacherRoute ? t("shell.teacherRole") : t("shell.learnerRole")}</p>
+          <div>
+            <p className="text-sm font-bold text-white">{t("shell.settings")}</p>
+            <p className="text-xs font-medium text-slate-500">{t("shell.comingSoon")}</p>
           </div>
         </div>
-        <Button className="mt-4 w-full" onClick={onLogout} variant="secondary">
+        <Button className="w-full" onClick={onLogout} variant="secondary">
           <LogOut className="h-4 w-4" /> {t("shell.signOut")}
         </Button>
       </div>
