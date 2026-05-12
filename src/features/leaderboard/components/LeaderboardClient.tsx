@@ -24,24 +24,24 @@ export function LeaderboardClient() {
   }, [filter]);
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-      <section className="relative overflow-hidden py-2">
+    <main className="mx-auto max-w-[1180px] px-5 py-5 sm:px-6 sm:py-7 lg:px-8">
+      <section className="relative overflow-hidden py-1">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.14),transparent_58%)]" />
-        <div className="relative flex flex-col items-center gap-4 text-center">
-          <div className="flex flex-col items-center gap-4">
+        <div className="relative flex flex-col items-center gap-3 text-center">
+          <div className="flex flex-col items-center gap-3">
             <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[24px] border border-amber-300/18 bg-[linear-gradient(180deg,rgba(120,53,15,0.26),rgba(15,23,42,0.72))] text-amber-100 shadow-[0_0_32px_rgba(251,191,36,0.12)]">
               <Trophy className="h-9 w-9" />
             </div>
-            <div className="min-w-0 pt-1">
-              <h1 className="mt-2 font-[var(--font-sora)] text-3xl font-extrabold text-white sm:text-[3.25rem] sm:leading-none">{t("leaderboard.title")}</h1>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+            <div className="min-w-0 pt-0.5">
+              <h1 className="mt-1 font-[var(--font-sora)] text-3xl font-extrabold text-white sm:text-[3.1rem] sm:leading-none">{t("leaderboard.title")}</h1>
+              <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
                 {t("leaderboard.body")}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="relative mt-6 overflow-hidden rounded-[26px] border border-white/10 bg-[linear-gradient(180deg,rgba(15,23,42,0.82),rgba(17,24,39,0.62))] shadow-[0_18px_50px_rgba(2,6,23,0.22)]">
+        <div className="relative mt-5 overflow-hidden rounded-[26px] border border-white/10 bg-[linear-gradient(180deg,rgba(15,23,42,0.82),rgba(17,24,39,0.62))] shadow-[0_18px_50px_rgba(2,6,23,0.22)]">
           <div
             className="bg-white/10"
             style={{
@@ -57,13 +57,13 @@ export function LeaderboardClient() {
           </div>
         </div>
 
-        <div className="relative mt-3 rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(15,23,42,0.72),rgba(17,24,39,0.52))] px-4 py-4 shadow-[0_14px_40px_rgba(2,6,23,0.14)]">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="pr-4">
+        <div className="relative mt-3 rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(15,23,42,0.72),rgba(17,24,39,0.52))] px-5 py-4 shadow-[0_14px_40px_rgba(2,6,23,0.14)]">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="min-w-[280px] pr-6">
               <p className="surface-label text-cyan-200/80">{t("leaderboard.filters")}</p>
-              <h2 className="mt-1 font-[var(--font-sora)] text-xl font-extrabold text-white">{t("leaderboard.scopeTitle")}</h2>
+              <h2 className="mt-1 whitespace-nowrap font-[var(--font-sora)] text-xl font-extrabold text-white">{t("leaderboard.scopeTitle")}</h2>
             </div>
-            <div className="flex flex-wrap gap-2 lg:justify-end">
+            <div className="flex flex-wrap gap-2.5 lg:flex-1 lg:justify-end">
               <Button onClick={() => setFilter("all")} variant={filter === "all" ? "primary" : "secondary"}>
                 {t("leaderboard.all")}
               </Button>
@@ -84,7 +84,7 @@ export function LeaderboardClient() {
             <h2 className="font-[var(--font-sora)] text-xl font-extrabold text-white">{t("leaderboard.listTitle")}</h2>
           </div>
         </div>
-        <div className="m-5 overflow-x-auto rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(8,16,36,0.98),rgba(6,12,28,0.96))] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+        <div className="m-4 overflow-x-auto rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(8,16,36,0.98),rgba(6,12,28,0.96))] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] sm:m-5">
           <table className="w-full min-w-[760px] border-collapse">
             <thead>
               <tr className="border-b border-white/10 bg-white/[0.025] text-[11px] font-black uppercase tracking-[0.12em] text-slate-500">
