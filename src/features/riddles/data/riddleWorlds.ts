@@ -22,29 +22,29 @@ export type GridLogicVisual = {
 export type RiddlePuzzle = {
   choices: RiddleOption[];
   correctAnswer: string;
-  explanation: string;
-  hint: string;
+  explanationKey: string;
+  hintKey: string;
   id: string;
-  prompt: string;
+  promptKey: string;
   type: RiddlePuzzleType;
   visual: GridLogicVisual | MissingNumberVisual | SymbolEquationVisual;
 };
 
 export type RiddleWorld = {
-  description: string;
+  descriptionKey: string;
   icon: "forest" | "market" | "temple";
   id: RiddleWorldId;
-  intro: string;
+  introKey: string;
   puzzles: RiddlePuzzle[];
-  title: string;
+  titleKey: string;
 };
 
 export const riddleWorlds: RiddleWorld[] = [
   {
-    description: "Missing numbers, patterns, and circle riddles.",
+    descriptionKey: "riddles.world.numberTemple.description",
     icon: "temple",
     id: "number-temple",
-    intro: "Ancient number locks guard each chamber. Spot the hidden rule and open the path.",
+    introKey: "riddles.world.numberTemple.intro",
     puzzles: [
       {
         choices: [
@@ -54,10 +54,10 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "14", value: "14" }
         ],
         correctAnswer: "13",
-        explanation: "Each step increases by 3: 4, 7, 10, 13.",
-        hint: "Look at the difference between each number.",
+        explanationKey: "riddles.puzzle.temple1.explanation",
+        hintKey: "riddles.puzzle.temple1.hint",
         id: "temple-1",
-        prompt: "Which number completes the staircase pattern?",
+        promptKey: "riddles.puzzle.temple1.prompt",
         type: "missing-number",
         visual: { cells: [4, 7, 10, null], shape: "row" }
       },
@@ -69,10 +69,10 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "30", value: "30" }
         ],
         correctAnswer: "24",
-        explanation: "The pattern doubles each time: 3, 6, 12, 24.",
-        hint: "Each number is twice the one before it.",
+        explanationKey: "riddles.puzzle.temple2.explanation",
+        hintKey: "riddles.puzzle.temple2.hint",
         id: "temple-2",
-        prompt: "The temple ring follows one repeating jump. What belongs in the final chamber?",
+        promptKey: "riddles.puzzle.temple2.prompt",
         type: "missing-number",
         visual: { cells: [3, 6, 12, null], shape: "circle-ring" }
       },
@@ -84,10 +84,10 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "22", value: "22" }
         ],
         correctAnswer: "20",
-        explanation: "The pattern adds 2, then 4, then 6: 8, 10, 14, 20.",
-        hint: "The step size grows each time.",
+        explanationKey: "riddles.puzzle.temple3.explanation",
+        hintKey: "riddles.puzzle.temple3.hint",
         id: "temple-3",
-        prompt: "Find the missing value in the growing-step pattern.",
+        promptKey: "riddles.puzzle.temple3.prompt",
         type: "missing-number",
         visual: { cells: [8, 10, 14, null], shape: "row" }
       },
@@ -99,10 +99,10 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "13", value: "13" }
         ],
         correctAnswer: "12",
-        explanation: "Go around the ring by adding 3 each time: 3, 6, 9, 12.",
-        hint: "Each number around the ring is 3 more than the one before it.",
+        explanationKey: "riddles.puzzle.temple4.explanation",
+        hintKey: "riddles.puzzle.temple4.hint",
         id: "temple-4",
-        prompt: "What number completes the final temple ring?",
+        promptKey: "riddles.puzzle.temple4.prompt",
         type: "missing-number",
         visual: { cells: [3, 6, 9, null], shape: "circle-ring" }
       },
@@ -114,21 +114,21 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "40", value: "40" }
         ],
         correctAnswer: "34",
-        explanation: "Each number is 5 more than the one before it: 9, 14, 19, 24, 29, 34.",
-        hint: "Add the same amount each time.",
+        explanationKey: "riddles.puzzle.temple5.explanation",
+        hintKey: "riddles.puzzle.temple5.hint",
         id: "temple-5",
-        prompt: "Choose the final key number for the temple path.",
+        promptKey: "riddles.puzzle.temple5.prompt",
         type: "missing-number",
         visual: { cells: [9, 14, 19, 24, 29, null], shape: "row" }
       }
     ],
-    title: "Number Temple"
+    titleKey: "riddles.world.numberTemple.title"
   },
   {
-    description: "Unknown values, box equations, and balanced math.",
+    descriptionKey: "riddles.world.equationForest.description",
     icon: "forest",
     id: "equation-forest",
-    intro: "The forest gates open when each equation stays in balance. Solve the unknown and move on.",
+    introKey: "riddles.world.equationForest.intro",
     puzzles: [
       {
         choices: [
@@ -138,13 +138,13 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "7", value: "7" }
         ],
         correctAnswer: "6",
-        explanation: "If x + 9 = 15, then x must be 6.",
-        hint: "Think about what number plus 9 equals 15.",
+        explanationKey: "riddles.puzzle.forest1.explanation",
+        hintKey: "riddles.puzzle.forest1.hint",
         id: "forest-1",
-        prompt: "What value belongs in the box?",
+        promptKey: "riddles.puzzle.forest1.prompt",
         type: "symbol-equation",
         visual: {
-          equations: [[{ kind: "symbol", value: "x" }, { kind: "plus", value: "+" }, { kind: "symbol", value: "9" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "15" }]]
+          equations: [[{ kind: "symbol", value: "X" }, { kind: "plus", value: "+" }, { kind: "symbol", value: "9" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "15" }]]
         }
       },
       {
@@ -155,13 +155,13 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "6", value: "6" }
         ],
         correctAnswer: "4",
-        explanation: "Two boxes make 8, so one box is 4.",
-        hint: "Split 8 into two equal parts.",
+        explanationKey: "riddles.puzzle.forest2.explanation",
+        hintKey: "riddles.puzzle.forest2.hint",
         id: "forest-2",
-        prompt: "The balanced gate has two equal boxes. What is one box worth?",
+        promptKey: "riddles.puzzle.forest2.prompt",
         type: "symbol-equation",
         visual: {
-          equations: [[{ kind: "symbol", value: "x" }, { kind: "plus", value: "+" }, { kind: "symbol", value: "x" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "8" }]]
+          equations: [[{ kind: "symbol", value: "X" }, { kind: "plus", value: "+" }, { kind: "symbol", value: "X" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "8" }]]
         }
       },
       {
@@ -172,13 +172,13 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "10", value: "10" }
         ],
         correctAnswer: "9",
-        explanation: "If x - 5 = 4, then x = 9.",
-        hint: "Undo the subtraction.",
+        explanationKey: "riddles.puzzle.forest3.explanation",
+        hintKey: "riddles.puzzle.forest3.hint",
         id: "forest-3",
-        prompt: "Which value keeps the forest equation balanced?",
+        promptKey: "riddles.puzzle.forest3.prompt",
         type: "symbol-equation",
         visual: {
-          equations: [[{ kind: "symbol", value: "x" }, { kind: "minus", value: "-" }, { kind: "symbol", value: "5" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "4" }]]
+          equations: [[{ kind: "symbol", value: "X" }, { kind: "minus", value: "-" }, { kind: "symbol", value: "5" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "4" }]]
         }
       },
       {
@@ -189,13 +189,13 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "13", value: "13" }
         ],
         correctAnswer: "11",
-        explanation: "3 + x = 14, so x = 11.",
-        hint: "What number added to 3 gives 14?",
+        explanationKey: "riddles.puzzle.forest4.explanation",
+        hintKey: "riddles.puzzle.forest4.hint",
         id: "forest-4",
-        prompt: "Find the hidden number in the branch equation.",
+        promptKey: "riddles.puzzle.forest4.prompt",
         type: "symbol-equation",
         visual: {
-          equations: [[{ kind: "symbol", value: "3" }, { kind: "plus", value: "+" }, { kind: "symbol", value: "x" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "14" }]]
+          equations: [[{ kind: "symbol", value: "3" }, { kind: "plus", value: "+" }, { kind: "symbol", value: "X" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "14" }]]
         }
       },
       {
@@ -206,23 +206,23 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "12", value: "12" }
         ],
         correctAnswer: "8",
-        explanation: "If x + 4 = 12, then x = 8.",
-        hint: "What is 12 minus 4?",
+        explanationKey: "riddles.puzzle.forest5.explanation",
+        hintKey: "riddles.puzzle.forest5.hint",
         id: "forest-5",
-        prompt: "Solve the final box to clear Equation Forest.",
+        promptKey: "riddles.puzzle.forest5.prompt",
         type: "symbol-equation",
         visual: {
-          equations: [[{ kind: "symbol", value: "x" }, { kind: "plus", value: "+" }, { kind: "symbol", value: "4" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "12" }]]
+          equations: [[{ kind: "symbol", value: "X" }, { kind: "plus", value: "+" }, { kind: "symbol", value: "4" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "12" }]]
         }
       }
     ],
-    title: "Equation Forest"
+    titleKey: "riddles.world.equationForest.title"
   },
   {
-    description: "Fruit, icons, and symbol equation puzzles.",
+    descriptionKey: "riddles.world.symbolMarket.description",
     icon: "market",
     id: "symbol-market",
-    intro: "Each market stall swaps numbers for symbols. Read the clues and solve the final trade.",
+    introKey: "riddles.world.symbolMarket.intro",
     puzzles: [
       {
         choices: [
@@ -232,10 +232,10 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "6", value: "6" }
         ],
         correctAnswer: "4",
-        explanation: "If 🍎 + 🍎 = 8, then one 🍎 = 4.",
-        hint: "Two matching symbols add to 8.",
+        explanationKey: "riddles.puzzle.market1.explanation",
+        hintKey: "riddles.puzzle.market1.hint",
         id: "market-1",
-        prompt: "What number does 🍎 represent?",
+        promptKey: "riddles.puzzle.market1.prompt",
         type: "symbol-equation",
         visual: {
           equations: [[{ kind: "symbol", value: "🍎" }, { kind: "plus", value: "+" }, { kind: "symbol", value: "🍎" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "8" }]]
@@ -249,10 +249,10 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "8", value: "8" }
         ],
         correctAnswer: "7",
-        explanation: "🍐 + 2 = 9, so 🍐 = 7.",
-        hint: "Undo the +2.",
+        explanationKey: "riddles.puzzle.market2.explanation",
+        hintKey: "riddles.puzzle.market2.hint",
         id: "market-2",
-        prompt: "What is the value of 🍐?",
+        promptKey: "riddles.puzzle.market2.prompt",
         type: "symbol-equation",
         visual: {
           equations: [[{ kind: "symbol", value: "🍐" }, { kind: "plus", value: "+" }, { kind: "symbol", value: "2" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "9" }]]
@@ -266,10 +266,10 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "13", value: "13" }
         ],
         correctAnswer: "11",
-        explanation: "⭐ = 5 and 🌙 = 6, so together they make 11.",
-        hint: "Solve each symbol separately, then combine them.",
+        explanationKey: "riddles.puzzle.market3.explanation",
+        hintKey: "riddles.puzzle.market3.hint",
         id: "market-3",
-        prompt: "If ⭐ = 5 and 🌙 = 6, what is ⭐ + 🌙?",
+        promptKey: "riddles.puzzle.market3.prompt",
         type: "symbol-equation",
         visual: {
           equations: [
@@ -287,10 +287,10 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "9", value: "9" }
         ],
         correctAnswer: "6",
-        explanation: "Each row goes up by 1: 1, 2, 3 then 2, 3, 4 then 3, 4, 5, so the last row must be 4, 5, 6.",
-        hint: "Look across each row and down each column. Both increase by 1.",
+        explanationKey: "riddles.puzzle.market4.explanation",
+        hintKey: "riddles.puzzle.market4.hint",
         id: "market-4",
-        prompt: "Which total completes the market grid?",
+        promptKey: "riddles.puzzle.market4.prompt",
         type: "grid-logic",
         visual: {
           cells: [
@@ -309,10 +309,10 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "12", value: "12" }
         ],
         correctAnswer: "10",
-        explanation: "In each row, the third number is the sum of the first two: 2 + 3 = 5, 4 + 5 = 9, so 4 + 6 = 10.",
-        hint: "Add the first two numbers in each row.",
+        explanationKey: "riddles.puzzle.market5.explanation",
+        hintKey: "riddles.puzzle.market5.hint",
         id: "market-5",
-        prompt: "Find the missing total in the final market stall.",
+        promptKey: "riddles.puzzle.market5.prompt",
         type: "grid-logic",
         visual: {
           cells: [
@@ -323,7 +323,7 @@ export const riddleWorlds: RiddleWorld[] = [
         }
       }
     ],
-    title: "Symbol Market"
+    titleKey: "riddles.world.symbolMarket.title"
   }
 ];
 

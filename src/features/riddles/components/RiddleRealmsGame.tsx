@@ -4,6 +4,7 @@ import { Brain, CheckCircle2, Compass, HelpCircle, Landmark, Map, MoveRight, Sha
 import { useMemo, useState } from "react";
 import { Button } from "@/shared/components/ui/Button";
 import { getRiddleWorld, riddleWorlds, type RiddlePuzzle, type RiddleWorld, type RiddleWorldId } from "@/features/riddles/data/riddleWorlds";
+import { useLocale } from "@/lib/i18n/useLocale";
 import { cx } from "@/lib/utils";
 
 const worldIcons = {
@@ -19,6 +20,7 @@ const worldAccents = {
 } as const;
 
 export function RiddleRealmsGame() {
+  const { t } = useLocale();
   const [selectedWorldId, setSelectedWorldId] = useState<RiddleWorldId | null>(null);
   const [puzzleIndexByWorld, setPuzzleIndexByWorld] = useState<Record<RiddleWorldId, number>>({
     "equation-forest": 0,
@@ -83,20 +85,20 @@ export function RiddleRealmsGame() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/16 bg-cyan-400/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-cyan-100">
               <Sparkles className="h-4 w-4" />
-              Logic worlds
+              {t("riddles.ui.logicWorlds")}
             </div>
-            <h2 className="mt-4 font-[var(--font-sora)] text-[2.15rem] font-extrabold text-white sm:text-[2.5rem]">Riddle Realms</h2>
+            <h2 className="mt-4 font-[var(--font-sora)] text-[2.15rem] font-extrabold text-white sm:text-[2.5rem]">{t("riddles.ui.title")}</h2>
             <p className="mt-3 max-w-3xl text-base leading-8 text-slate-300">
-              Choose a logic world, solve visual riddles, and clear each realm one puzzle at a time.
+              {t("riddles.ui.subtitle")}
             </p>
           </div>
           {selectedWorld ? (
             <div className="flex flex-wrap gap-3">
               <Button onClick={() => setSelectedWorldId(null)} variant="secondary">
-                <Map className="h-4 w-4" /> Change world
+                <Map className="h-4 w-4" /> {t("riddles.ui.changeWorld")}
               </Button>
               <Button onClick={restartWorld} variant="ghost">
-                Restart world
+                {t("riddles.ui.restartWorld")}
               </Button>
             </div>
           ) : null}
@@ -120,18 +122,18 @@ export function RiddleRealmsGame() {
                 })()}
               </div>
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">World selected</p>
-                <h3 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">{selectedWorld.title}</h3>
-                <p className="mt-2 text-sm leading-7 text-slate-300">{selectedWorld.intro}</p>
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">{t("riddles.ui.worldSelected")}</p>
+                <h3 className="mt-2 font-[var(--font-sora)] text-2xl font-extrabold text-white">{t(selectedWorld.titleKey as never)}</h3>
+                <p className="mt-2 text-sm leading-7 text-slate-300">{t(selectedWorld.introKey as never)}</p>
               </div>
             </div>
 
             <div className="mt-6 rounded-[24px] bg-white/[0.04] p-5">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Progress</p>
+                  <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">{t("riddles.ui.progress")}</p>
                   <p className="mt-2 text-lg font-black text-white">
-                    Puzzle {puzzleIndexByWorld[selectedWorld.id] + 1} of {selectedWorld.puzzles.length}
+                    {t("riddles.ui.puzzleProgress", { current: puzzleIndexByWorld[selectedWorld.id] + 1, total: selectedWorld.puzzles.length })}
                   </p>
                 </div>
                 <Compass className="h-5 w-5 text-cyan-200" />
@@ -145,20 +147,20 @@ export function RiddleRealmsGame() {
             </div>
 
             <div className="mt-5 rounded-[24px] bg-white/[0.04] p-5">
-              <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Riddle type</p>
-              <p className="mt-2 text-lg font-black capitalize text-white">{currentPuzzle.type.replace("-", " ")}</p>
-              <p className="mt-3 text-sm leading-7 text-slate-300">{selectedWorld.description}</p>
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">{t("riddles.ui.riddleType")}</p>
+              <p className="mt-2 text-lg font-black capitalize text-white">{t(`riddles.type.${currentPuzzle.type}` as never)}</p>
+              <p className="mt-3 text-sm leading-7 text-slate-300">{t(selectedWorld.descriptionKey as never)}</p>
             </div>
           </aside>
 
           <div className="rounded-[30px] border border-white/10 bg-[rgba(16,23,42,0.92)] p-6 shadow-[0_16px_40px_rgba(2,6,23,0.24)] sm:p-7">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.14em] text-cyan-200">Puzzle prompt</p>
-                <h3 className="mt-3 font-[var(--font-sora)] text-[1.9rem] font-extrabold leading-tight text-white">{currentPuzzle.prompt}</h3>
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-cyan-200">{t("riddles.ui.puzzlePrompt")}</p>
+                <h3 className="mt-3 font-[var(--font-sora)] text-[1.9rem] font-extrabold leading-tight text-white">{t(currentPuzzle.promptKey as never)}</h3>
               </div>
               <div className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-black uppercase tracking-[0.12em] text-slate-300">
-                {selectedWorld.title}
+                {t(selectedWorld.titleKey as never)}
               </div>
             </div>
 
@@ -197,16 +199,16 @@ export function RiddleRealmsGame() {
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Button className="sm:min-w-[160px]" disabled={!selectedAnswer || submitted} onClick={handleSubmit}>
-                Submit
+                {t("riddles.ui.submit")}
               </Button>
               <Button className="sm:min-w-[140px]" onClick={() => setRevealedHint((current) => !current)} variant="secondary">
-                <HelpCircle className="h-4 w-4" /> {revealedHint ? "Hide hint" : "Show hint"}
+                <HelpCircle className="h-4 w-4" /> {revealedHint ? t("riddles.ui.hideHint") : t("riddles.ui.showHint")}
               </Button>
             </div>
 
             {revealedHint ? (
               <div className="mt-5 rounded-[22px] bg-cyan-400/10 px-4 py-4 text-sm leading-7 text-cyan-50">
-                <span className="font-black text-cyan-100">Hint:</span> {currentPuzzle.hint}
+                <span className="font-black text-cyan-100">{t("riddles.ui.hintLabel")}</span> {t(currentPuzzle.hintKey as never)}
               </div>
             ) : null}
 
@@ -215,17 +217,17 @@ export function RiddleRealmsGame() {
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className={cx("mt-0.5 h-5 w-5 shrink-0", isCorrect ? "text-emerald-200" : "text-rose-200")} />
                   <div>
-                    <p className="font-[var(--font-sora)] text-xl font-extrabold">{isCorrect ? "Correct!" : "Not quite"}</p>
-                    <p className="mt-2 text-sm leading-7">{currentPuzzle.explanation}</p>
+                    <p className="font-[var(--font-sora)] text-xl font-extrabold">{isCorrect ? t("riddles.ui.correct") : t("riddles.ui.notQuite")}</p>
+                    <p className="mt-2 text-sm leading-7">{t(currentPuzzle.explanationKey as never)}</p>
                   </div>
                 </div>
 
                 <div className="mt-5">
                   <Button disabled={puzzleIndexByWorld[selectedWorld.id] === selectedWorld.puzzles.length - 1} onClick={handleNextPuzzle}>
-                    Next puzzle <MoveRight className="h-4 w-4" />
+                    {t("riddles.ui.nextPuzzle")} <MoveRight className="h-4 w-4" />
                   </Button>
                   {puzzleIndexByWorld[selectedWorld.id] === selectedWorld.puzzles.length - 1 ? (
-                    <p className="mt-3 text-sm font-medium text-slate-200">You cleared every sample puzzle in this world. Pick another realm or restart this one.</p>
+                    <p className="mt-3 text-sm font-medium text-slate-200">{t("riddles.ui.worldCleared")}</p>
                   ) : null}
                 </div>
               </div>
@@ -238,6 +240,7 @@ export function RiddleRealmsGame() {
 }
 
 function WorldCard({ onSelect, world }: { onSelect: () => void; world: RiddleWorld }) {
+  const { t } = useLocale();
   const Icon = worldIcons[world.id];
 
   return (
@@ -249,11 +252,11 @@ function WorldCard({ onSelect, world }: { onSelect: () => void; world: RiddleWor
       <div className={cx("flex h-14 w-14 items-center justify-center rounded-[18px] border", worldAccents[world.id])}>
         <Icon className="h-6 w-6" />
       </div>
-      <h3 className="mt-6 font-[var(--font-sora)] text-[1.8rem] font-extrabold text-white">{world.title}</h3>
-      <p className="mt-3 text-base leading-7 text-slate-300">{world.description}</p>
+      <h3 className="mt-6 font-[var(--font-sora)] text-[1.8rem] font-extrabold text-white">{t(world.titleKey as never)}</h3>
+      <p className="mt-3 text-base leading-7 text-slate-300">{t(world.descriptionKey as never)}</p>
       <div className="mt-5 flex items-center justify-between text-sm font-semibold text-slate-400">
-        <span>{world.puzzles.length} sample puzzles</span>
-        <span className="text-cyan-100">Enter realm</span>
+        <span>{t("riddles.ui.samplePuzzles", { count: world.puzzles.length })}</span>
+        <span className="text-cyan-100">{t("riddles.ui.enterRealm")}</span>
       </div>
     </button>
   );

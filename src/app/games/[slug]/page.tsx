@@ -25,10 +25,10 @@ const descriptionKeys = {
 } as const;
 
 const riddleRealmsMeta = {
-  description: "Choose a world, solve visual riddles, and clear premium logic realms one puzzle at a time.",
+  descriptionKey: "games.card.riddleRealms.description",
   duration: "15 riddles",
   slug: "riddle-realms" as const,
-  title: "Riddle Realms"
+  titleKey: "games.card.riddleRealms.title"
 };
 
 export default function GamePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -52,8 +52,12 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
               <ArrowLeft className="h-4 w-4" /> {t("games.page.backToAll")}
             </Link>
           </Button>
-          <h1 className="mt-4 font-[var(--font-sora)] text-4xl font-extrabold text-white">{game.title}</h1>
-          <p className="mt-3 max-w-2xl leading-7 text-slate-300">{descriptionKey ? t(descriptionKey) : game.description}</p>
+          <h1 className="mt-4 font-[var(--font-sora)] text-4xl font-extrabold text-white">
+            {"titleKey" in game ? t(game.titleKey as never) : game.title}
+          </h1>
+          <p className="mt-3 max-w-2xl leading-7 text-slate-300">
+            {"descriptionKey" in game ? t(game.descriptionKey as never) : descriptionKey ? t(descriptionKey) : game.description}
+          </p>
         </div>
         <div className="rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-sm font-black text-slate-200 shadow-[0_14px_34px_rgba(2,8,23,0.24)] backdrop-blur-xl">
           {durationKey ? t(durationKey) : game.duration}
