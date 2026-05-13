@@ -1,4 +1,4 @@
-import type { Messages } from "@/lib/i18n/messages/en";
+﻿import type { Messages } from "@/lib/i18n/messages/en";
 
 const ru = {
   "nav.dashboard": "Панель",
@@ -155,13 +155,43 @@ const ru = {
   "games.page.libraryTitle": "Каталог активных игр",
   "games.page.libraryBadge": "Сначала играйте, потом сохраняйте",
   "games.page.backToAll": "Все игры",
+  "games.page.allGamesTitle": "Все игры",
+  "games.page.allGamesSubtitle": "Выбери испытание и начни играть",
+  "games.page.featuredQuickMathDuelTitle": "Рекомендуется: Quick Math Duel",
+  "games.page.featuredQuickMathDuelBody": "Самая популярная игра недели. Отлично подходит для разминки математических навыков!",
+  "games.page.playNow": "Играть",
   "games.detail.playerFallback": "Исследователь",
 
   "gameCard.duration.5-rounds": "5 раундов",
   "gameCard.duration.60-sec": "60 сек",
-  "gameCard.duration.10-puzzles": "10 задач",
+  "gameCard.duration.10-puzzles": "10 головоломок",
   "gameCard.duration.8-grids": "8 сеток",
-  "gameCard.start": "\u041d\u0430\u0447\u0430\u0442\u044c \u0438\u0433\u0440\u0443",
+  "gameCard.start": "Начать игру",
+  "games.howItWorks.step3.body": "Войдите, чтобы сохранять результаты и соревноваться в рейтинге",
+  "games.howItWorks.step3.title": "Отслеживайте прогресс",
+  "games.howItWorks.step2.body": "Решайте задачи и улучшайте свои навыки",
+  "games.howItWorks.step2.title": "Играй и учись",
+  "games.howItWorks.step1.body": "Выберите игру, которая соответствует вашему уровню",
+  "games.howItWorks.step1.title": "Выберите игру",
+  "games.howItWorks.title": "Как это работает",
+  "games.card.riddleRealms.description": "Выбери логический мир и решай визуальные математические загадки",
+  "games.card.riddleRealms.title": "Riddle Realms",
+  "games.card.mathGridPuzzle.description": "Реши компактную сетку 3×3, найдя скрытое правило в строках",
+  "games.card.mathGridPuzzle.title": "Math Grid Puzzle",
+  "games.card.missingNumberPuzzle.description": "Найди закономерность и выбери пропущенное число",
+  "games.card.missingNumberPuzzle.title": "Missing Number Puzzle",
+  "games.card.bossRoundBattle.description": "Сразись с математическим монстром за пять ходов и защити свои жизни",
+  "games.card.bossRoundBattle.title": "Boss Round Battle",
+  "games.card.quickMathDuel.description": "Быстрые арифметические задания для проверки скорости и точности",
+  "games.card.quickMathDuel.title": "Quick Math Duel",
+  "games.meta.riddles": "загадок",
+  "games.meta.grids": "сеток",
+  "games.meta.puzzles": "головоломок",
+  "games.meta.rounds": "раундов",
+  "games.meta.min": "мин",
+  "games.difficulty.hard": "Сложно",
+  "games.difficulty.medium": "Средне",
+  "games.difficulty.easy": "Легко",
   "gameCard.recommendedFirst": "\u0420\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0443\u0435\u043c \u0441\u043d\u0430\u0447\u0430\u043b\u0430",
   "gameCard.description.boss-round-battle": "Сразитесь с математическим монстром за пять атакующих ходов и защитите свои сердца.",
   "gameCard.description.quick-math-duel": "Соревнуйтесь с таймером в быстрых арифметических раундах и наращивайте серию.",
@@ -364,7 +394,7 @@ const ru = {
   "shell.nav.leaderboard": "Рейтинг",
   "shell.nav.profile": "Профиль",
   "shell.nav.achievements": "Достижения",
-  "shell.nav.learn": "Учиться",
+  "shell.nav.learn": "Обучение",
   "shell.nav.practice": "Практика",
   "shell.brand": "MathQuest Arena",
   "shell.workspace": "Рабочее пространство",
@@ -392,13 +422,13 @@ const ru = {
   "dashboard.welcomeBack": "С возвращением, {name}!",
   "dashboard.heroSubtitle": "Готовы продолжить свое математическое путешествие?",
 
-  "protected.loading": "????????? ???? ?????...",
-  "protected.setupTitle": "????? ????????? Supabase",
-  "protected.setupBody": "???????? ??? Supabase URL ? anon key ? `.env.local`, ????? ????????? ????? ?? `supabase/schema.sql`, ????? ???????? auth ? ??????????? ????????.",
-  "protected.setupCta": "???????????? ???",
-  "protected.loginTitle": "???????, ????? ??????????",
-  "protected.loginBody": "???? ??????, ??????? ? ??????????? ?????????? ??????? ? ????? ????????? MathQuest.",
-  "protected.loginCta": "?????",
+  "protected.loading": "Загружаем вашу арену...",
+  "protected.setupTitle": "Нужна настройка Supabase",
+  "protected.setupBody": "Добавьте ваш Supabase URL и anon key в `.env.local`, затем запустите схему из `supabase/schema.sql`, чтобы включить авторизацию и сохранение прогресса.",
+  "protected.setupCta": "Посмотреть игры",
+  "protected.loginTitle": "Войдите, чтобы продолжить",
+  "protected.loginBody": "Ваша панель, профиль и сохраненные результаты связаны с вашим аккаунтом MathQuest.",
+  "protected.loginCta": "Войти",
 
   "protected.unlockTitle": "\u0427\u0442\u043e \u0434\u0430\u0435\u0442 \u0430\u043a\u043a\u0430\u0443\u043d\u0442",
   "protected.saveProgressTitle": "\u0421\u043e\u0445\u0440\u0430\u043d\u044f\u0439\u0442\u0435 \u043f\u0440\u043e\u0433\u0440\u0435\u0441\u0441",
@@ -617,4 +647,5 @@ const ru = {
 } satisfies Messages;
 
 export default ru;
+
 

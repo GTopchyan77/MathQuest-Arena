@@ -8,12 +8,13 @@ import { useLocale } from "@/lib/i18n/useLocale";
 
 type DemoGameCard = {
   count?: string;
-  description: string;
+  descriptionKey: string;
   difficulty: "Easy" | "Medium" | "Hard";
-  duration: string;
+  durationCount: string;
+  durationUnitKey: string;
   href?: string;
   icon: "algebra" | "brain" | "fraction" | "geometry" | "sprint" | "zap";
-  title: string;
+  titleKey: string;
 };
 
 const accentClasses = {
@@ -27,6 +28,12 @@ const difficultyClasses: Record<DemoGameCard["difficulty"], string> = {
   Easy: "border-emerald-400/20 bg-emerald-400/12 text-emerald-200",
   Hard: "border-violet-400/20 bg-violet-400/14 text-violet-200",
   Medium: "border-cyan-400/20 bg-cyan-400/12 text-cyan-200"
+};
+
+const difficultyKeys: Record<DemoGameCard["difficulty"], "games.difficulty.easy" | "games.difficulty.medium" | "games.difficulty.hard"> = {
+  Easy: "games.difficulty.easy",
+  Hard: "games.difficulty.hard",
+  Medium: "games.difficulty.medium"
 };
 
 const durationKeys: Record<GameMeta["duration"], "gameCard.duration.5-rounds" | "gameCard.duration.60-sec" | "gameCard.duration.10-puzzles" | "gameCard.duration.8-grids"> = {
@@ -146,6 +153,7 @@ const demoIconTone = {
 } as const;
 
 export function DemoGameCard({ card }: { card: DemoGameCard }) {
+  const { t } = useLocale();
   const Icon = demoIconMap[card.icon];
 
   return (
@@ -154,16 +162,16 @@ export function DemoGameCard({ card }: { card: DemoGameCard }) {
         <div className={`flex h-12 w-12 items-center justify-center rounded-[14px] border ${demoIconTone[card.icon]}`}>
           <Icon className="h-5 w-5" />
         </div>
-        <div className={`rounded-full border px-3 py-1 text-xs font-bold ${difficultyClasses[card.difficulty]}`}>{card.difficulty}</div>
+        <div className={`rounded-full border px-3 py-1 text-xs font-bold ${difficultyClasses[card.difficulty]}`}>{t(difficultyKeys[card.difficulty])}</div>
       </div>
 
       <div className="mt-6 flex h-full flex-col">
-        <h3 className="font-[var(--font-sora)] text-[2rem] font-extrabold leading-tight text-white">{card.title}</h3>
-        <p className="mt-3 min-h-[68px] text-[0.98rem] leading-7 text-slate-300">{card.description}</p>
+        <h3 className="font-[var(--font-sora)] text-[2rem] font-extrabold leading-tight text-white">{t(card.titleKey as never)}</h3>
+        <p className="mt-3 min-h-[68px] text-[0.98rem] leading-7 text-slate-300">{t(card.descriptionKey as never)}</p>
         <div className="mt-4 flex items-center gap-5 text-sm text-slate-400">
           <div className="flex items-center gap-2">
             <Clock3 className="h-4 w-4" />
-            <span>{card.duration}</span>
+            <span>{card.durationCount} {t(card.durationUnitKey as never)}</span>
           </div>
           {card.count ? <span>{card.count}</span> : null}
         </div>
@@ -172,7 +180,7 @@ export function DemoGameCard({ card }: { card: DemoGameCard }) {
           className="mt-auto h-12 w-full justify-center rounded-[14px] border border-[rgba(42,62,107,0.95)] bg-[rgba(14,22,44,0.92)] text-white shadow-none hover:border-cyan-300/34 hover:bg-[rgba(24,34,61,0.96)]"
           variant="secondary"
         >
-          {card.href ? <Link href={card.href}>Start game</Link> : <span>Start game</span>}
+          {card.href ? <Link href={card.href}>{t("gameCard.start")}</Link> : <span>{t("gameCard.start")}</span>}
         </Button>
       </div>
     </div>

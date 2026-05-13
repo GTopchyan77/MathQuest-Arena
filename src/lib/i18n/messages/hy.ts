@@ -1,4 +1,4 @@
-import type { Messages } from "@/lib/i18n/messages/en";
+﻿import type { Messages } from "@/lib/i18n/messages/en";
 
 const hy = {
   "nav.dashboard": "Վահանակ",
@@ -155,13 +155,43 @@ const hy = {
   "games.page.libraryTitle": "Ակտիվ խաղերի կատալոգ",
   "games.page.libraryBadge": "Սկզբում խաղացեք, հետո պահեք",
   "games.page.backToAll": "Բոլոր խաղերը",
+  "games.page.allGamesTitle": "Բոլոր խաղերը",
+  "games.page.allGamesSubtitle": "Ընտրիր մարտահրավերը և սկսիր խաղալ",
+  "games.page.featuredQuickMathDuelTitle": "Առաջարկվող՝ Quick Math Duel",
+  "games.page.featuredQuickMathDuelBody": "Այս շաբաթվա ամենահայտնի խաղը։ Հարմար է մաթեմատիկական հմտությունները արագ տաքացնելու համար։",
+  "games.page.playNow": "Խաղալ հիմա",
   "games.detail.playerFallback": "Հետազոտող",
 
   "gameCard.duration.5-rounds": "5 փուլ",
   "gameCard.duration.60-sec": "60 վրկ",
   "gameCard.duration.10-puzzles": "10 հանելուկ",
   "gameCard.duration.8-grids": "8 ցանց",
-  "gameCard.start": "\u054d\u056f\u057d\u0565\u056c \u056d\u0561\u0572\u0568",
+  "gameCard.start": "Սկսել խաղը",
+  "games.howItWorks.step3.body": "Մուտք գործիր՝ միավորները պահելու և վարկանիշում մրցելու համար",
+  "games.howItWorks.step3.title": "Հետևիր առաջընթացին",
+  "games.howItWorks.step2.body": "Լուծիր խնդիրներ և զարգացրու քո հմտությունները",
+  "games.howItWorks.step2.title": "Խաղա և սովորիր",
+  "games.howItWorks.step1.body": "Ընտրիր դժվարության մակարդակը, որը համապատասխանում է քո մակարդակին",
+  "games.howItWorks.step1.title": "Ընտրիր խաղը",
+  "games.howItWorks.title": "Ինչպես է աշխատում",
+  "games.card.riddleRealms.description": "Ընտրիր տրամաբանական աշխարհ և լուծիր տեսողական մաթեմատիկական հանելուկներ",
+  "games.card.riddleRealms.title": "Riddle Realms",
+  "games.card.mathGridPuzzle.description": "Լուծիր փոքր 3×3 աղյուսակը՝ գտնելով շարքերի թաքնված կանոնը",
+  "games.card.mathGridPuzzle.title": "Math Grid Puzzle",
+  "games.card.missingNumberPuzzle.description": "Գտիր հաջորդականության օրինաչափությունը և ընտրիր բացակայող թիվը",
+  "games.card.missingNumberPuzzle.title": "Missing Number Puzzle",
+  "games.card.bossRoundBattle.description": "Մրցիր մաթեմատիկական հրեշի դեմ հինգ քայլով և պահպանիր քո սրտերը",
+  "games.card.bossRoundBattle.title": "Boss Round Battle",
+  "games.card.quickMathDuel.description": "Արագ թվաբանական մարտահրավերներ՝ արագությունն ու ճշտությունը ստուգելու համար",
+  "games.card.quickMathDuel.title": "Quick Math Duel",
+  "games.meta.riddles": "հանելուկ",
+  "games.meta.grids": "ցանց",
+  "games.meta.puzzles": "հանելուկ",
+  "games.meta.rounds": "փուլ",
+  "games.meta.min": "րոպե",
+  "games.difficulty.hard": "Բարդ",
+  "games.difficulty.medium": "Միջին",
+  "games.difficulty.easy": "Հեշտ",
   "gameCard.recommendedFirst": "\u0531\u057c\u0561\u057b\u0561\u0580\u056f\u057e\u0578\u0582\u0574 \u0567 \u057d\u056f\u0566\u0562\u056b\u0581",
   "gameCard.description.boss-round-battle": "Պայքարեք մաթ հրեշի դեմ հինգ հարձակման փուլում և պաշտպանեք ձեր սրտերը։",
   "gameCard.description.quick-math-duel": "Մրցեք ժամացույցի հետ արագ թվաբանական փուլերում և կառուցեք շարք։",
@@ -392,13 +422,13 @@ const hy = {
   "dashboard.welcomeBack": "Բարի վերադարձ, {name}!",
   "dashboard.heroSubtitle": "Պատրա՞ստ ես շարունակելու քո մաթ ճամփորդությունը։",
 
-  "protected.loading": "???????? ? ??? ??????...",
-  "protected.setupTitle": "Supabase-? ??????????? ? ????",
-  "protected.setupBody": "????????? ??? Supabase URL-? ? anon key-? `.env.local` ???????, ???? ????????? `supabase/schema.sql`-? ??????? auth-? ?? ????????? ?????????? ????????? ?????:",
-  "protected.setupCta": "????????? ??????",
-  "protected.loginTitle": "????? ??????? ???????????? ?????",
-  "protected.loginBody": "??? ????????, ??????? ? ????????? ?????????? ?????? ?? ??? MathQuest ??????:",
-  "protected.loginCta": "????? ??????",
+  "protected.loading": "Բեռնվում է ձեր արենան...",
+  "protected.setupTitle": "Supabase-ի կարգավորում է պետք",
+  "protected.setupBody": "Ավելացրեք ձեր Supabase URL-ն ու anon key-ը `.env.local` ֆայլում, հետո գործարկեք `supabase/schema.sql` սխեման՝ auth-ը և պահպանվող առաջընթացը միացնելու համար։",
+  "protected.setupCta": "Նախադիտել խաղերը",
+  "protected.loginTitle": "Մուտք գործեք շարունակելու համար",
+  "protected.loginBody": "Ձեր վահանակը, պրոֆիլը և պահպանված միավորները կապված են ձեր MathQuest հաշվին։",
+  "protected.loginCta": "Մուտք գործել",
 
   "protected.unlockTitle": "\u053b\u0576\u0579 \u0565\u0584 \u057d\u057f\u0561\u0576\u0578\u0582\u0574 \u0570\u0561\u0577\u056b\u057e \u0578\u0582\u0576\u0565\u0576\u0561\u056c\u0578\u057e",
   "protected.saveProgressTitle": "\u054a\u0561\u0570\u0565\u0584 \u0561\u057c\u0561\u057b\u0568\u0576\u0569\u0561\u0581\u0568",
@@ -617,4 +647,6 @@ const hy = {
 } satisfies Messages;
 
 export default hy;
+
+
 
