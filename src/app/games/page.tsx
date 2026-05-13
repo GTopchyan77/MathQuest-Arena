@@ -20,7 +20,7 @@ const games = [
   {
     count: undefined,
     descriptionKey: "games.card.bossRoundBattle.description",
-    difficulty: "Hard" as const,
+    difficulty: "Easy" as const,
     durationCount: "5",
     durationUnitKey: "games.meta.rounds",
     href: "/games/boss-round-battle",

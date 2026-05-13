@@ -138,13 +138,13 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "7", value: "7" }
         ],
         correctAnswer: "6",
-        explanation: "If □ + 9 = 15, then □ must be 6.",
+        explanation: "If x + 9 = 15, then x must be 6.",
         hint: "Think about what number plus 9 equals 15.",
         id: "forest-1",
         prompt: "What value belongs in the box?",
         type: "symbol-equation",
         visual: {
-          equations: [[{ kind: "symbol", value: "□" }, { kind: "plus", value: "+" }, { kind: "symbol", value: "9" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "15" }]]
+          equations: [[{ kind: "symbol", value: "x" }, { kind: "plus", value: "+" }, { kind: "symbol", value: "9" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "15" }]]
         }
       },
       {
@@ -161,7 +161,7 @@ export const riddleWorlds: RiddleWorld[] = [
         prompt: "The balanced gate has two equal boxes. What is one box worth?",
         type: "symbol-equation",
         visual: {
-          equations: [[{ kind: "symbol", value: "□" }, { kind: "plus", value: "+" }, { kind: "symbol", value: "□" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "8" }]]
+          equations: [[{ kind: "symbol", value: "x" }, { kind: "plus", value: "+" }, { kind: "symbol", value: "x" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "8" }]]
         }
       },
       {
@@ -172,13 +172,13 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "10", value: "10" }
         ],
         correctAnswer: "9",
-        explanation: "If □ - 5 = 4, then □ = 9.",
+        explanation: "If x - 5 = 4, then x = 9.",
         hint: "Undo the subtraction.",
         id: "forest-3",
         prompt: "Which value keeps the forest equation balanced?",
         type: "symbol-equation",
         visual: {
-          equations: [[{ kind: "symbol", value: "□" }, { kind: "minus", value: "-" }, { kind: "symbol", value: "5" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "4" }]]
+          equations: [[{ kind: "symbol", value: "x" }, { kind: "minus", value: "-" }, { kind: "symbol", value: "5" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "4" }]]
         }
       },
       {
@@ -189,13 +189,13 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "13", value: "13" }
         ],
         correctAnswer: "11",
-        explanation: "3 + □ = 14, so □ = 11.",
+        explanation: "3 + x = 14, so x = 11.",
         hint: "What number added to 3 gives 14?",
         id: "forest-4",
         prompt: "Find the hidden number in the branch equation.",
         type: "symbol-equation",
         visual: {
-          equations: [[{ kind: "symbol", value: "3" }, { kind: "plus", value: "+" }, { kind: "symbol", value: "□" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "14" }]]
+          equations: [[{ kind: "symbol", value: "3" }, { kind: "plus", value: "+" }, { kind: "symbol", value: "x" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "14" }]]
         }
       },
       {
@@ -206,13 +206,13 @@ export const riddleWorlds: RiddleWorld[] = [
           { label: "12", value: "12" }
         ],
         correctAnswer: "8",
-        explanation: "If □ + 4 = 12, then □ = 8.",
+        explanation: "If x + 4 = 12, then x = 8.",
         hint: "What is 12 minus 4?",
         id: "forest-5",
         prompt: "Solve the final box to clear Equation Forest.",
         type: "symbol-equation",
         visual: {
-          equations: [[{ kind: "symbol", value: "□" }, { kind: "plus", value: "+" }, { kind: "symbol", value: "4" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "12" }]]
+          equations: [[{ kind: "symbol", value: "x" }, { kind: "plus", value: "+" }, { kind: "symbol", value: "4" }, { kind: "equals", value: "=" }, { kind: "symbol", value: "12" }]]
         }
       }
     ],
