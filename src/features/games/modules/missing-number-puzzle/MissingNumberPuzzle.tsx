@@ -102,11 +102,7 @@ export function MissingNumberPuzzle() {
                 type="button"
               >
                 <div className="text-4xl font-black">{option}</div>
-                <div className="mt-3 flex flex-wrap gap-1">
-                  {createMiniTokens(option).map((token) => (
-                    <span className={`h-3 w-3 rounded-full ${miniTokenClass(token)}`} key={token} />
-                  ))}
-                </div>
+                <p className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-slate-400">Pattern choice</p>
               </button>
             ))}
           </div>
@@ -175,28 +171,17 @@ function Badge({ children, tone }: { children: React.ReactNode; tone: "cyan" | "
 }
 
 function SequenceCard({ value }: { value: number | null }) {
-  const tokens = value === null ? createPlaceholderTokens() : createVisualTokens(value);
-
   return (
     <div
       className={`rounded-[26px] border p-4 ${
         value === null ? "border-[rgba(196,181,253,0.45)] bg-[rgba(167,139,250,0.14)] text-[rgb(237,233,254)]" : "border-white/10 bg-white/6 text-white"
       }`}
     >
-      <div className="text-center text-4xl font-black">{value ?? "?"}</div>
-      <div className="mt-4 space-y-2">
-        {tokens.tens.map((token) => (
-          <div className={`h-3.5 rounded-full ${tokenBarClass(token)}`} key={token} />
-        ))}
-        <div className="flex flex-wrap gap-1.5">
-          {tokens.ones.map((token) => (
-            <span
-              className={`h-5 w-5 rounded-xl ${value === null ? "border border-dashed border-violet-200/50 bg-violet-200/12" : oneTokenClass(token)}`}
-              key={token}
-            />
-          ))}
-          {tokens.badge ? <span className="rounded-full bg-white/10 px-2 py-1 text-[0.65rem] font-black uppercase tracking-[0.08em]">{tokens.badge}</span> : null}
-        </div>
+      <div className="flex min-h-[108px] flex-col items-center justify-center rounded-[20px] border border-white/8 bg-black/10 px-3 py-4 text-center">
+        <div className="text-4xl font-black">{value ?? "?"}</div>
+        <p className="mt-3 text-[0.68rem] font-black uppercase tracking-[0.14em] text-slate-400">
+          {value === null ? "Missing value" : "Sequence value"}
+        </p>
       </div>
     </div>
   );
@@ -246,60 +231,3 @@ function Pill({ label, value }: { label: string; value: number }) {
   );
 }
 
-function createVisualTokens(value: number) {
-  const safeValue = Math.max(0, value);
-  const tens = Math.min(Math.floor(safeValue / 10), 3);
-  const ones = safeValue % 10;
-  const hiddenTens = Math.max(0, Math.floor(safeValue / 10) - tens);
-
-  return {
-    badge: hiddenTens > 0 ? `+${hiddenTens * 10}` : null,
-    ones: Array.from({ length: ones }, (_, index) => `one-${value}-${index}`),
-    tens: Array.from({ length: tens }, (_, index) => `ten-${value}-${index}`)
-  };
-}
-
-function createPlaceholderTokens() {
-  return {
-    badge: null,
-    ones: Array.from({ length: 4 }, (_, index) => `placeholder-${index}`),
-    tens: Array.from({ length: 2 }, (_, index) => `placeholder-ten-${index}`)
-  };
-}
-
-function createMiniTokens(value: number) {
-  return Array.from({ length: Math.max(1, Math.min(6, (value % 10) || 3)) }, (_, index) => `mini-${value}-${index}`);
-}
-
-function oneTokenClass(token: string) {
-  const palettes = [
-    "bg-pink-300/90 shadow-[0_0_12px_rgba(249,168,212,0.3)]",
-    "bg-amber-200/90 shadow-[0_0_12px_rgba(252,211,77,0.28)]",
-    "bg-emerald-300/90 shadow-[0_0_12px_rgba(110,231,183,0.28)]",
-    "bg-cyan-300/90 shadow-[0_0_12px_rgba(103,232,249,0.28)]",
-    "bg-[rgba(196,181,253,0.9)] shadow-[0_0_12px_rgba(196,181,253,0.28)]"
-  ];
-
-  return palettes[token.length % palettes.length];
-}
-
-function tokenBarClass(token: string) {
-  const palettes = [
-    "bg-[linear-gradient(90deg,rgba(34,211,238,0.9),rgba(125,211,252,0.65))]",
-    "bg-[linear-gradient(90deg,rgba(196,181,253,0.9),rgba(167,139,250,0.65))]",
-    "bg-[linear-gradient(90deg,rgba(110,231,183,0.9),rgba(16,185,129,0.65))]"
-  ];
-
-  return palettes[token.length % palettes.length];
-}
-
-function miniTokenClass(token: string) {
-  const palettes = [
-    "bg-pink-300 shadow-[0_0_10px_rgba(249,168,212,0.26)]",
-    "bg-cyan-300 shadow-[0_0_10px_rgba(103,232,249,0.26)]",
-    "bg-amber-200 shadow-[0_0_10px_rgba(252,211,77,0.22)]",
-    "bg-emerald-300 shadow-[0_0_10px_rgba(110,231,183,0.24)]"
-  ];
-
-  return palettes[token.length % palettes.length];
-}
