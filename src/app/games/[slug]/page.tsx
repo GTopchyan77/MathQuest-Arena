@@ -24,10 +24,17 @@ const descriptionKeys = {
   "quick-math-duel": "gameCard.description.quick-math-duel"
 } as const;
 
+const riddleRealmsMeta = {
+  description: "Choose a world, solve visual riddles, and clear premium logic realms one puzzle at a time.",
+  duration: "15 riddles",
+  slug: "riddle-realms" as const,
+  title: "Riddle Realms"
+};
+
 export default function GamePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const { t } = useLocale();
-  const game = getGame(slug);
+  const game = getGame(slug) ?? (slug === "riddle-realms" ? riddleRealmsMeta : null);
 
   if (!game) {
     notFound();
@@ -52,7 +59,7 @@ export default function GamePage({ params }: { params: Promise<{ slug: string }>
           {durationKey ? t(durationKey) : game.duration}
         </div>
       </div>
-      <GameRenderer slug={game.slug as GameSlug} />
+      <GameRenderer slug={game.slug as GameSlug | "riddle-realms"} />
     </main>
   );
 }

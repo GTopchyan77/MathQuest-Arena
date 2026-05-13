@@ -17,48 +17,39 @@ const games = [
   },
   {
     count: undefined,
-    description: "Race against time solving progressively harder problems",
-    difficulty: "Medium" as const,
-    duration: "10 min",
-    href: undefined,
-    icon: "sprint" as const,
-    title: "Number Sprint"
-  },
-  {
-    count: undefined,
-    description: "Conquer algebraic equations and prove your mastery",
+    description: "Battle a math monster across five attack turns and protect your hearts",
     difficulty: "Hard" as const,
-    duration: "15 min",
-    href: undefined,
+    duration: "5 rounds",
+    href: "/games/boss-round-battle",
     icon: "algebra" as const,
-    title: "Algebra Arena"
+    title: "Boss Round Battle"
   },
   {
     count: undefined,
-    description: "Sharpen your mental calculation skills without a calculator",
-    difficulty: "Easy" as const,
-    duration: "8 min",
-    href: undefined,
-    icon: "brain" as const,
-    title: "Mental Math Master"
-  },
-  {
-    count: undefined,
-    description: "Master fractions, decimals, and percentages in this challenge",
+    description: "Spot sequence patterns, choose the missing value, and scale up difficulty",
     difficulty: "Medium" as const,
-    duration: "12 min",
-    href: undefined,
+    duration: "10 puzzles",
+    href: "/games/missing-number-puzzle",
     icon: "fraction" as const,
-    title: "Fraction Frenzy"
+    title: "Missing Number Puzzle"
   },
   {
     count: undefined,
-    description: "Solve spatial problems and geometric puzzles",
-    difficulty: "Hard" as const,
-    duration: "20 min",
-    href: undefined,
+    description: "Solve a compact 3x3 grid by finding the hidden rule behind the rows",
+    difficulty: "Medium" as const,
+    duration: "8 grids",
+    href: "/games/math-grid-puzzle",
     icon: "geometry" as const,
-    title: "Geometry Quest"
+    title: "Math Grid Puzzle"
+  },
+  {
+    count: undefined,
+    description: "Choose a logic world and solve visual math riddles across premium puzzle realms",
+    difficulty: "Medium" as const,
+    duration: "15 riddles",
+    href: "/games/riddle-realms",
+    icon: "fraction" as const,
+    title: "Riddle Realms"
   }
 ];
 

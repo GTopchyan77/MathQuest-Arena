@@ -135,7 +135,7 @@ export function AppShell({ children }: AppShellProps) {
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.08),transparent_22%),radial-gradient(circle_at_top_right,rgba(99,102,241,0.08),transparent_24%),linear-gradient(180deg,rgba(8,13,26,0.98),rgba(5,9,18,1))]">
       <MathCursorTrail enabled={shouldShowMathTrail} />
       <div className="flex min-h-screen">
-      <aside className="hidden w-[252px] shrink-0 border-r border-white/6 bg-[rgba(8,12,25,0.72)] px-4 py-5 backdrop-blur-2xl lg:flex lg:flex-col">
+        <aside className="sticky top-0 hidden h-dvh w-[252px] shrink-0 border-r border-white/6 bg-[rgba(8,12,25,0.72)] px-4 py-5 backdrop-blur-2xl lg:flex lg:flex-col">
           <SidebarContent
             currentPath={pathname}
             displayName={displayName}
@@ -191,7 +191,7 @@ export function AppShell({ children }: AppShellProps) {
 
       {sidebarOpen ? (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm lg:hidden">
-          <div className="absolute inset-y-0 left-0 w-[272px] border-r border-white/8 bg-[rgba(6,10,21,0.95)] px-4 py-5">
+          <div className="absolute inset-y-0 left-0 flex h-dvh w-[272px] flex-col border-r border-white/8 bg-[rgba(6,10,21,0.95)] px-4 py-5">
             <div className="mb-4 flex justify-end">
               <button
                 className="focus-ring rounded-2xl border border-white/10 bg-white/6 p-2 text-slate-100"
@@ -238,20 +238,20 @@ function SidebarContent({
   const items = isTeacherUser ? [...navItems, ...teacherNavItems] : navItems;
 
   return (
-    <>
+    <div className="flex h-full min-h-0 flex-col">
       <Link className="flex items-center gap-3" href="/">
         <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-cyan-300/18 bg-[linear-gradient(135deg,rgba(34,211,238,0.18),rgba(99,102,241,0.18))] text-cyan-100 shadow-[0_12px_28px_rgba(34,211,238,0.14)]">
           <Calculator className="h-5 w-5" />
         </span>
         <div>
-          <p className="font-[var(--font-sora)] text-base font-extrabold text-white">MathQuest Arena</p>
+          <p className="font-[var(--font-sora)] text-base font-extrabold text-white">{t("shell.brand")}</p>
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{t("shell.learningOs")}</p>
         </div>
       </Link>
 
-      <div className="mt-8">
+      <div className="mt-8 flex min-h-0 flex-1 flex-col">
         <p className="mb-3 px-3 text-[11px] font-black uppercase tracking-[0.16em] text-slate-500">{t("shell.workspace")}</p>
-        <nav className="grid gap-1.5">
+        <nav className="min-h-0 flex-1 space-y-1.5 overflow-y-auto pr-1">
           {items.map((item) => {
             const Icon = item.icon;
             const isDisabled = "disabled" in item && Boolean(item.disabled);
@@ -282,7 +282,7 @@ function SidebarContent({
 
                 {badgeKey ? (
                   <span className="ml-2 shrink-0 rounded-full bg-white/[0.06] px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.08em] text-slate-500">
-                    Soon
+                    {t("shell.soon")}
                   </span>
                 ) : null}
               </>
@@ -317,7 +317,7 @@ function SidebarContent({
         </nav>
       </div>
 
-      <div className="mt-auto space-y-2 border-t border-white/8 pt-4">
+      <div className="mt-4 shrink-0 border-t border-white/8 pt-4">
         <div className="flex items-center gap-3 rounded-2xl px-2 py-2 text-slate-300">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.04] text-slate-300">
             <Settings className="h-4 w-4" />
@@ -331,6 +331,6 @@ function SidebarContent({
           <LogOut className="h-4 w-4" /> {t("shell.signOut")}
         </Button>
       </div>
-    </>
+    </div>
   );
 }
